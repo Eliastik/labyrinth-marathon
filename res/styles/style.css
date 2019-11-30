@@ -1,0 +1,10 @@
+.button {
+	-fx-background-color: rgba(125, 125, 125, 0.5);
+	-fx-border-width: 0;
+	-fx-font-color: white;
+	-fx-font-size: 18px;
+}
+
+.button:hover {
+	-fx-background-color: rgba(125, 125, 125, 0.85);
+}
