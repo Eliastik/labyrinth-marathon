@@ -2,8 +2,9 @@ package game;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
@@ -255,7 +256,7 @@ public class MenuLauncher extends Application {
 		text.setEditable(false);
 		int caretPosition = text.caretPositionProperty().get();
 		
-		try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+		try(BufferedReader br = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/" + file), Charset.forName("UTF-8")))) {
 			String line = br.readLine();
 			
 			while (line != null) {
