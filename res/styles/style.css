@@ -65,3 +65,27 @@
 .combo-box-popup .list-view .list-cell:hover {
 	-fx-background-color: rgba(75, 75, 75, 1.0);
 }
+
+.menu-item .label {
+    -fx-text-fill: black;
+}
+
+.menu-item:hover, .menu-item:focused {
+    -fx-background-color: rgba(150, 150, 150, 1.0);
+}
+
+.context-menu {
+    -fx-background-color: rgba(150, 150, 150, 0.5);
+}
+
+.menu-bar {
+    -fx-background-color: rgba(150, 150, 150, 0.5);
+}
+
+.menu .label {
+    -fx-text-fill: black;
+}
+
+.menu:hover, .menu:showing, .menu-item:focused {
+    -fx-background-color: rgba(150, 150, 150, 1.0);
+}

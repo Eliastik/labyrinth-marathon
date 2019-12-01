@@ -1,5 +1,8 @@
 package game;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Locale;
@@ -47,15 +50,67 @@ public class MenuLauncher extends Application {
 			Menu fileBar = new Menu(locales.getString("file"));
 			Menu helpBar = new Menu(locales.getString("help"));
 			MenuItem exitItem = new MenuItem(locales.getString("exit"));
-			MenuItem helpItem = new MenuItem(locales.getString("about"));
+			MenuItem aboutItem = new MenuItem(locales.getString("about"));
 			
 			menuB.getMenus().addAll(fileBar, helpBar);
 			fileBar.getItems().addAll(exitItem);
-			helpBar.getItems().addAll(helpItem);
+			helpBar.getItems().addAll(aboutItem);
 			
 			exitItem.setOnAction(e -> {
 				stage.close();
 				System.exit(0);
+			});
+			
+			aboutItem.setOnAction(e -> {
+				Alert alert = new Alert(Alert.AlertType.INFORMATION);
+				alert.setTitle(locales.getString("about"));
+				alert.setHeaderText(locales.getString("aboutApp"));
+				alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/styleAlert.css").toExternalForm());
+				ImageView icon = new ImageView(new Image(getClass().getResourceAsStream("/images/icon_flat.png")));
+				icon.setFitHeight(64);
+				icon.setFitWidth(64);
+				alert.setGraphic(icon);
+				
+				VBox vboxAbout = new VBox();
+				
+				HBox hboxCopy = new HBox();
+				Label labelCopy = new Label("© 2019 Eliastik (eliastiksofts.com)");
+				hboxCopy.getChildren().add(labelCopy);
+				
+				HBox hboxLicense = new HBox();
+				Label labelLicense = new Label(locales.getString("license"));
+				hboxLicense.getChildren().add(labelLicense);
+				
+				HBox buttonsAbout = new HBox();
+				buttonsAbout.setAlignment(Pos.CENTER);
+				Button buttonWebsite = new Button(locales.getString("website"));
+				Button buttonLicense = new Button(locales.getString("licenseButton"));
+				Button buttonReadme = new Button(locales.getString("readme"));
+				HBox.setMargin(buttonWebsite, new Insets(15, 5, 0, 5));
+				HBox.setMargin(buttonLicense, new Insets(15, 5, 0, 5));
+				HBox.setMargin(buttonReadme, new Insets(15, 5, 0, 5));
+				buttonsAbout.getChildren().addAll(buttonWebsite, buttonLicense, buttonReadme);
+				
+				buttonWebsite.setOnAction(e2 -> {
+					try {
+						new ProcessBuilder("x-www-browser", "https://www.eliastiksofts.com").start();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+				});
+				
+				buttonLicense.setOnAction(e2 -> {
+					this.displayTextFileDialog(locales.getString("licenseButton"), "license.txt");
+				});
+				
+				buttonReadme.setOnAction(e2 -> {
+					this.displayTextFileDialog(locales.getString("readme"), "README.md");
+				});
+				
+				vboxAbout.getChildren().addAll(hboxCopy, hboxLicense, buttonsAbout);
+				
+				alert.getDialogPane().setContent(vboxAbout);
+				alert.show();
 			});
 			
 			ImageView logo = new ImageView(new Image(getClass().getResourceAsStream("/images/logo.png")));
@@ -188,6 +243,35 @@ public class MenuLauncher extends Application {
 			stage.setScene(scene);
 			stage.show();
 			stage.setResizable(false);
+	}
+	
+	public void displayTextFileDialog(String title, String file) {
+		Alert alert = new Alert(Alert.AlertType.INFORMATION);
+		alert.setTitle(title);
+		alert.setHeaderText(title);
+		alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/styleAlert.css").toExternalForm());
+		TextArea text = new TextArea();
+		text.setWrapText(true);
+		text.setEditable(false);
+		int caretPosition = text.caretPositionProperty().get();
+		
+		try(BufferedReader br = new BufferedReader(new FileReader(file))) {
+			String line = br.readLine();
+			
+			while (line != null) {
+				text.appendText(line + "\n");
+				line = br.readLine();
+			}
+		} catch (FileNotFoundException e1) {
+			e1.printStackTrace();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		text.positionCaret(caretPosition);
+		
+		alert.getDialogPane().setContent(text);
+		alert.show();
 	}
 
 	public static void main(String[] args) {
