@@ -24,6 +24,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -46,7 +47,7 @@ public class MenuLauncher extends Application {
 			Menu fileBar = new Menu(locales.getString("file"));
 			Menu helpBar = new Menu(locales.getString("help"));
 			MenuItem exitItem = new MenuItem(locales.getString("exit"));
-			MenuItem helpItem = new MenuItem(locales.getString("help"));
+			MenuItem helpItem = new MenuItem(locales.getString("about"));
 			
 			menuB.getMenus().addAll(fileBar, helpBar);
 			fileBar.getItems().addAll(exitItem);
@@ -67,6 +68,28 @@ public class MenuLauncher extends Application {
 			
 			vbox.getChildren().addAll(logo, marathon, labyrinth, exit);
 			vbox.setAlignment(Pos.BASELINE_CENTER);
+			
+			marathon.setOnAction(e -> {
+				try {
+					Stage s = new Stage();
+					s.initOwner(stage);
+					s.initModality(Modality.WINDOW_MODAL);
+					new GameLauncher(1).start(s);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			});
+			
+			labyrinth.setOnAction(e -> {
+				try {
+					Stage s = new Stage();
+					s.initOwner(stage);
+					s.initModality(Modality.WINDOW_MODAL);
+					new GameLauncher(2).start(s);
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+			});
 			
 			exit.setOnAction(e -> {
 				stage.close();

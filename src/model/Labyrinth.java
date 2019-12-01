@@ -43,12 +43,20 @@ public class Labyrinth {
 		this.algorithm = algorithm;
 	}
 	
-	public Labyrinth(int width, int height, Position startPosition, GenerationAlgorithm algorithm, Position endPosition, boolean enableAutoPlayer) {
+	public Labyrinth(int width, int height, Position startPosition, Position endPosition, GenerationAlgorithm algorithm, boolean enableAutoPlayer) {
 		this(width, height, startPosition, endPosition, algorithm, false, enableAutoPlayer);
+	}
+	
+	public Labyrinth(int width, int height, GenerationAlgorithm algorithm, boolean enableAutoPlayer) {
+		this(width, height, new Position(0, 0), new Position(width - 1, height - 1), algorithm, enableAutoPlayer);
 	}
 	
 	public Labyrinth(int width, int height, Position startPosition, Position endPosition, boolean enableAutoPlayer) {
 		this(width, height, startPosition, endPosition, new AldousBroder(), false, enableAutoPlayer);
+	}
+	
+	public Labyrinth(int width, int height, boolean enableAutoPlayer) {
+		this(width, height, new Position(0, 0), new Position(width - 1, height - 1), enableAutoPlayer);
 	}
 	
 	public Labyrinth(int width, int height, Position startPosition, Position endPosition) {

@@ -1,10 +1,55 @@
 .button {
 	-fx-background-color: rgba(125, 125, 125, 0.5);
 	-fx-border-width: 0;
-	-fx-font-color: white;
 	-fx-font-size: 18px;
 }
 
 .button:hover {
 	-fx-background-color: rgba(125, 125, 125, 0.85);
+}
+
+.text-field {
+	-fx-font-size: 15px;
+	-fx-background-color: rgba(125, 125, 125, 0.5);
+	-fx-border-width: 0;
+	-fx-font-color: white;
+}
+
+.spinner .increment-arrow-button, .spinner .decrement-arrow-button {
+	-fx-background-color: rgba(150, 150, 150, 1.0);
+	-fx-border-width: 0;
+}
+
+.spinner .increment-arrow-button:hover, .spinner .decrement-arrow-button:hover {
+	-fx-background-color: rgba(75, 75, 75, 1.0);
+	-fx-border-width: 0;
+}
+
+.spinner .increment-arrow-button .increment-arrow {
+    -fx-background-color: white;
+}
+
+.spinner .decrement-arrow-button .decrement-arrow {
+    -fx-background-color: white;
+}
+
+.combo-box-base {
+	-fx-background-color: rgba(125, 125, 125, 0.5);
+	-fx-font-size: 15px;
+}
+
+.combo-box-base:hover {
+	-fx-background-color: rgba(125, 125, 125, 0.85);
+}
+
+.combo-box-popup .list-view {
+	-fx-background-color: rgba(125, 125, 125, 0.5);
+}
+
+.combo-box-popup .list-view .list-cell {
+	-fx-background-color: rgba(125, 125, 125, 1.0);
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+	-fx-background-color: rgba(75, 75, 75, 1.0);
 }

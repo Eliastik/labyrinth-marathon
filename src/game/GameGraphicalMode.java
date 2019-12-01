@@ -2,7 +2,6 @@ package game;
 
 
 import java.util.Locale;
-import java.util.Random;
 import java.util.ResourceBundle;
 
 import javafx.animation.Animation;
@@ -48,7 +47,8 @@ import util.Position;
  */
 public class GameGraphicalMode extends Application {
 	private Labyrinth labyrinth;
-	private int level = 1;
+	private GameLauncher launcher;
+	private int level = 0;
 	private Canvas canvas;
 	private boolean joueurMove = false;
 	private boolean exited = false;
@@ -63,9 +63,11 @@ public class GameGraphicalMode extends Application {
 	 * Construct a new graphical game
 	 * @param labyrinth (Labyrinth) A generated labyrinth (run generate())
 	 */
-	public GameGraphicalMode(Labyrinth labyrinth, int level) {
+	public GameGraphicalMode(Labyrinth labyrinth, GameLauncher launcher, boolean displayInfoStart, int level) {
 		this.labyrinth = labyrinth;
+		this.launcher = launcher;
 		this.level = level;
+		this.displayInfoStart = displayInfoStart;
 	}
 	
 	/**
@@ -91,7 +93,6 @@ public class GameGraphicalMode extends Application {
 		ResourceBundle locales = ResourceBundle.getBundle("locales.graphical", Locale.getDefault()); // Locale
 		
 		Player player = this.labyrinth.getPlayer();
-		player.setSprite(new Image(getClass().getResourceAsStream("/images/" + (1 + new Random().nextInt(25)) + ".png")));
 		
 		BorderPane root = new BorderPane();
 		CanvasPane pane = new CanvasPane(800, 600);
@@ -99,7 +100,12 @@ public class GameGraphicalMode extends Application {
 		root.setCenter(pane);
 		
 		HBox hbox = new HBox();
-		Label levelLabel = new Label(locales.getString("level") + " " + locales.getString("num") + this.level);
+		Label levelLabel = new Label();
+		
+		if(this.level > 0) {
+			levelLabel.setText(locales.getString("level") + " " + locales.getString("num") + this.level);
+		}
+		
 		levelLabel.setFont(new Font(35));
 		Region region = new Region();
 		HBox.setHgrow(region, Priority.ALWAYS);
@@ -125,12 +131,14 @@ public class GameGraphicalMode extends Application {
 			exited = true;
 			timerDraw.stop();
 			primaryStage.close();
+			if(this.launcher != null) this.launcher.retry();
 		});
 		
 		quit.setOnAction(e -> {
 			exited = true;
 			timerDraw.stop();
 			primaryStage.close();
+			if(this.launcher != null) this.launcher.exit();
 		});
 		
 		solution.setOnAction(e -> {
@@ -148,6 +156,13 @@ public class GameGraphicalMode extends Application {
 		primaryStage.setHeight(600);
 		primaryStage.setScene(scene);
 		primaryStage.show();
+		
+		primaryStage.setOnCloseRequest(e -> {
+			exited = true;
+			timerDraw.stop();
+			primaryStage.close();
+			if(this.launcher != null) this.launcher.exit();
+		});
 		
 		if(!labyrinth.isAutoPlayer()) {
 			scene.setOnKeyPressed(e -> {
@@ -216,6 +231,10 @@ public class GameGraphicalMode extends Application {
 			
 			this.timelineWin = new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
 				this.timelineWin.stop();
+				exited = true;
+				timerDraw.stop();
+				stage.close();
+				if(this.launcher != null) this.launcher.progress();
 				this.win = true;
 			}));
 			

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Random;
 import java.util.Stack;
 
 import javafx.scene.image.Image;
@@ -28,6 +29,7 @@ public class Player {
 		this.labyrinth = labyrinth;
 		this.position = position;
 		this.direction = direction;
+		this.setSprite(new Image(getClass().getResourceAsStream("/images/" + (1 + new Random().nextInt(25)) + ".png")));
 	}
 	
 	public Player(Position position, Direction direction) {
