@@ -1,0 +1,30 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+archivesBaseName = 'labyrinth-marathon'
+version = '1.0'
+compileJava.options.encoding = 'UTF-8'
+
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
+sourceSets {
+	main.java.srcDirs = ['src/']
+	main.resources.srcDirs = ['res/']
+}
+
+jar {
+	manifest {
+		attributes 'Main-Class': 'game.MenuLauncher'
+	}
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+dependencies {
+	compile group: 'org.json', name: 'json', version: '20190722'
+}
