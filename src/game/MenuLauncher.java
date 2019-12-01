@@ -1,5 +1,7 @@
 package game;
 
+import java.io.IOException;
+import java.text.DateFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -7,11 +9,15 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
@@ -71,6 +77,79 @@ public class MenuLauncher extends Application {
 			Hyperlink update = new Hyperlink(locales.getString("update"));
 			update.setFont(new Font(15));
 			hbox.getChildren().addAll(update);
+			
+			update.setOnAction(e -> {
+				UpdateChecker checker = new UpdateChecker();
+				
+				Alert alert = new Alert(Alert.AlertType.INFORMATION);
+				alert.setTitle(locales.getString("updateManager"));
+				alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/styleAlert.css").toExternalForm());
+				
+				try {
+					if(checker.checkUpdate()) {
+						alert.setHeaderText(locales.getString("updateAvailable"));
+						VBox vboxAlert = new VBox();
+						
+						HBox hboxCurrentVersion = new HBox();
+						Label currentVersionLabel = new Label(locales.getString("currentVersion") + " ");
+						currentVersionLabel.setStyle("-fx-font-weight: bold");
+						Label currentVersionNumber = new Label(checker.getCurrentVersion());
+						hboxCurrentVersion.getChildren().addAll(currentVersionLabel, currentVersionNumber);
+						
+						HBox hboxNewVersion = new HBox();
+						Label newVersionLabel = new Label(locales.getString("newVersion") + " ");
+						newVersionLabel.setStyle("-fx-font-weight: bold");
+						Label newVersionNumber = new Label(checker.getVersionUpdate());
+						hboxNewVersion.getChildren().addAll(newVersionLabel, newVersionNumber);
+						
+						HBox hboxDateVersion = new HBox();
+						Label dateVersionLabel = new Label(locales.getString("dateVersion") + " ");
+						dateVersionLabel.setStyle("-fx-font-weight: bold");
+						Label dateVersion = new Label(DateFormat.getDateInstance().format(checker.getDateUpdate()));
+						hboxDateVersion.getChildren().addAll(dateVersionLabel, dateVersion);
+						
+						HBox hboxChangesLabel = new HBox();
+						Label changesLabel = new Label(locales.getString("changesVersion") + " ");
+						changesLabel.setStyle("-fx-font-weight: bold");
+						hboxChangesLabel.getChildren().addAll(changesLabel);
+						
+						HBox hboxChangesTextarea = new HBox();
+						TextArea textareaChanges = new TextArea(checker.getChangesUpdate());
+						textareaChanges.setEditable(false);
+						textareaChanges.setPrefWidth(450);
+						HBox.setMargin(textareaChanges, new Insets(5, 0, 0, 0));
+						hboxChangesTextarea.getChildren().addAll(textareaChanges);
+						
+						HBox hboxDowload = new HBox();
+						Button downloadButton = new Button(locales.getString("downloadUpdate"));
+						HBox.setMargin(downloadButton, new Insets(15, 0, 0, 0));
+						hboxDowload.setAlignment(Pos.CENTER);
+						hboxDowload.getChildren().addAll(downloadButton);
+						
+						vboxAlert.getChildren().addAll(hboxCurrentVersion, hboxNewVersion, hboxDateVersion, hboxChangesLabel, hboxChangesTextarea, hboxDowload);
+						alert.getDialogPane().setContent(vboxAlert);
+						alert.getButtonTypes().remove(ButtonType.OK);
+						alert.getButtonTypes().add(ButtonType.CLOSE);
+						
+						downloadButton.setOnAction(e2 -> {
+							try {
+								new ProcessBuilder("x-www-browser", checker.getUrlUpdate()).start();
+							} catch (IOException e1) {
+								e1.printStackTrace();
+							}
+						});
+					} else {
+						alert.setHeaderText(locales.getString("noUpdate"));
+					}
+				} catch (Exception e1) {
+					alert.setAlertType(Alert.AlertType.ERROR);
+					alert.setHeaderText(locales.getString("errorUpdate"));
+					Label labelError = new Label(locales.getString("errorUpdateInfos"));
+					alert.getDialogPane().setContent(labelError);
+				}
+				
+				alert.show();
+			});
 			
 			root.setTop(menuB);
 			root.setCenter(vbox);
