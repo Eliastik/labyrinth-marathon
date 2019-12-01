@@ -217,7 +217,7 @@ public class GameLauncher extends Application {
 	}
 	
 	public void exit() {
-		
+		// TODO: highscore ladder
 	}
 	
 	public void progress() {

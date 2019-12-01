@@ -240,7 +240,7 @@ public class MenuLauncher extends Application {
 			VBox.setMargin(exit, new Insets(5, 3, 3, 3));
 			
 			stage.setTitle(locales.getString("title"));
-			stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon.png")));
+			stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon_flat.png")));
 			stage.setScene(scene);
 			stage.show();
 			stage.setResizable(false);

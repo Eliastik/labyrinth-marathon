@@ -1,12 +1,30 @@
+buildscript {
+	dependencies {
+		classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
+	}
+	
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'javafx-gradle-plugin'
 archivesBaseName = 'labyrinth-marathon'
 version = '1.0'
 compileJava.options.encoding = 'UTF-8'
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
 	mavenLocal()
 	mavenCentral()
+}
+
+dependencies {
+	compile group: 'org.json', name: 'json', version: '20190722'
 }
 
 sourceSets {
@@ -20,11 +38,16 @@ jar {
 	}
 }
 
-java {
-	sourceCompatibility = JavaVersion.VERSION_1_8
-	targetCompatibility = JavaVersion.VERSION_1_8
-}
-
-dependencies {
-	compile group: 'org.json', name: 'json', version: '20190722'
+jfx {
+	verbose = true
+	mainClass = 'game.MenuLauncher'
+	vendor = 'Eliastik'
+	nativeReleaseVersion = version
+	appName = archivesBaseName
+	jfxMainAppJarName = archivesBaseName + '-' + version + '.jar'
+	additionalAppResources = 'res/'
+	bundleArguments = [
+		licenseType: 'GPLv3+',
+		licenseFile: 'license.txt'
+	]
 }

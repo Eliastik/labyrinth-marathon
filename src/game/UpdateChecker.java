@@ -28,7 +28,7 @@ public class UpdateChecker {
 		
 		Properties properties = new Properties();
 		properties.load(getClass().getResourceAsStream("/appInfo.properties"));
-		this.updateSource = properties.getProperty("updateSource");
+		this.updateSource = properties.getProperty("updateSource") + "?platform=" + System.getProperty("os.name").trim();
 		this.currentVersion = properties.getProperty("version");
 		
 		URL request = new URL(updateSource);
