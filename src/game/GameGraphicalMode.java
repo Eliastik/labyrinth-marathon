@@ -13,15 +13,20 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
@@ -58,6 +63,10 @@ public class GameGraphicalMode extends Application {
 	private Timeline timelineAuto;
 	private AnimationTimer timerDraw;
 	protected Stage stage;
+	protected double[] camera = new double[]{1.0, 0.0, 0.0}; // zoom / posX / posY
+	private double precXDrag = -1.0;
+	private double precYDrag = -1.0;
+	private boolean autoCamera = false;
 	
 	/**
 	 * Construct a new graphical game
@@ -130,14 +139,14 @@ public class GameGraphicalMode extends Application {
 		retry.setOnAction(e -> {
 			exited = true;
 			timerDraw.stop();
-			primaryStage.close();
+			this.stage.close();
 			if(this.launcher != null) this.launcher.retry();
 		});
 		
 		quit.setOnAction(e -> {
 			exited = true;
 			timerDraw.stop();
-			primaryStage.close();
+			this.stage.close();
 			if(this.launcher != null) this.launcher.exit();
 		});
 		
@@ -149,18 +158,62 @@ public class GameGraphicalMode extends Application {
 		Scene scene = new Scene(root);
 		scene.getStylesheets().add("/styles/style.css");
 		
-		primaryStage.setTitle(locales.getString("title"));
-		primaryStage.setMinWidth(400);
-		primaryStage.setMinHeight(400);
-		primaryStage.setWidth(800);
-		primaryStage.setHeight(600);
-		primaryStage.setScene(scene);
-		primaryStage.show();
+		this.stage.setTitle(locales.getString("title"));
+		this.stage.setMinWidth(400);
+		this.stage.setMinHeight(400);
+		this.stage.setWidth(800);
+		this.stage.setHeight(600);
+		this.stage.setScene(scene);
+		this.stage.show();
 		
-		primaryStage.setOnCloseRequest(e -> {
+		Button resetCamera = new Button(locales.getString("resetCamera"));
+		resetCamera.setLayoutX(15);
+		resetCamera.setLayoutY(scene.getHeight() - 100);
+		
+		resetCamera.setOnAction(e -> {
+			this.camera[0] = 1.0;
+			this.camera[1] = 0.0;
+			this.camera[2] = 0.0;
+		});
+		
+		CheckBox checkboxAutoCamera = new CheckBox();
+		Label labelAutoCamera = new Label(locales.getString("autoCamera"));
+		labelAutoCamera.setFont(new Font(15));
+		checkboxAutoCamera.setLayoutX(18);
+		checkboxAutoCamera.setLayoutY(scene.getHeight() - 130);
+		labelAutoCamera.setLayoutX(45);
+		labelAutoCamera.setLayoutY(scene.getHeight() - 130);
+		
+		labelAutoCamera.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+			if(checkboxAutoCamera.isSelected()) {
+				checkboxAutoCamera.setSelected(false);
+			} else {
+				checkboxAutoCamera.setSelected(true);
+			}
+		});
+		
+		checkboxAutoCamera.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				autoCamera = newValue;
+			}
+		});
+		
+		scene.heightProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				resetCamera.setLayoutY(scene.getHeight() - 100);
+				checkboxAutoCamera.setLayoutY(scene.getHeight() - 130);
+				labelAutoCamera.setLayoutY(scene.getHeight() - 130);
+			}
+		});
+		
+		pane.getChildren().addAll(resetCamera, checkboxAutoCamera, labelAutoCamera);
+		
+		this.stage.setOnCloseRequest(e -> {
 			exited = true;
 			timerDraw.stop();
-			primaryStage.close();
+			this.stage.close();
 			if(this.launcher != null) this.launcher.exit();
 		});
 		
@@ -223,6 +276,49 @@ public class GameGraphicalMode extends Application {
 		};
 		
 		this.timerDraw.start();
+		
+		// Events camera
+		this.canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				if(precXDrag == -1.0)
+					precXDrag = e.getSceneX() - canvas.getLayoutX();
+				if(precYDrag == -1.0) precYDrag = e.getSceneY() - canvas.getLayoutY();
+
+				double deltaXDrag = (e.getSceneX() - canvas.getLayoutX() - precXDrag);
+				double deltaYDrag = (e.getSceneY() - canvas.getLayoutY() - precYDrag);
+
+				camera[1] += deltaXDrag;
+				camera[2] += deltaYDrag;
+
+				precXDrag = e.getSceneX() - canvas.getLayoutX();
+				precYDrag = e.getSceneY() - canvas.getLayoutY();
+			}
+		});
+
+		this.canvas.addEventHandler(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				canvas.setCursor(Cursor.MOVE);
+			}
+		});
+
+		this.canvas.addEventHandler(MouseEvent.MOUSE_RELEASED, new EventHandler<MouseEvent>() {
+			public void handle(MouseEvent e) {
+				precXDrag = -1.0;
+				precYDrag = -1.0;
+				canvas.setCursor(Cursor.DEFAULT);
+			}
+		});
+
+		this.canvas.addEventHandler(ScrollEvent.SCROLL, new EventHandler<ScrollEvent>() {
+			@Override
+			public void handle(ScrollEvent e) {
+				if(e.getDeltaY() < 0 && camera[0] - 0.25 >= 0.25) {
+					camera[0] -= 0.25;
+				} else if(e.getDeltaY() > 0 && camera[0] + 0.25 <= 50.0) {
+					camera[0] += 0.25;
+				}
+			}
+		});
 	}
 	
 	public void tick(Player joueur) {
@@ -231,9 +327,9 @@ public class GameGraphicalMode extends Application {
 			
 			this.timelineWin = new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
 				this.timelineWin.stop();
-				exited = true;
-				timerDraw.stop();
-				stage.close();
+				this.exited = true;
+				this.timerDraw.stop();
+				this.stage.close();
 				if(this.launcher != null) this.launcher.progress();
 				this.win = true;
 			}));
@@ -274,17 +370,41 @@ public class GameGraphicalMode extends Application {
 		this.timelineAuto.play();
 	}
 	
+	public void autoCamera(Labyrinth labyrinth, int x, int y) {
+		this.camera[1] = -((getSizeCase(labyrinth)[0] * x + getStartX(labyrinth)) - this.canvas.getWidth() / 2 + getSizeCase(labyrinth)[0]);
+		this.camera[2] = -((getSizeCase(labyrinth)[1] * y + getStartY(labyrinth)) - this.canvas.getHeight() / 2 + getSizeCase(labyrinth)[1]);
+	}
+	
+	public int[] getSizeCase(Labyrinth labyrinth) {
+		int[] size = new int[2];
+		size[0] = (int) ((this.canvas.getWidth() / ((labyrinth.getWidth() * 2) + 1)) * this.camera[0]);
+		size[1] = (int) ((this.canvas.getHeight() / ((labyrinth.getHeight() * 2) + 1)) * this.camera[0]);
+		size[1] = size[1] > size[0] ? size[0] : size[1];
+		size[0] = size[0] > size[1] ? size[1] : size[0];
+		return size;
+	}
+	
+	public int getStartX(Labyrinth labyrinth) {
+		return (int) (((this.canvas.getWidth() - getSizeCase(labyrinth)[0] * ((labyrinth.getWidth() * 2) + 1)) / 2));
+	}
+	
+	public int getStartY(Labyrinth labyrinth) {
+		return (int) (((this.canvas.getHeight() - getSizeCase(labyrinth)[1] * ((labyrinth.getHeight() * 2) + 1)) / 2));
+	}
+	
 	public void draw(Labyrinth labyrinthe, Player joueur, Image brick, Image visite, Image debut, Image fond, ResourceBundle locales) {
-		int widthCase = (int) (this.canvas.getWidth() / ((labyrinthe.getWidth() * 2) + 1));
-		int heightCase = (int) (this.canvas.getHeight() / ((labyrinthe.getHeight() * 2) + 1));
-		heightCase = heightCase > widthCase ? widthCase : heightCase;
-		widthCase = widthCase > heightCase ? heightCase : widthCase;
+		if(this.autoCamera) {
+			this.autoCamera(labyrinth, joueur.getPosition().getX() * 2, joueur.getPosition().getY() * 2);
+		}
+		
+		int widthCase = getSizeCase(labyrinthe)[0];
+		int heightCase = getSizeCase(labyrinthe)[1];
 		
 		int widthGrid = widthCase * (labyrinthe.getWidth() * 2);
 		int heightGrid = heightCase * (labyrinthe.getHeight() * 2);
 		
-		int debutX = (int) ((this.canvas.getWidth() - widthCase * ((labyrinthe.getWidth() * 2) + 1)) / 2);
-		int debutY = (int) ((this.canvas.getHeight() - heightCase * ((labyrinthe.getHeight() * 2) + 1)) / 2);
+		int startX = (int) (getStartX(labyrinthe) + this.camera[1]);
+		int startY = (int) (getStartY(labyrinthe)  + this.camera[2]);
 		
 		GraphicsContext gc = this.canvas.getGraphicsContext2D();
 		gc.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
@@ -302,24 +422,24 @@ public class GameGraphicalMode extends Application {
 					heightImage = heightGrid - i;
 				}
 				
-				gc.drawImage(fond, 0, 0, widthImage, heightImage, j + debutX, i + debutY, widthImage, heightImage);
+				gc.drawImage(fond, 0, 0, widthImage, heightImage, j + startX, i + startY, widthImage, heightImage);
 			}
 		}
 		
 		for(int i = 0; i < labyrinthe.getHeight() * 2 + 1; i++) {
 			for(int j = 0; j < labyrinthe.getWidth() * 2 + 1; j++) {
 				if(j == labyrinthe.getWidth() * 2 || i == labyrinthe.getHeight() * 2) {
-					gc.drawImage(brick, (double) widthCase * j + debutX, heightCase * i + debutY, widthCase, heightCase);
+					gc.drawImage(brick, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 				} else {
 					Position pos = new Position(j / 2, i / 2);
 					Cell c = labyrinthe.getCase(pos);
-					Position posOuest = labyrinthe.getNeighbour(pos, Direction.WEST, Direction.WEST);
-					Cell cOuest = labyrinthe.getCase(posOuest);
-					Position posNord = labyrinthe.getNeighbour(pos, Direction.NORTH, Direction.NORTH);
-					Cell cNord = labyrinthe.getCase(posNord);
+					Position posWest = labyrinthe.getNeighbour(pos, Direction.WEST, Direction.WEST);
+					Cell cWest = labyrinthe.getCase(posWest);
+					Position posNorth = labyrinthe.getNeighbour(pos, Direction.NORTH, Direction.NORTH);
+					Cell cNorth = labyrinthe.getCase(posNorth);
 					
-					if(i == 0 || j == 0 || ((i + 1) % 2 == 0 && j % 2 == 0 && cOuest.getEast() == CellValue.WALL && c.getWest() == CellValue.WALL) || ((i % 2 == 0 && j % 2 == 0) || (i % 2 == 0 && cNord.getSouth() == CellValue.WALL && c.getNorth() == CellValue.WALL))) {
-						gc.drawImage(brick, (double) widthCase * j + debutX, heightCase * i + debutY, widthCase, heightCase);
+					if(i == 0 || j == 0 || ((i + 1) % 2 == 0 && j % 2 == 0 && cWest.getEast() == CellValue.WALL && c.getWest() == CellValue.WALL) || ((i % 2 == 0 && j % 2 == 0) || (i % 2 == 0 && cNorth.getSouth() == CellValue.WALL && c.getNorth() == CellValue.WALL))) {
+						gc.drawImage(brick, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 					} else if((i + 1) % 2 == 0 && (j + 1) % 2 == 0) {
 						if(pos.equals(joueur.getPosition())) {
 							int numImageY = 1;
@@ -339,16 +459,16 @@ public class GameGraphicalMode extends Application {
 									break;
 							}
 							
-							gc.drawImage(joueur.getSprite(), 1, 10 * (numImageY) + 55 * (numImageY - 1), 55, 55, (double) widthCase * j + debutX, heightCase * i + debutY, widthCase, heightCase);
+							gc.drawImage(joueur.getSprite(), 1, 10 * (numImageY) + 55 * (numImageY - 1), 55, 55, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 						} else if(pos.equals(labyrinthe.getEndPosition())) {
-							gc.drawImage(debut, (double) widthCase * j + debutX, heightCase * i + debutY, widthCase, heightCase);
+							gc.drawImage(debut, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 						} else {
 							if(c.getValue() == CellValue.WALL) {
-								gc.drawImage(brick, (double) widthCase * j + debutX, heightCase * i + debutY, widthCase, heightCase);
+								gc.drawImage(brick, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 							}
 							
 							if(c.getValue() == CellValue.CROSSED) {
-								gc.drawImage(visite, (double) widthCase * j + debutX, heightCase * i + debutY, widthCase, heightCase);
+								gc.drawImage(visite, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 							}
 						}
 					}
@@ -372,14 +492,14 @@ public class GameGraphicalMode extends Application {
 		}
 		
 		if(!text.getText().trim().equals("")) {
-			int longueurTexte = (int) text.getLayoutBounds().getWidth();
-			int largeurTexte = (int) text.getLayoutBounds().getHeight();
+			int widthText = (int) text.getLayoutBounds().getWidth();
+			int heightText = (int) text.getLayoutBounds().getHeight();
 			
 			gc.setFill(Color.rgb(125, 125, 125, 0.85));
-			gc.fillRoundRect((this.canvas.getWidth() - longueurTexte * 1.25) / 2, (this.canvas.getHeight() - largeurTexte * 1.25) / 2, longueurTexte * 1.25, largeurTexte * 1.25, 5, 5);
+			gc.fillRoundRect((this.canvas.getWidth() - widthText * 1.25) / 2, (this.canvas.getHeight() - heightText * 1.25) / 2, widthText * 1.25, heightText * 1.25, 5, 5);
 			
 			gc.setFill(Color.WHITE);
-			gc.fillText(text.getText(), (this.canvas.getWidth() - longueurTexte) / 2, this.canvas.getHeight() / 2);
+			gc.fillText(text.getText(), (this.canvas.getWidth() - widthText) / 2, this.canvas.getHeight() / 2);
 		}
 	}
 	

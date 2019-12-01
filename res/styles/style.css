@@ -8,6 +8,18 @@
 	-fx-background-color: rgba(125, 125, 125, 0.85);
 }
 
+.check-box:selected > .box {
+	-fx-background-color: rgba(125, 125, 125, 0.85);
+}
+
+.check-box > .box {
+	-fx-background-color: rgba(125, 125, 125, 0.5);
+}
+
+.check-box:selected > .box > .mark, .check-box:indeterminate  > .box > .mark {
+    -fx-background-color: white;
+}
+
 .text-field {
 	-fx-font-size: 15px;
 	-fx-background-color: rgba(125, 125, 125, 0.5);
