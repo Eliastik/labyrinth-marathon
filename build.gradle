@@ -42,12 +42,19 @@ jar {
 	}
 }
 
+eclipse {
+	classpath {
+		defaultOutputDir = file('build-eclipse')
+	}
+}
+
 jfx {
 	verbose = true
+	identifier = '4176e652-6b34-4928-a357-b32dcd3e64a5'
 	mainClass = 'game.MenuLauncher'
 	vendor = 'Eliastik'
 	nativeReleaseVersion = version
-	appName = archivesBaseName
+	appName = "Labyrinth Marathon"
 	usePatchedJFXAntLib = false
 	jfxMainAppJarName = archivesBaseName + '-' + version + '.jar'
 	additionalAppResources = 'res/'
