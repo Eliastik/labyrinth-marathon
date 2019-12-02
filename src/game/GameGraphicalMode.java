@@ -137,17 +137,21 @@ public class GameGraphicalMode extends Application {
 		root.setTop(hbox);
 		
 		retry.setOnAction(e -> {
-			exited = true;
-			timerDraw.stop();
-			this.stage.close();
-			if(this.launcher != null) this.launcher.retry();
+			if(!this.isWin()) {
+				exited = true;
+				timerDraw.stop();
+				this.stage.close();
+				if(this.launcher != null) this.launcher.retry();
+			}
 		});
 		
 		quit.setOnAction(e -> {
-			exited = true;
-			timerDraw.stop();
-			this.stage.close();
-			if(this.launcher != null) this.launcher.exit();
+			if(!this.isWin()) {
+				exited = true;
+				timerDraw.stop();
+				this.stage.close();
+				if(this.launcher != null) this.launcher.exit();
+			}
 		});
 		
 		solution.setOnAction(e -> {
@@ -159,6 +163,7 @@ public class GameGraphicalMode extends Application {
 		scene.getStylesheets().add("/styles/style.css");
 		
 		this.stage.setTitle(locales.getString("title"));
+		this.stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon_flat.png")));
 		this.stage.setMinWidth(400);
 		this.stage.setMinHeight(400);
 		this.stage.setWidth(800);
@@ -323,6 +328,7 @@ public class GameGraphicalMode extends Application {
 	
 	public void tick(Player joueur) {
 		if(joueur.goalAchieved()) {
+			this.win = true;
 			if(timelineWin != null) timelineWin.stop();
 			
 			this.timelineWin = new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
@@ -331,7 +337,6 @@ public class GameGraphicalMode extends Application {
 				this.timerDraw.stop();
 				this.stage.close();
 				if(this.launcher != null) this.launcher.progress();
-				this.win = true;
 			}));
 			
 			this.timelineWin.setDelay(new Duration(1));

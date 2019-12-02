@@ -48,6 +48,7 @@ jfx {
 	vendor = 'Eliastik'
 	nativeReleaseVersion = version
 	appName = archivesBaseName
+	usePatchedJFXAntLib = false
 	jfxMainAppJarName = archivesBaseName + '-' + version + '.jar'
 	additionalAppResources = 'res/'
 	bundleArguments = [

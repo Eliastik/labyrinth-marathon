@@ -2,6 +2,7 @@ package game;
 
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
@@ -28,7 +29,7 @@ public class UpdateChecker {
 		
 		Properties properties = new Properties();
 		properties.load(getClass().getResourceAsStream("/appInfo.properties"));
-		this.updateSource = properties.getProperty("updateSource") + "?platform=" + System.getProperty("os.name").trim();
+		this.updateSource = properties.getProperty("updateSource") + "?platform=" + URLEncoder.encode(System.getProperty("os.name").trim(), "UTF-8");
 		this.currentVersion = properties.getProperty("version");
 		
 		URL request = new URL(updateSource);

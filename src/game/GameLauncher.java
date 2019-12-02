@@ -157,7 +157,7 @@ public class GameLauncher extends Application {
 		root.getChildren().addAll(labelTitle, hboxSizeLbl, hboxSize, hboxAlgorithmLbl, hboxAlgorithm, hboxSeedLbl, hboxSeed, hboxButtons);
 		
 		stage.setTitle(locales.getString("title"));
-		stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon.png")));
+		stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon_flat.png")));
 		stage.setScene(scene);
 		stage.show();
 		stage.setResizable(false);

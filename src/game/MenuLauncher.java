@@ -9,11 +9,15 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -80,6 +84,17 @@ public class MenuLauncher extends Application {
 				
 				VBox vboxAbout = new VBox();
 				
+				HBox hboxVersion = new HBox();
+				Label labelVersion = new Label();
+				
+				try {
+					labelVersion = new Label(MessageFormat.format(locales.getString("version"), properties.getProperty("version"), DateFormat.getDateInstance().format(new SimpleDateFormat("dd/MM/yy").parse(properties.getProperty("versionDate")))));
+				} catch (ParseException e1) {
+					e1.printStackTrace();
+				}
+				
+				hboxVersion.getChildren().add(labelVersion);
+				
 				HBox hboxCopy = new HBox();
 				Label labelCopy = new Label("© 2019 Eliastik (eliastiksofts.com)");
 				hboxCopy.getChildren().add(labelCopy);
@@ -110,7 +125,7 @@ public class MenuLauncher extends Application {
 					this.displayTextFileDialog(locales.getString("readme"), "README.md");
 				});
 				
-				vboxAbout.getChildren().addAll(hboxCopy, hboxLicense, buttonsAbout);
+				vboxAbout.getChildren().addAll(hboxVersion, hboxCopy, hboxLicense, buttonsAbout);
 				
 				alert.getDialogPane().setContent(vboxAbout);
 				alert.show();
@@ -160,72 +175,88 @@ public class MenuLauncher extends Application {
 			hbox.getChildren().addAll(update);
 			
 			update.setOnAction(e -> {
-				UpdateChecker checker = new UpdateChecker();
-				
-				Alert alert = new Alert(Alert.AlertType.INFORMATION);
-				alert.setTitle(locales.getString("updateManager"));
-				alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/styleAlert.css").toExternalForm());
-				
-				try {
-					if(checker.checkUpdate()) {
-						alert.setHeaderText(locales.getString("updateAvailable"));
-						VBox vboxAlert = new VBox();
-						
-						HBox hboxCurrentVersion = new HBox();
-						Label currentVersionLabel = new Label(locales.getString("currentVersion") + " ");
-						currentVersionLabel.setStyle("-fx-font-weight: bold");
-						Label currentVersionNumber = new Label(checker.getCurrentVersion());
-						hboxCurrentVersion.getChildren().addAll(currentVersionLabel, currentVersionNumber);
-						
-						HBox hboxNewVersion = new HBox();
-						Label newVersionLabel = new Label(locales.getString("newVersion") + " ");
-						newVersionLabel.setStyle("-fx-font-weight: bold");
-						Label newVersionNumber = new Label(checker.getVersionUpdate());
-						hboxNewVersion.getChildren().addAll(newVersionLabel, newVersionNumber);
-						
-						HBox hboxDateVersion = new HBox();
-						Label dateVersionLabel = new Label(locales.getString("dateVersion") + " ");
-						dateVersionLabel.setStyle("-fx-font-weight: bold");
-						Label dateVersion = new Label(DateFormat.getDateInstance().format(checker.getDateUpdate()));
-						hboxDateVersion.getChildren().addAll(dateVersionLabel, dateVersion);
-						
-						HBox hboxChangesLabel = new HBox();
-						Label changesLabel = new Label(locales.getString("changesVersion") + " ");
-						changesLabel.setStyle("-fx-font-weight: bold");
-						hboxChangesLabel.getChildren().addAll(changesLabel);
-						
-						HBox hboxChangesTextarea = new HBox();
-						TextArea textareaChanges = new TextArea(checker.getChangesUpdate());
-						textareaChanges.setEditable(false);
-						textareaChanges.setPrefWidth(450);
-						HBox.setMargin(textareaChanges, new Insets(5, 0, 0, 0));
-						hboxChangesTextarea.getChildren().addAll(textareaChanges);
-						
-						HBox hboxDowload = new HBox();
-						Button downloadButton = new Button(locales.getString("downloadUpdate"));
-						HBox.setMargin(downloadButton, new Insets(15, 0, 0, 0));
-						hboxDowload.setAlignment(Pos.CENTER);
-						hboxDowload.getChildren().addAll(downloadButton);
-						
-						vboxAlert.getChildren().addAll(hboxCurrentVersion, hboxNewVersion, hboxDateVersion, hboxChangesLabel, hboxChangesTextarea, hboxDowload);
-						alert.getDialogPane().setContent(vboxAlert);
-						alert.getButtonTypes().remove(ButtonType.OK);
-						alert.getButtonTypes().add(ButtonType.CLOSE);
-						
-						downloadButton.setOnAction(e2 -> {
-							this.launchBrowser(checker.getUrlUpdate());
-						});
-					} else {
-						alert.setHeaderText(locales.getString("noUpdate"));
+				new Thread(() -> {
+					UpdateChecker checker = new UpdateChecker();
+					boolean checkUpdateTmp = false;
+					boolean errorUpdateTmp = false;
+					
+					try {
+						checkUpdateTmp = checker.checkUpdate();
+					} catch (Exception e3) {
+						errorUpdateTmp = true;
 					}
-				} catch (Exception e1) {
-					alert.setAlertType(Alert.AlertType.ERROR);
-					alert.setHeaderText(locales.getString("errorUpdate"));
-					Label labelError = new Label(locales.getString("errorUpdateInfos"));
-					alert.getDialogPane().setContent(labelError);
-				}
-				
-				alert.show();
+					
+					final boolean checkUpdate = checkUpdateTmp;
+					final boolean errorUpdate = errorUpdateTmp;
+					
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							Alert alert = new Alert(Alert.AlertType.INFORMATION);
+							alert.setTitle(locales.getString("updateManager"));
+							alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/styleAlert.css").toExternalForm());
+							
+							if(checkUpdate) {
+								alert.setHeaderText(locales.getString("updateAvailable"));
+								VBox vboxAlert = new VBox();
+								
+								HBox hboxCurrentVersion = new HBox();
+								Label currentVersionLabel = new Label(locales.getString("currentVersion") + " ");
+								currentVersionLabel.setStyle("-fx-font-weight: bold");
+								Label currentVersionNumber = new Label(checker.getCurrentVersion());
+								hboxCurrentVersion.getChildren().addAll(currentVersionLabel, currentVersionNumber);
+								
+								HBox hboxNewVersion = new HBox();
+								Label newVersionLabel = new Label(locales.getString("newVersion") + " ");
+								newVersionLabel.setStyle("-fx-font-weight: bold");
+								Label newVersionNumber = new Label(checker.getVersionUpdate());
+								hboxNewVersion.getChildren().addAll(newVersionLabel, newVersionNumber);
+								
+								HBox hboxDateVersion = new HBox();
+								Label dateVersionLabel = new Label(locales.getString("dateVersion") + " ");
+								dateVersionLabel.setStyle("-fx-font-weight: bold");
+								Label dateVersion = new Label(DateFormat.getDateInstance().format(checker.getDateUpdate()));
+								hboxDateVersion.getChildren().addAll(dateVersionLabel, dateVersion);
+								
+								HBox hboxChangesLabel = new HBox();
+								Label changesLabel = new Label(locales.getString("changesVersion") + " ");
+								changesLabel.setStyle("-fx-font-weight: bold");
+								hboxChangesLabel.getChildren().addAll(changesLabel);
+								
+								HBox hboxChangesTextarea = new HBox();
+								TextArea textareaChanges = new TextArea(checker.getChangesUpdate());
+								textareaChanges.setEditable(false);
+								textareaChanges.setPrefWidth(450);
+								HBox.setMargin(textareaChanges, new Insets(5, 0, 0, 0));
+								hboxChangesTextarea.getChildren().addAll(textareaChanges);
+								
+								HBox hboxDowload = new HBox();
+								Button downloadButton = new Button(locales.getString("downloadUpdate"));
+								HBox.setMargin(downloadButton, new Insets(15, 0, 0, 0));
+								hboxDowload.setAlignment(Pos.CENTER);
+								hboxDowload.getChildren().addAll(downloadButton);
+								
+								vboxAlert.getChildren().addAll(hboxCurrentVersion, hboxNewVersion, hboxDateVersion, hboxChangesLabel, hboxChangesTextarea, hboxDowload);
+								alert.getDialogPane().setContent(vboxAlert);
+								alert.getButtonTypes().remove(ButtonType.OK);
+								alert.getButtonTypes().add(ButtonType.CLOSE);
+								
+								downloadButton.setOnAction(e2 -> {
+									launchBrowser(checker.getUrlUpdate());
+								});
+							} else if(errorUpdate) {
+								alert.setAlertType(Alert.AlertType.ERROR);
+								alert.setHeaderText(locales.getString("errorUpdate"));
+								Label labelError = new Label(locales.getString("errorUpdateInfos"));
+								alert.getDialogPane().setContent(labelError);
+							} else {
+								alert.setHeaderText(locales.getString("noUpdate"));
+							}
+							
+							alert.show();
+						}
+					});
+				}).start();
 			});
 			
 			root.setTop(menuB);
