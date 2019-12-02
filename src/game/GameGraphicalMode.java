@@ -168,7 +168,7 @@ public class GameGraphicalMode extends Application {
 		
 		Button resetCamera = new Button(locales.getString("resetCamera"));
 		resetCamera.setLayoutX(15);
-		resetCamera.setLayoutY(scene.getHeight() - 100);
+		resetCamera.setLayoutY(scene.getHeight() - 110);
 		
 		resetCamera.setOnAction(e -> {
 			this.camera[0] = 1.0;
@@ -180,9 +180,9 @@ public class GameGraphicalMode extends Application {
 		Label labelAutoCamera = new Label(locales.getString("autoCamera"));
 		labelAutoCamera.setFont(new Font(15));
 		checkboxAutoCamera.setLayoutX(18);
-		checkboxAutoCamera.setLayoutY(scene.getHeight() - 130);
+		checkboxAutoCamera.setLayoutY(scene.getHeight() - 140);
 		labelAutoCamera.setLayoutX(45);
-		labelAutoCamera.setLayoutY(scene.getHeight() - 130);
+		labelAutoCamera.setLayoutY(scene.getHeight() - 140);
 		
 		labelAutoCamera.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
 			if(checkboxAutoCamera.isSelected()) {
@@ -202,9 +202,9 @@ public class GameGraphicalMode extends Application {
 		scene.heightProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-				resetCamera.setLayoutY(scene.getHeight() - 100);
-				checkboxAutoCamera.setLayoutY(scene.getHeight() - 130);
-				labelAutoCamera.setLayoutY(scene.getHeight() - 130);
+				resetCamera.setLayoutY(scene.getHeight() - 110);
+				checkboxAutoCamera.setLayoutY(scene.getHeight() - 140);
+				labelAutoCamera.setLayoutY(scene.getHeight() - 140);
 			}
 		});
 		

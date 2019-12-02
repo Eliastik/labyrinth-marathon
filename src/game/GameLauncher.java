@@ -50,7 +50,7 @@ public class GameLauncher extends Application {
 		ResourceBundle locales = ResourceBundle.getBundle("locales.gameLauncher", Locale.getDefault()); // Locale
 
 		VBox root = new VBox();
-		Scene scene = new Scene(root, 450, 320);
+		Scene scene = new Scene(root, 450, 340);
 		scene.getStylesheets().add("/styles/style.css");
 		
 		Label labelTitle = new Label(locales.getString("labelTitle"));

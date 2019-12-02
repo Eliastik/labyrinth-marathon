@@ -1,12 +1,16 @@
 package game;
 
+import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.ResourceBundle;
 
 import javafx.application.Application;
@@ -41,6 +45,8 @@ public class MenuLauncher extends Application {
 	@Override
 	public void start(Stage stage) throws Exception {
 			ResourceBundle locales = ResourceBundle.getBundle("locales.menu", Locale.getDefault()); // Locale
+			Properties properties = new Properties();
+			properties.load(getClass().getResourceAsStream("/appInfo.properties"));
 		
 			BorderPane root = new BorderPane();
 			VBox vbox = new VBox();
@@ -93,11 +99,7 @@ public class MenuLauncher extends Application {
 				buttonsAbout.getChildren().addAll(buttonWebsite, buttonLicense, buttonReadme);
 				
 				buttonWebsite.setOnAction(e2 -> {
-					try {
-						new ProcessBuilder("x-www-browser", "https://www.eliastiksofts.com").start();
-					} catch (IOException e1) {
-						e1.printStackTrace();
-					}
+					this.launchBrowser(properties.getProperty("website"));
 				});
 				
 				buttonLicense.setOnAction(e2 -> {
@@ -211,11 +213,7 @@ public class MenuLauncher extends Application {
 						alert.getButtonTypes().add(ButtonType.CLOSE);
 						
 						downloadButton.setOnAction(e2 -> {
-							try {
-								new ProcessBuilder("x-www-browser", checker.getUrlUpdate()).start();
-							} catch (IOException e1) {
-								e1.printStackTrace();
-							}
+							this.launchBrowser(checker.getUrlUpdate());
 						});
 					} else {
 						alert.setHeaderText(locales.getString("noUpdate"));
@@ -273,6 +271,18 @@ public class MenuLauncher extends Application {
 		
 		alert.getDialogPane().setContent(text);
 		alert.show();
+	}
+	
+	public void launchBrowser(String uri) {
+		if(Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+			new Thread(() -> {
+				try {
+					Desktop.getDesktop().browse(new URI(uri));
+				} catch (IOException | URISyntaxException e1) {
+					e1.printStackTrace();
+				}
+			}).start();
+		}
 	}
 
 	public static void main(String[] args) {
