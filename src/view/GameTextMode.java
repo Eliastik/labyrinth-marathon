@@ -26,7 +26,9 @@ public class GameTextMode implements GameView {
 	
 	/**
 	 * Construct a new text game
-	 * @param labyrinth (Labyrinth) A generated labyrinth (run generate())
+	 * @param launcher (GameLauncher) the launcher
+	 * @param displatInfoStart (boolean)
+	 * @param level (int)
 	 */
 	public GameTextMode(GameLauncher launcher, int level) {
 		this.launcher = launcher;
@@ -51,72 +53,70 @@ public class GameTextMode implements GameView {
 		String choice = "";
 		boolean validEntry = false;
 		
+		for(int i = 0; i < 25; i++) System.out.print("\n");
+		controller.displayTextLabyrinth();
+		
 		if(!controller.isGoalAchieved() && !controller.isPlayerBlocked()) {
-			while(!controller.isGoalAchieved() && !controller.isPlayerBlocked()) {
-				for(int i = 0; i < 25; i++) System.out.print("\n");
-
-				controller.displayTextLabyrinth();
-				if(this.level > 0) System.out.println(locales.getString("level") + " " + locales.getString("num") + this.level);
-				System.out.println(MessageFormat.format(locales.getString("infos"), controller.getEndPosition().getX() + " - " + controller.getEndPosition().getY()));
-				
-				if(!moveSucceeded) {
-					System.out.println(locales.getString("moveFailed"));
-				}
-				
-				System.out.println(locales.getString("move"));
-				
-				do {
-					validEntry = false;
-					choice = scanner.nextLine().trim().toUpperCase();
-					
-					if(choice.equals("") || (choice.charAt(0) != 'T' && choice.charAt(0) != 'B' && choice.charAt(0) != 'R' && choice.charAt(0) != 'L')) {
-						System.out.println(locales.getString("invalidChoice"));
-					} else {
-						validEntry = true;
-					}
-				} while(!validEntry);
-				
-				switch(choice.charAt(0)) {
-					case 'T':
-						moveSucceeded = controller.movePlayer(Direction.NORTH);
-						break;
-					case 'B':
-						moveSucceeded = controller.movePlayer(Direction.SOUTH);
-						break;
-					case 'L':
-						moveSucceeded = controller.movePlayer(Direction.WEST);
-						break;
-					case 'R':
-						moveSucceeded = controller.movePlayer(Direction.EAST);
-						break;
-				}
+			if(this.level > 0) System.out.println(locales.getString("level") + " " + locales.getString("num") + this.level);
+			System.out.println(MessageFormat.format(locales.getString("infos"), controller.getEndPosition().getX() + " - " + controller.getEndPosition().getY()));
+			
+			if(!moveSucceeded) {
+				System.out.println(locales.getString("moveFailed"));
 			}
 			
-			for(int i = 0; i < 25; i++) System.out.print("\n");
-			controller.displayTextLabyrinth();
+			System.out.println(locales.getString("move"));
+			
+			do {
+				validEntry = false;
+				choice = scanner.nextLine().trim().toUpperCase();
+				
+				if(choice.equals("") || (choice.charAt(0) != 'T' && choice.charAt(0) != 'B' && choice.charAt(0) != 'R' && choice.charAt(0) != 'L')) {
+					System.out.println(locales.getString("invalidChoice"));
+				} else {
+					validEntry = true;
+				}
+			} while(!validEntry);
+			
+			switch(choice.charAt(0)) {
+				case 'T':
+					moveSucceeded = controller.movePlayer(Direction.NORTH);
+					break;
+				case 'B':
+					moveSucceeded = controller.movePlayer(Direction.SOUTH);
+					break;
+				case 'L':
+					moveSucceeded = controller.movePlayer(Direction.WEST);
+					break;
+				case 'R':
+					moveSucceeded = controller.movePlayer(Direction.EAST);
+					break;
+			}
 		} else {
 			if(controller.isGoalAchieved()) {
 				System.out.println(locales.getString("exitFound"));
 				if(this.launcher != null) this.launcher.progress();
 			} else if(controller.isPlayerBlocked()) {
 				System.out.println(locales.getString("blocked"));
-				System.out.println("\n" + locales.getString("retry"));
 				
-				do {
-					validEntry = false;
-					choice = scanner.nextLine().trim().toUpperCase();
+				if(this.launcher != null) {
+					System.out.println("\n" + locales.getString("retry"));
 					
-					if(choice.equals("") || (choice.charAt(0) != 'Y' && choice.charAt(0) != 'N')) {
-						System.out.println(locales.getString("invalidChoice"));
+					do {
+						validEntry = false;
+						choice = scanner.nextLine().trim().toUpperCase();
+						
+						if(choice.equals("") || (choice.charAt(0) != 'Y' && choice.charAt(0) != 'N')) {
+							System.out.println(locales.getString("invalidChoice"));
+						} else {
+							validEntry = true;
+						}
+					} while(!validEntry);
+					
+					if(choice.charAt(0) == 'Y') {
+						if(this.launcher != null) this.launcher.retry();
 					} else {
-						validEntry = true;
+						if(this.launcher != null) this.launcher.exit();
 					}
-				} while(!validEntry);
-				
-				if(choice.charAt(0) == 'Y') {
-					this.launcher.retry();
-				} else {
-					this.launcher.exit();
 				}
 			}
 		}
@@ -127,5 +127,9 @@ public class GameTextMode implements GameView {
 	@Override
 	public void setController(GameController controller) {
 		this.controller = controller;
+	}
+	
+	public static void main(String[] args) {
+		new GameTextMode().run();
 	}
 }

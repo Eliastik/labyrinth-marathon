@@ -73,7 +73,9 @@ public class GameGraphicalMode extends Application implements GameView {
 	
 	/**
 	 * Construct a new graphical game
-	 * @param labyrinth (Labyrinth) A generated labyrinth (run generate())
+	 * @param launcher (GameLauncher) the launcher
+	 * @param displatInfoStart (boolean)
+	 * @param level (int)
 	 */
 	public GameGraphicalMode(GameLauncher launcher, boolean displayInfoStart, int level) {
 		this.launcher = launcher;
