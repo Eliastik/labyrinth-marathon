@@ -1,10 +1,11 @@
-package game;
+package view;
 
 
 import java.util.Locale;
 import java.util.Queue;
 import java.util.ResourceBundle;
 
+import controller.GameController;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
@@ -41,7 +42,6 @@ import javafx.util.Duration;
 import model.Cell;
 import model.CellValue;
 import model.Labyrinth;
-import model.Player;
 import util.Direction;
 import util.Position;
 
@@ -51,20 +51,21 @@ import util.Position;
  * @version 1.0
  * @since 30/11/2019
  */
-public class GameGraphicalMode extends Application {
+public class GameGraphicalMode extends Application implements Runnable, GameView {
 	protected Stage stage;
-	private Labyrinth labyrinth;
-	private GameLauncher launcher;
 	private Canvas canvas;
-	private Timeline timelineWin;
-	private Timeline timelineAuto;
+	private GameLauncher launcher;
+	private GameController controller;
 	private AnimationTimer timerDraw;
-	private int level = 0;
-	private boolean joueurMove = false;
-	private boolean exited = false;
-	private boolean win = false;
-	private boolean displayInfoStart = true;
+	private Thread threadDraw;
+	private Timeline timelineAuto;
+	private Thread threadAuto;
+	private Timeline timelineWin;
 	private Queue<Position> pathAuto;
+	private int level = 0;
+	private boolean playerMoved = false;
+	private boolean exited = false;
+	private boolean displayInfoStart = true;
 	protected double[] camera = new double[]{1.0, 0.0, 0.0}; // zoom / posX / posY
 	private double precXDrag = -1.0;
 	private double precYDrag = -1.0;
@@ -74,8 +75,7 @@ public class GameGraphicalMode extends Application {
 	 * Construct a new graphical game
 	 * @param labyrinth (Labyrinth) A generated labyrinth (run generate())
 	 */
-	public GameGraphicalMode(Labyrinth labyrinth, GameLauncher launcher, boolean displayInfoStart, int level) {
-		this.labyrinth = labyrinth;
+	public GameGraphicalMode(GameLauncher launcher, boolean displayInfoStart, int level) {
 		this.launcher = launcher;
 		this.level = level;
 		this.displayInfoStart = displayInfoStart;
@@ -87,7 +87,15 @@ public class GameGraphicalMode extends Application {
 	public GameGraphicalMode() {
 		Labyrinth labyrinth = new Labyrinth();
 		labyrinth.generate(System.currentTimeMillis());
-		this.labyrinth = labyrinth;
+		this.controller = new GameController(labyrinth, this);
+	}
+
+	public void setDisplayInfoStart(boolean displayInfoStart) {
+		this.displayInfoStart = displayInfoStart;
+	}
+
+	public void setController(GameController controller) {
+		this.controller = controller;
 	}
 	
 	@Override
@@ -102,8 +110,6 @@ public class GameGraphicalMode extends Application {
 		Image debut = new Image(getClass().getResourceAsStream("/images/start.png"));
 		Image fond = new Image(getClass().getResourceAsStream("/images/back.png"));
 		ResourceBundle locales = ResourceBundle.getBundle("locales.graphical", Locale.getDefault()); // Locale
-		
-		Player player = this.labyrinth.getPlayer();
 		
 		BorderPane root = new BorderPane();
 		CanvasPane pane = new CanvasPane(800, 600);
@@ -130,7 +136,7 @@ public class GameGraphicalMode extends Application {
 		HBox.setMargin(retry, new Insets(5, 5, 5, 5));
 		HBox.setMargin(quit, new Insets(5, 5, 5, 5));
 		
-		if(labyrinth.isAutoPlayerEnabled()) {
+		if(controller.isAutoPlayerEnabled()) {
 			hbox.getChildren().addAll(levelLabel, region, solution, retry, quit);
 		} else {
 			hbox.getChildren().addAll(levelLabel, region, retry, quit);
@@ -139,26 +145,26 @@ public class GameGraphicalMode extends Application {
 		root.setTop(hbox);
 		
 		retry.setOnAction(e -> {
-			if(!this.isWin()) {
-				exited = true;
-				timerDraw.stop();
-				this.stage.close();
+			if(!controller.isGoalAchieved() || controller.isAutoPlayer()) {
+				stop();
 				if(this.launcher != null) this.launcher.retry();
 			}
 		});
 		
 		quit.setOnAction(e -> {
-			if(!this.isWin()) {
-				exited = true;
-				timerDraw.stop();
-				this.stage.close();
+			if(!controller.isGoalAchieved() || controller.isAutoPlayer()) {
+				stop();
 				if(this.launcher != null) this.launcher.exit();
 			}
 		});
 		
+		stage.setOnCloseRequest(e -> {
+			stop();
+			if(this.launcher != null) this.launcher.exit();
+		});
+		
 		solution.setOnAction(e -> {
-			enableJoueurAuto(player);
-			labyrinth.setAutoPlayer(true);
+			enableAutoPlayer();
 		});
 		
 		Scene scene = new Scene(root);
@@ -217,72 +223,30 @@ public class GameGraphicalMode extends Application {
 		
 		pane.getChildren().addAll(resetCamera, checkboxAutoCamera, labelAutoCamera);
 		
-		this.stage.setOnCloseRequest(e -> {
-			exited = true;
-			timerDraw.stop();
-			this.stage.close();
-			if(this.launcher != null) this.launcher.exit();
-		});
-		
-		if(!labyrinth.isAutoPlayer()) {
+		if(!controller.isAutoPlayer()) {
 			scene.setOnKeyPressed(e -> {
-				if(!exited && !labyrinth.isAutoPlayer() && !player.goalAchieved()) {
-					switch(e.getCode()) {
-						case UP:
-							player.moveTo(Direction.NORTH);
-							joueurMove = true;
-							break;
-						case DOWN:
-							player.moveTo(Direction.SOUTH);
-							joueurMove = true;
-							break;
-						case RIGHT:
-							player.moveTo(Direction.EAST);
-							joueurMove = true;
-							break;
-						case LEFT:
-							player.moveTo(Direction.WEST);
-							joueurMove = true;
-							break;
-						case Z:
-							player.moveTo(Direction.NORTH);
-							joueurMove = true;
-							break;
-						case Q:
-							player.moveTo(Direction.WEST);
-							joueurMove = true;
-							break;
-						case S:
-							player.moveTo(Direction.SOUTH);
-							joueurMove = true;
-							break;
-						case D:
-							player.moveTo(Direction.EAST);
-							joueurMove = true;
-							break;
-						default:
-							break;
-					}
-					
-					tick(player);
-				}
+				playerMoved = controller.movePlayer(e.getCode());
 			});
 		} else {
-			enableJoueurAuto(player);
+			enableAutoPlayer();
 		}
     	
-    	this.timerDraw = new AnimationTimer() {
-			@Override
-			public void handle(long time) {
-				if(!exited) {
-					draw(labyrinth, player, brick, visite, debut, fond, locales);
-				} else {
-					this.stop();
+		this.threadDraw = new Thread(() -> {
+			this.timerDraw = new AnimationTimer() {
+				@Override
+				public void handle(long time) {
+					if(!exited) {
+						draw(brick, visite, debut, fond, locales);
+					} else {
+						this.stop();
+					}
 				}
-			}
-		};
+			};
+			
+			this.timerDraw.start();
+		});
 		
-		this.timerDraw.start();
+		this.threadDraw.start();
 		
 		// Events camera
 		this.canvas.addEventHandler(MouseEvent.MOUSE_DRAGGED, new EventHandler<MouseEvent>() {
@@ -328,95 +292,41 @@ public class GameGraphicalMode extends Application {
 		});
 	}
 	
-	public void tick(Player joueur) {
-		if(joueur.goalAchieved()) {
-			this.win = true;
-			if(timelineWin != null) timelineWin.stop();
-			
-			this.timelineWin = new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
-				this.timelineWin.stop();
-				this.exited = true;
-				this.timerDraw.stop();
-				this.stage.close();
-				if(this.launcher != null) this.launcher.progress();
-			}));
-			
-			this.timelineWin.setDelay(new Duration(1));
-			this.timelineWin.setCycleCount(1);
-			this.timelineWin.play();
-		}
+	public void autoCamera(int x, int y) {
+		this.camera[1] = -((getSizeCase()[0] * x + getStartX()) - this.canvas.getWidth() / 2 + getSizeCase()[0]);
+		this.camera[2] = -((getSizeCase()[1] * y + getStartY()) - this.canvas.getHeight() / 2 + getSizeCase()[1]);
 	}
 	
-	public void enableJoueurAuto(Player joueur) {
-		if(this.timelineAuto != null) this.timelineAuto.stop();
-		
-		if(this.pathAuto == null) {
-			this.pathAuto = joueur.getPathAI();
-			this.pathAuto.poll();
-		}
-		
-		this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.25), ev -> {
-			Position next = this.pathAuto.poll();
-			Position current = joueur.getPosition();
-			
-			if(next != null) {
-				if(next.getX() == current.getX() - 1) {
-					joueur.moveTo(Direction.WEST);
-					joueurMove = true;
-				} else if(next.getX() == current.getX() + 1) {
-					joueur.moveTo(Direction.EAST);
-					joueurMove = true;
-				} else if(next.getY() == current.getY() - 1) {
-					joueur.moveTo(Direction.NORTH);
-					joueurMove = true;
-				} else if(next.getY() == current.getY() + 1) {
-					joueur.moveTo(Direction.SOUTH);
-					joueurMove = true;
-				}
-			} else {
-				this.timelineAuto.stop();
-			}
-		}));
-		
-		this.timelineAuto.setCycleCount(Animation.INDEFINITE);
-		this.timelineAuto.play();
-	}
-	
-	public void autoCamera(Labyrinth labyrinth, int x, int y) {
-		this.camera[1] = -((getSizeCase(labyrinth)[0] * x + getStartX(labyrinth)) - this.canvas.getWidth() / 2 + getSizeCase(labyrinth)[0]);
-		this.camera[2] = -((getSizeCase(labyrinth)[1] * y + getStartY(labyrinth)) - this.canvas.getHeight() / 2 + getSizeCase(labyrinth)[1]);
-	}
-	
-	public int[] getSizeCase(Labyrinth labyrinth) {
+	public int[] getSizeCase() {
 		int[] size = new int[2];
-		size[0] = (int) ((this.canvas.getWidth() / ((labyrinth.getWidth() * 2) + 1)) * this.camera[0]);
-		size[1] = (int) ((this.canvas.getHeight() / ((labyrinth.getHeight() * 2) + 1)) * this.camera[0]);
+		size[0] = (int) ((this.canvas.getWidth() / ((controller.getLabyrinthWidth() * 2) + 1)) * this.camera[0]);
+		size[1] = (int) ((this.canvas.getHeight() / ((controller.getLabyrinthHeight() * 2) + 1)) * this.camera[0]);
 		size[1] = size[1] > size[0] ? size[0] : size[1];
 		size[0] = size[0] > size[1] ? size[1] : size[0];
 		return size;
 	}
 	
-	public int getStartX(Labyrinth labyrinth) {
-		return (int) (((this.canvas.getWidth() - getSizeCase(labyrinth)[0] * ((labyrinth.getWidth() * 2) + 1)) / 2));
+	public int getStartX() {
+		return (int) (((this.canvas.getWidth() - getSizeCase()[0] * ((controller.getLabyrinthWidth() * 2) + 1)) / 2));
 	}
 	
-	public int getStartY(Labyrinth labyrinth) {
-		return (int) (((this.canvas.getHeight() - getSizeCase(labyrinth)[1] * ((labyrinth.getHeight() * 2) + 1)) / 2));
+	public int getStartY() {
+		return (int) (((this.canvas.getHeight() - getSizeCase()[1] * ((controller.getLabyrinthHeight() * 2) + 1)) / 2));
 	}
 	
-	public void draw(Labyrinth labyrinthe, Player joueur, Image brick, Image visite, Image debut, Image fond, ResourceBundle locales) {
+	public void draw(Image brick, Image visite, Image debut, Image fond, ResourceBundle locales) {
 		if(this.autoCamera) {
-			this.autoCamera(labyrinth, joueur.getPosition().getX() * 2, joueur.getPosition().getY() * 2);
+			this.autoCamera(controller.getPlayerPosition().getX() * 2, controller.getPlayerPosition().getY() * 2);
 		}
 		
-		int widthCase = getSizeCase(labyrinthe)[0];
-		int heightCase = getSizeCase(labyrinthe)[1];
+		int widthCase = getSizeCase()[0];
+		int heightCase = getSizeCase()[1];
 		
-		int widthGrid = widthCase * (labyrinthe.getWidth() * 2);
-		int heightGrid = heightCase * (labyrinthe.getHeight() * 2);
+		int widthGrid = widthCase * (controller.getLabyrinthWidth() * 2);
+		int heightGrid = heightCase * (controller.getLabyrinthHeight() * 2);
 		
-		int startX = (int) (getStartX(labyrinthe) + this.camera[1]);
-		int startY = (int) (getStartY(labyrinthe)  + this.camera[2]);
+		int startX = (int) (getStartX() + this.camera[1]);
+		int startY = (int) (getStartY()  + this.camera[2]);
 		
 		GraphicsContext gc = this.canvas.getGraphicsContext2D();
 		gc.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
@@ -438,25 +348,25 @@ public class GameGraphicalMode extends Application {
 			}
 		}
 		
-		for(int i = 0; i < labyrinthe.getHeight() * 2 + 1; i++) {
-			for(int j = 0; j < labyrinthe.getWidth() * 2 + 1; j++) {
-				if(j == labyrinthe.getWidth() * 2 || i == labyrinthe.getHeight() * 2) {
+		for(int i = 0; i < controller.getLabyrinthHeight() * 2 + 1; i++) {
+			for(int j = 0; j < controller.getLabyrinthWidth() * 2 + 1; j++) {
+				if(j == controller.getLabyrinthWidth() * 2 || i == controller.getLabyrinthHeight() * 2) {
 					gc.drawImage(brick, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 				} else {
 					Position pos = new Position(j / 2, i / 2);
-					Cell c = labyrinthe.getCase(pos);
-					Position posWest = labyrinthe.getNeighbour(pos, Direction.WEST, Direction.WEST);
-					Cell cWest = labyrinthe.getCase(posWest);
-					Position posNorth = labyrinthe.getNeighbour(pos, Direction.NORTH, Direction.NORTH);
-					Cell cNorth = labyrinthe.getCase(posNorth);
+					Cell c = controller.getCell(pos);
+					Position posWest = controller.getNeighbour(pos, Direction.WEST, Direction.WEST);
+					Cell cWest = controller.getCell(posWest);
+					Position posNorth = controller.getNeighbour(pos, Direction.NORTH, Direction.NORTH);
+					Cell cNorth = controller.getCell(posNorth);
 					
 					if(i == 0 || j == 0 || ((i + 1) % 2 == 0 && j % 2 == 0 && cWest.getEast() == CellValue.WALL && c.getWest() == CellValue.WALL) || ((i % 2 == 0 && j % 2 == 0) || (i % 2 == 0 && cNorth.getSouth() == CellValue.WALL && c.getNorth() == CellValue.WALL))) {
 						gc.drawImage(brick, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 					} else if((i + 1) % 2 == 0 && (j + 1) % 2 == 0) {
-						if(pos.equals(joueur.getPosition())) {
+						if(pos.equals(controller.getPlayerPosition())) {
 							int numImageY = 1;
 							
-							switch(joueur.getDirection()) {
+							switch(controller.getPlayerDirection()) {
 								case NORTH:
 									numImageY = 4;
 									break;
@@ -471,8 +381,8 @@ public class GameGraphicalMode extends Application {
 									break;
 							}
 							
-							gc.drawImage(joueur.getSprite(), 1, 10 * (numImageY) + 55 * (numImageY - 1), 55, 55, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
-						} else if(pos.equals(labyrinthe.getEndPosition())) {
+							gc.drawImage(controller.getSprite(), 1, 10 * (numImageY) + 55 * (numImageY - 1), 55, 55, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
+						} else if(pos.equals(controller.getEndPosition())) {
 							gc.drawImage(debut, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 						} else {
 							if(c.getValue() == CellValue.WALL) {
@@ -493,13 +403,13 @@ public class GameGraphicalMode extends Application {
 		gc.setFont(new Font(45));
 		gc.setTextBaseline(VPos.CENTER);
 		
-		if(!joueurMove && displayInfoStart) {
+		if(!playerMoved && displayInfoStart) {
 			text.setText(locales.getString("infos"));
 			text.setFont(new Font(30));
 			gc.setFont(new Font(30));
-		} else if(joueur.goalAchieved()) {
+		} else if(controller.isGoalAchieved()) {
 			text.setText(locales.getString("exitFound"));
-		} else if(joueur.isBlocked()) {
+		} else if(controller.isPlayerBlocked()) {
 			text.setText(locales.getString("blocked"));
 		}
 		
@@ -513,6 +423,91 @@ public class GameGraphicalMode extends Application {
 			gc.setFill(Color.WHITE);
 			gc.fillText(text.getText(), (this.canvas.getWidth() - widthText) / 2, this.canvas.getHeight() / 2);
 		}
+	}
+	
+	public void stopDraw() {
+		if(this.timerDraw != null) this.timerDraw.stop();
+		
+		if(this.threadDraw != null) {
+			try {
+				this.threadDraw.join(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public void enableAutoPlayer() {
+		stopAutoPlayer();
+		controller.setAutoPlayer(true);
+
+		this.threadAuto = new Thread(() -> {
+			if(this.pathAuto == null) {
+				this.pathAuto = controller.getPathAI();
+				this.pathAuto.poll();
+			}
+		
+			this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.25), ev -> {
+				Position next = this.pathAuto.poll();
+				Position current = controller.getPlayerPosition();
+				
+				if(next != null) {
+					if(next.getX() == current.getX() - 1) {
+						playerMoved = controller.movePlayer(Direction.WEST);
+					} else if(next.getX() == current.getX() + 1) {
+						playerMoved = controller.movePlayer(Direction.EAST);
+					} else if(next.getY() == current.getY() - 1) {
+						playerMoved = controller.movePlayer(Direction.NORTH);
+					} else if(next.getY() == current.getY() + 1) {
+						playerMoved = controller.movePlayer(Direction.SOUTH);
+					}
+				} else {
+					this.timelineAuto.stop();
+				}
+			}));
+			
+			this.timelineAuto.setCycleCount(Animation.INDEFINITE);
+			this.timelineAuto.play();
+		});
+		
+		this.threadAuto.start();
+	}
+	
+	public void stopAutoPlayer() {
+		controller.setAutoPlayer(false);
+		
+		if(this.timelineAuto != null) this.timelineAuto.stop();
+		
+		if(this.threadAuto != null) {
+			try {
+				this.threadAuto.join(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void update() {
+		if(controller.isGoalAchieved() && !controller.isAutoPlayer()) {
+			if(timelineWin != null) timelineWin.stop();
+			
+			this.timelineWin = new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
+				this.exited = true;
+				this.timelineWin.stop();
+				this.timerDraw.stop();
+				this.stage.close();
+				if(this.launcher != null) this.launcher.progress();
+			}));
+			
+			this.timelineWin.setDelay(new Duration(1));
+			this.timelineWin.setCycleCount(1);
+			this.timelineWin.play();
+		}
+	}
+	
+	public void stopWin() {
+		if(this.timelineWin != null) this.timelineWin.stop();
 	}
 	
 	public void run() {
@@ -534,12 +529,12 @@ public class GameGraphicalMode extends Application {
 		}
 	}
 	
-	public boolean isWin() {
-		return win;
-	}
-
-	public void setDisplayInfoStart(boolean displayInfoStart) {
-		this.displayInfoStart = displayInfoStart;
+	public void stop() {
+		this.exited = true;
+		this.stopDraw();
+		this.stopAutoPlayer();
+		this.stopWin();
+		this.stage.close();
 	}
 
 	public static void main(String[] args) {

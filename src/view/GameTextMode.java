@@ -1,4 +1,4 @@
-package game;
+package view;
 
 
 import java.text.MessageFormat;

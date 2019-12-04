@@ -52,10 +52,10 @@ public class Player {
 	 * @return (boolean) true if the player could have moved, false otherwise
 	 */
 	public boolean moveTo(Direction direction) {
-		boolean peuxSeDeplacer = this.labyrinth.canMoveTo(this.labyrinth.getCase(this.getPosition()), this.labyrinth.getCase(this.labyrinth.getNeighbour(this.getPosition(), direction, direction)), direction);
+		boolean peuxSeDeplacer = this.labyrinth.canMoveTo(this.labyrinth.getCell(this.getPosition()), this.labyrinth.getCell(this.labyrinth.getNeighbour(this.getPosition(), direction, direction)), direction);
 		
 		if(peuxSeDeplacer) {
-			this.labyrinth.getCase(this.getPosition()).setValue(CellValue.CROSSED);
+			this.labyrinth.getCell(this.getPosition()).setValue(CellValue.CROSSED);
 			this.setPosition(labyrinth.getNeighbour(this.getPosition(), direction, direction));
 			this.checkBlocked = true;
 		}
@@ -94,9 +94,9 @@ public class Player {
 		
 			      for(int i = 0; i < directions.length; i++) {
 			    	  Position pos = this.labyrinth.getNeighbour(currentPosition, directions[i], directions[i]);
-			    	  Cell c = this.labyrinth.getCase(pos);
+			    	  Cell c = this.labyrinth.getCell(pos);
 			    	  
-			    	  if(!checkList.contains(pos) && !complete.contains(pos) && this.labyrinth.canMoveTo(this.labyrinth.getCase(currentPosition), c, directions[i])) {
+			    	  if(!checkList.contains(pos) && !complete.contains(pos) && this.labyrinth.canMoveTo(this.labyrinth.getCell(currentPosition), c, directions[i])) {
 					        if((c.getValue() == CellValue.EMPTY || pos.equals(this.getPosition()))) {
 						        checkList.add(pos);
 						        
@@ -143,9 +143,9 @@ public class Player {
 				
 				for(int i = 0; i < directions.size(); i++) {
 					Position posNeighbour = this.labyrinth.getNeighbour(current, directions.get(i), directions.get(i));
-					Cell neighbour = this.labyrinth.getCase(posNeighbour);
+					Cell neighbour = this.labyrinth.getCell(posNeighbour);
 					
-					if(!explore.contains(posNeighbour) && !posNeighbour.equals(current) && this.labyrinth.canMoveTo(this.labyrinth.getCase(current), neighbour, directions.get(i))) {
+					if(!explore.contains(posNeighbour) && !posNeighbour.equals(current) && this.labyrinth.canMoveTo(this.labyrinth.getCell(current), neighbour, directions.get(i))) {
 						List<Position> path = new ArrayList<>(pathToEnd);
 						path.add(posNeighbour);
 						queue.add(path);

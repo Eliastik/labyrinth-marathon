@@ -1,10 +1,11 @@
-package game;
+package view;
 
 import java.util.Locale;
 import java.util.ResourceBundle;
 
 import algorithms.AldousBroder;
 import algorithms.BinaryTree;
+import controller.GameController;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -193,7 +194,7 @@ public class GameLauncher extends Application {
 			}
 			
 			labyrinth.generate(this.seed);
-			game = new GameGraphicalMode(labyrinth, this, displayInfoStart, 0);
+			game = new GameGraphicalMode(this, displayInfoStart, 0);
 		} else {
 			labyrinth = new Labyrinth(this.width, this.height, this.algorithm, false);
 			
@@ -204,9 +205,10 @@ public class GameLauncher extends Application {
 			}
 			
 			labyrinth.generate(this.seed);
-			game = new GameGraphicalMode(labyrinth, this, displayInfoStart, this.level);
+			game = new GameGraphicalMode(this, displayInfoStart, this.level);
 		}
 		
+		game.setController(new GameController(labyrinth, game));
 		game.run();
 	}
 	

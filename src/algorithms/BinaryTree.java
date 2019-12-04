@@ -32,10 +32,10 @@ public class BinaryTree implements GenerationAlgorithm {
 					dir = directions.get(random.nextInt(directions.size()));
 					
 					Position pos = new Position(j, i);
-					Cell c = labyrinth.getCase(pos);
+					Cell c = labyrinth.getCell(pos);
 					
 					Position posOther = labyrinth.getNeighbour(pos, dir, dir);
-					Cell cOther = labyrinth.getCase(posOther);
+					Cell cOther = labyrinth.getCell(posOther);
 
 					c.setEdgeToDirection(dir, CellValue.EMPTY);
 					cOther.setOppositeEdge(dir, CellValue.EMPTY);

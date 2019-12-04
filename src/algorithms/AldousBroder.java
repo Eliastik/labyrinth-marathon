@@ -32,13 +32,13 @@ public class AldousBroder implements GenerationAlgorithm {
 			
 			for(Direction dir : directions) {
 				Position pos = labyrinth.getNeighbour(currentPos, dir, dir);
-				Cell c = labyrinth.getCase(pos);
+				Cell c = labyrinth.getCell(pos);
 				
 				if(pos.getX() >= 0 && pos.getX() < labyrinth.getWidth() && pos.getY() >= 0 && pos.getY() < labyrinth.getHeight()) {
 					if(c.getValue() == CellValue.WALL) {
-						labyrinth.getCase(currentPos).setEdgeToDirection(dir, CellValue.EMPTY);
+						labyrinth.getCell(currentPos).setEdgeToDirection(dir, CellValue.EMPTY);
 						c.setOppositeEdge(dir, CellValue.EMPTY);
-						labyrinth.getCase(currentPos).setValue(CellValue.EMPTY);
+						labyrinth.getCell(currentPos).setValue(CellValue.EMPTY);
 						c.setValue(CellValue.EMPTY);
 						remaining--;
 					}

@@ -71,7 +71,7 @@ public class Labyrinth {
 		this(5, 5);
 	}
 	
-	public Cell getCase(Position position) {
+	public Cell getCell(Position position) {
 		return cells[position.getY()][position.getX()];
 	}
 
@@ -224,7 +224,7 @@ public class Labyrinth {
 	 */
 	public void generate(long seed) {
 		Random random = new Random(seed);
-		this.getCase(this.startPosition).setValue(CellValue.EMPTY);
+		this.getCell(this.startPosition).setValue(CellValue.EMPTY);
 		algorithm.generate(this, random, this.startPosition, this.endPosition);
 	}
 
@@ -237,9 +237,9 @@ public class Labyrinth {
 			
 			for(int j = 0; j < this.getWidth(); j++) {
 				Position pos = new Position(j, i);
-				Cell c = this.getCase(pos);
+				Cell c = this.getCell(pos);
 				Position posEst = this.getNeighbour(pos, Direction.EAST, Direction.EAST);
-				Cell cEst = this.getCase(posEst);
+				Cell cEst = this.getCell(posEst);
 				
 				if(pos.equals(this.getPlayer().getPosition())) {
 					res += "00";
@@ -260,9 +260,9 @@ public class Labyrinth {
 			
 			for(int j = 0; j < this.getWidth(); j++) {
 				Position pos = new Position(j, i);
-				Cell c = this.getCase(pos);
+				Cell c = this.getCell(pos);
 				Position posSud = this.getNeighbour(pos, Direction.SOUTH, Direction.SOUTH);
-				Cell cSud = this.getCase(posSud);
+				Cell cSud = this.getCell(posSud);
 				
 				res += "+";
 				
