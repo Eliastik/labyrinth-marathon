@@ -2,6 +2,7 @@ package game;
 
 
 import java.util.Locale;
+import java.util.Queue;
 import java.util.ResourceBundle;
 
 import javafx.animation.Animation;
@@ -51,18 +52,19 @@ import util.Position;
  * @since 30/11/2019
  */
 public class GameGraphicalMode extends Application {
+	protected Stage stage;
 	private Labyrinth labyrinth;
 	private GameLauncher launcher;
-	private int level = 0;
 	private Canvas canvas;
+	private Timeline timelineWin;
+	private Timeline timelineAuto;
+	private AnimationTimer timerDraw;
+	private int level = 0;
 	private boolean joueurMove = false;
 	private boolean exited = false;
 	private boolean win = false;
 	private boolean displayInfoStart = true;
-	private Timeline timelineWin;
-	private Timeline timelineAuto;
-	private AnimationTimer timerDraw;
-	protected Stage stage;
+	private Queue<Position> pathAuto;
 	protected double[] camera = new double[]{1.0, 0.0, 0.0}; // zoom / posX / posY
 	private double precXDrag = -1.0;
 	private double precYDrag = -1.0;
@@ -348,8 +350,13 @@ public class GameGraphicalMode extends Application {
 	public void enableJoueurAuto(Player joueur) {
 		if(this.timelineAuto != null) this.timelineAuto.stop();
 		
+		if(this.pathAuto == null) {
+			this.pathAuto = joueur.getPathAI();
+			this.pathAuto.poll();
+		}
+		
 		this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.25), ev -> {
-			Position next = joueur.getNextDirectionIA();
+			Position next = this.pathAuto.poll();
 			Position current = joueur.getPosition();
 			
 			if(next != null) {

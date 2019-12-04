@@ -24,6 +24,8 @@ public class Player {
 	private Direction direction;
 	private Labyrinth labyrinth;
 	private Image sprite;
+	private boolean checkBlocked = true;
+	private boolean blocked = false;
 	
 	public Player(Position position, Direction direction, Labyrinth labyrinth) {
 		this.labyrinth = labyrinth;
@@ -55,6 +57,7 @@ public class Player {
 		if(peuxSeDeplacer) {
 			this.labyrinth.getCase(this.getPosition()).setValue(CellValue.CROSSED);
 			this.setPosition(labyrinth.getNeighbour(this.getPosition(), direction, direction));
+			this.checkBlocked = true;
 		}
 		
 		this.setDirection(direction);
@@ -76,40 +79,49 @@ public class Player {
 	 * @return (boolean) true if the player is blocked, false otherwise
 	 */
 	public boolean isBlocked() {
-		Stack<Position> checkList = new Stack<>();
-		checkList.add(this.labyrinth.getEndPosition());
-		List<Position> complete = new ArrayList<>();
+		if(this.blocked) return true;
 		
-		while(!checkList.isEmpty()) {
-		      Position currentPosition = checkList.pop();
-		      Direction[] directions = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
-	
-		      for(int i = 0; i < directions.length; i++) {
-		    	  Position pos = this.labyrinth.getNeighbour(currentPosition, directions[i], directions[i]);
-		    	  Cell c = this.labyrinth.getCase(pos);
-		    	  
-		    	  if(!checkList.contains(pos) && !complete.contains(pos) && this.labyrinth.canMoveTo(this.labyrinth.getCase(currentPosition), c, directions[i])) {
-				        if((c.getValue() == CellValue.EMPTY || pos.equals(this.getPosition()))) {
-					        checkList.add(pos);
-					        
-					        if(pos.equals(this.getPosition())) {
-					        	return false;
+		if(this.checkBlocked) {
+			this.checkBlocked = false;
+			
+			Stack<Position> checkList = new Stack<>();
+			checkList.add(this.labyrinth.getEndPosition());
+			List<Position> complete = new ArrayList<>();
+			
+			while(!checkList.isEmpty()) {
+			      Position currentPosition = checkList.pop();
+			      Direction[] directions = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
+		
+			      for(int i = 0; i < directions.length; i++) {
+			    	  Position pos = this.labyrinth.getNeighbour(currentPosition, directions[i], directions[i]);
+			    	  Cell c = this.labyrinth.getCase(pos);
+			    	  
+			    	  if(!checkList.contains(pos) && !complete.contains(pos) && this.labyrinth.canMoveTo(this.labyrinth.getCase(currentPosition), c, directions[i])) {
+					        if((c.getValue() == CellValue.EMPTY || pos.equals(this.getPosition()))) {
+						        checkList.add(pos);
+						        
+						        if(pos.equals(this.getPosition())) {
+						        	return false;
+						        }
 					        }
-				        }
-		    	  }
-		      }
-		      
-		      complete.add(currentPosition);
-	    }
-	    
-	    return true;
+			    	  }
+			      }
+			      
+			      complete.add(currentPosition);
+		    }
+			
+			this.blocked = true;
+		    return true;
+		}
+		
+		return false;
 	}
 	
 	/**
 	 * Calculate a path to the exit and return the next position where to move.
 	 * @return (Position) the next position where to move
 	 */
-	public Position getNextDirectionIA() {
+	public Queue<Position> getPathAI() {
 		if(this.getPosition().equals(this.labyrinth.getEndPosition())) return null;
 		
 		Queue<List<Position>> queue = new LinkedList<>();
@@ -124,7 +136,7 @@ public class Player {
 			Position current = pathToEnd.get(pathToEnd.size() - 1);
 			
 			if(current.equals(this.labyrinth.getEndPosition())) {
-				return pathToEnd.get(1);
+				return new LinkedList<>(pathToEnd);
 			} else {
 				ArrayList<Position> neightbours = new ArrayList<>();
 				List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST));
