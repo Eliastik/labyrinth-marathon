@@ -51,7 +51,7 @@ import util.Position;
  * @version 1.0
  * @since 30/11/2019
  */
-public class GameGraphicalMode extends Application implements Runnable, GameView {
+public class GameGraphicalMode extends Application implements GameView {
 	protected Stage stage;
 	private Canvas canvas;
 	private GameLauncher launcher;
@@ -488,7 +488,7 @@ public class GameGraphicalMode extends Application implements Runnable, GameView
 	}
 
 	@Override
-	public void update() {
+	public void update(boolean moveSucceeded) {
 		if(controller.isGoalAchieved() && !controller.isAutoPlayer()) {
 			if(timelineWin != null) timelineWin.stop();
 			

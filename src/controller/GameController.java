@@ -94,20 +94,15 @@ public class GameController {
 			}
 		}
 		
-		if(moved) {
-			view.update();
-		}
-		
+		view.update(moved);
 		return moved;
 	}
 	
 	public boolean movePlayer(Direction direction) {
-		if(labyrinth.getPlayer().moveTo(direction)) {
-			view.update();
-			return true;
-		}
-		
-		return false;
+		boolean moved = false;
+		if(!labyrinth.getPlayer().goalAchieved()) moved = labyrinth.getPlayer().moveTo(direction);
+		view.update(moved);
+		return moved;
 	}
 	
 	public boolean isAutoPlayer() {
@@ -132,5 +127,9 @@ public class GameController {
 	
 	public boolean isPlayerBlocked() {
 		return labyrinth.getPlayer().isBlocked();
+	}
+	
+	public void displayTextLabyrinth() {
+		System.out.println(labyrinth);
 	}
 }

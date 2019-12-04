@@ -182,7 +182,7 @@ public class GameLauncher extends Application {
 	
 	private void launchGame() {
 		Labyrinth labyrinth;
-		GameGraphicalMode game;
+		GameView game;
 		
 		if(this.gameMode == 2) {
 			labyrinth = new Labyrinth(this.width, this.height, this.algorithm, true);

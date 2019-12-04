@@ -6,8 +6,8 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.Scanner;
 
+import controller.GameController;
 import model.Labyrinth;
-import model.Player;
 import util.Direction;
 
 /**
@@ -17,66 +17,115 @@ import util.Direction;
  * @version 1.0
  * @since 30/11/2019
  */
-public class GameTextMode {
-	public static void main(String[] args) {
-		Labyrinth labyrinth = new Labyrinth(10, 10);
-		Player player = labyrinth.getPlayer();
+public class GameTextMode implements GameView {
+	private GameLauncher launcher;
+	private GameController controller;
+	private int level = 0;
+	private ResourceBundle locales = ResourceBundle.getBundle("locales.text", Locale.getDefault()); // Locale
+	private Scanner scanner = new Scanner(System.in);
+	
+	/**
+	 * Construct a new text game
+	 * @param labyrinth (Labyrinth) A generated labyrinth (run generate())
+	 */
+	public GameTextMode(GameLauncher launcher, int level) {
+		this.launcher = launcher;
+		this.level = level;
+	}
+	
+	/**
+	 * Construct a new text game
+	 */
+	public GameTextMode() {
+		Labyrinth labyrinth = new Labyrinth();
 		labyrinth.generate(System.currentTimeMillis());
-		ResourceBundle locales = ResourceBundle.getBundle("locales.text", Locale.getDefault()); // Locale
-		
+		this.controller = new GameController(labyrinth, this);
+	}
+	
+	public void run() {
+		this.update(true);
+	}
+
+	@Override
+	public void update(boolean moveSucceeded) {
 		String choice = "";
-		boolean moveSucceeded = true;
 		boolean validEntry = false;
-		Scanner scanner = new Scanner(System.in);
 		
-		while(!player.goalAchieved() && !player.isBlocked()) {
-			for(int i = 0; i < 25; i++) System.out.print("\n");
-			
-			System.out.println(labyrinth);
-			System.out.println(MessageFormat.format(locales.getString("infos"), labyrinth.getEndPosition().getX() + " - " + labyrinth.getEndPosition().getY()));
-			
-			if(!moveSucceeded) {
-				System.out.println(locales.getString("moveFailed"));
-			}
-			
-			System.out.println(locales.getString("move"));
-			
-			do {
-				validEntry = false;
-				choice = scanner.nextLine().trim().toUpperCase();
+		if(!controller.isGoalAchieved() && !controller.isPlayerBlocked()) {
+			while(!controller.isGoalAchieved() && !controller.isPlayerBlocked()) {
+				for(int i = 0; i < 25; i++) System.out.print("\n");
+
+				controller.displayTextLabyrinth();
+				if(this.level > 0) System.out.println(locales.getString("level") + " " + locales.getString("num") + this.level);
+				System.out.println(MessageFormat.format(locales.getString("infos"), controller.getEndPosition().getX() + " - " + controller.getEndPosition().getY()));
 				
-				if(choice.equals("") || (choice.charAt(0) != 'H' && choice.charAt(0) != 'B' && choice.charAt(0) != 'G' && choice.charAt(0) != 'D')) {
-					System.out.println(locales.getString("invalidChoice"));
-				} else {
-					validEntry = true;
+				if(!moveSucceeded) {
+					System.out.println(locales.getString("moveFailed"));
 				}
-			} while(!validEntry);
-			
-			switch(choice.charAt(0)) {
-				case 'H':
-					moveSucceeded = player.moveTo(Direction.NORTH);
-					break;
-				case 'B':
-					moveSucceeded = player.moveTo(Direction.SOUTH);
-					break;
-				case 'G':
-					moveSucceeded = player.moveTo(Direction.WEST);
-					break;
-				case 'D':
-					moveSucceeded = player.moveTo(Direction.EAST);
-					break;
+				
+				System.out.println(locales.getString("move"));
+				
+				do {
+					validEntry = false;
+					choice = scanner.nextLine().trim().toUpperCase();
+					
+					if(choice.equals("") || (choice.charAt(0) != 'T' && choice.charAt(0) != 'B' && choice.charAt(0) != 'R' && choice.charAt(0) != 'L')) {
+						System.out.println(locales.getString("invalidChoice"));
+					} else {
+						validEntry = true;
+					}
+				} while(!validEntry);
+				
+				switch(choice.charAt(0)) {
+					case 'T':
+						moveSucceeded = controller.movePlayer(Direction.NORTH);
+						break;
+					case 'B':
+						moveSucceeded = controller.movePlayer(Direction.SOUTH);
+						break;
+					case 'L':
+						moveSucceeded = controller.movePlayer(Direction.WEST);
+						break;
+					case 'R':
+						moveSucceeded = controller.movePlayer(Direction.EAST);
+						break;
+				}
 			}
-		}
-		
-		for(int i = 0; i < 25; i++) System.out.print("\n");
-		System.out.println(labyrinth);
-		
-		if(player.goalAchieved()) {
-			System.out.println(locales.getString("exitFound"));
-		} else if(player.isBlocked()) {
-			System.out.println(locales.getString("blocked"));
+			
+			for(int i = 0; i < 25; i++) System.out.print("\n");
+			controller.displayTextLabyrinth();
+		} else {
+			if(controller.isGoalAchieved()) {
+				System.out.println(locales.getString("exitFound"));
+				if(this.launcher != null) this.launcher.progress();
+			} else if(controller.isPlayerBlocked()) {
+				System.out.println(locales.getString("blocked"));
+				System.out.println("\n" + locales.getString("retry"));
+				
+				do {
+					validEntry = false;
+					choice = scanner.nextLine().trim().toUpperCase();
+					
+					if(choice.equals("") || (choice.charAt(0) != 'Y' && choice.charAt(0) != 'N')) {
+						System.out.println(locales.getString("invalidChoice"));
+					} else {
+						validEntry = true;
+					}
+				} while(!validEntry);
+				
+				if(choice.charAt(0) == 'Y') {
+					this.launcher.retry();
+				} else {
+					this.launcher.exit();
+				}
+			}
 		}
 		
 		scanner.close();
+	}
+
+	@Override
+	public void setController(GameController controller) {
+		this.controller = controller;
 	}
 }
