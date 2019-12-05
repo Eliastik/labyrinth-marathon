@@ -27,6 +27,7 @@ import model.GenerationAlgorithm;
 import model.Labyrinth;
 import model.algorithms.AldousBroder;
 import model.algorithms.BinaryTree;
+import model.algorithms.RecursiveBacktracking;
 import model.algorithms.SideWinder;
 
 /**
@@ -106,7 +107,7 @@ public class GameLauncher extends Application {
 		ComboBox<String> algorithms = new ComboBox<>();
 		HBox.setMargin(algorithms, new Insets(5, 5, 5, 5));
 		ObservableList<String> algorithmsList = FXCollections.observableArrayList();
-		algorithmsList.addAll("Aldous Broder", "Binary Tree", "Side Winder");
+		algorithmsList.addAll("Aldous Broder", "Binary Tree", "Side Winder", "Recursive Backtracking");
 		algorithms.setItems(algorithmsList);
 		algorithms.getSelectionModel().select(0);
 		hboxAlgorithm.getChildren().addAll(algorithms);
@@ -161,6 +162,7 @@ public class GameLauncher extends Application {
 			
 			if(checkStepByStep.isSelected()) {
 				this.stepByStep = true;
+				this.displayInfoStart = false;
 			}
 			
 			switch(algorithms.getValue()) {
@@ -172,6 +174,9 @@ public class GameLauncher extends Application {
 					break;
 				case "Side Winder":
 					this.algorithm = new SideWinder();
+					break;
+				case "Recursive Backtracking":
+					this.algorithm = new RecursiveBacktracking();
 					break;
 				default:
 					this.algorithm = new AldousBroder();

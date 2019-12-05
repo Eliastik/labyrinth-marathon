@@ -419,7 +419,7 @@ public class GameGraphicalView extends Application implements GameView {
 			int widthText = (int) text.getLayoutBounds().getWidth();
 			int heightText = (int) text.getLayoutBounds().getHeight();
 			
-			gc.setFill(Color.rgb(125, 125, 125, 0.85));
+			gc.setFill(Color.rgb(125, 125, 125, 0.65));
 			gc.fillRoundRect((this.canvas.getWidth() - widthText * 1.25) / 2, (this.canvas.getHeight() - heightText * 1.25) / 2, widthText * 1.25, heightText * 1.25, 5, 5);
 			
 			gc.setFill(Color.WHITE);
