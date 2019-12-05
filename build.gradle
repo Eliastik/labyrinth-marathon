@@ -34,7 +34,7 @@ sourceSets {
 
 jar {
 	manifest {
-		attributes 'Main-Class': 'game.MenuLauncher'
+		attributes 'Main-Class': 'view.MenuLauncher'
 	}
 	
 	from {
@@ -51,7 +51,7 @@ eclipse {
 jfx {
 	verbose = true
 	identifier = '4176e652-6b34-4928-a357-b32dcd3e64a5'
-	mainClass = 'game.MenuLauncher'
+	mainClass = 'view.MenuLauncher'
 	vendor = 'Eliastik'
 	nativeReleaseVersion = version
 	appName = "Labyrinth Marathon"
