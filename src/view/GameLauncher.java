@@ -25,6 +25,7 @@ import model.GenerationAlgorithm;
 import model.Labyrinth;
 import model.algorithms.AldousBroder;
 import model.algorithms.BinaryTree;
+import model.algorithms.SideWinder;
 
 /**
  * The launcher with settings
@@ -101,7 +102,7 @@ public class GameLauncher extends Application {
 		ComboBox<String> algorithms = new ComboBox<>();
 		HBox.setMargin(algorithms, new Insets(5, 5, 5, 5));
 		ObservableList<String> algorithmsList = FXCollections.observableArrayList();
-		algorithmsList.addAll("Aldous Broder", "Binary Tree");
+		algorithmsList.addAll("Aldous Broder", "Binary Tree", "Side Winder");
 		algorithms.setItems(algorithmsList);
 		algorithms.getSelectionModel().select(0);
 		hboxAlgorithm.getChildren().addAll(algorithms);
@@ -145,6 +146,9 @@ public class GameLauncher extends Application {
 					break;
 				case "Binary Tree":
 					this.algorithm = new BinaryTree();
+					break;
+				case "Side Winder":
+					this.algorithm = new SideWinder();
 					break;
 				default:
 					this.algorithm = new AldousBroder();
