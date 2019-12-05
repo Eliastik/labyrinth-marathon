@@ -32,7 +32,7 @@ public class SideWinder implements GenerationAlgorithmStrategy {
 						c.setValue(CellValue.CURRENT);
 						
 						try {
-							Thread.sleep(250);
+							Thread.sleep(150);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -54,7 +54,7 @@ public class SideWinder implements GenerationAlgorithmStrategy {
 						c.setValue(CellValue.CURRENT);
 						
 						try {
-							Thread.sleep(250);
+							Thread.sleep(150);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
