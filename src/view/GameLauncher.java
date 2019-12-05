@@ -11,12 +11,14 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -42,6 +44,8 @@ public class GameLauncher extends Application {
 	private Image spritePlayer;
 	private int level = 1;
 	private boolean displayInfoStart = true;
+	private boolean stepByStep = false;
+	private Thread stepByStepThread;
 	
 	public GameLauncher(int gameMode) {
 		this.gameMode = gameMode;
@@ -52,7 +56,7 @@ public class GameLauncher extends Application {
 		ResourceBundle locales = ResourceBundle.getBundle("locales.gameLauncher", Locale.getDefault()); // Locale
 
 		VBox root = new VBox();
-		Scene scene = new Scene(root, 450, 340);
+		Scene scene = new Scene(root);
 		scene.getStylesheets().add("/styles/style.css");
 		
 		Label labelTitle = new Label(locales.getString("labelTitle"));
@@ -113,6 +117,21 @@ public class GameLauncher extends Application {
 		HBox.setMargin(seedLbl, new Insets(5, 5, 5, 5));
 		hboxSeedLbl.getChildren().addAll(seedLbl);
 		
+		HBox hboxStepByStep = new HBox();
+		CheckBox checkStepByStep = new CheckBox();
+		Label stepByStepLbl = new Label(locales.getString("stepByStep"));
+		HBox.setMargin(checkStepByStep, new Insets(5, 5, 5, 5));
+		HBox.setMargin(stepByStepLbl, new Insets(5, 5, 5, 5));
+		hboxStepByStep.getChildren().addAll(checkStepByStep, stepByStepLbl);
+		
+		stepByStepLbl.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+			if(checkStepByStep.isSelected()) {
+				checkStepByStep.setSelected(false);
+			} else {
+				checkStepByStep.setSelected(true);
+			}
+		});
+		
 		HBox hboxSeed = new HBox();
 		TextField seedField = new TextField("" + this.seed);
 		HBox.setMargin(seedField, new Insets(5, 5, 5, 5));
@@ -140,6 +159,10 @@ public class GameLauncher extends Application {
 				this.seed = System.currentTimeMillis();
 			}
 			
+			if(checkStepByStep.isSelected()) {
+				this.stepByStep = true;
+			}
+			
 			switch(algorithms.getValue()) {
 				case "Aldous Broder":
 					this.algorithm = new AldousBroder();
@@ -159,7 +182,7 @@ public class GameLauncher extends Application {
 			stage.close();
 		});
 		
-		root.getChildren().addAll(labelTitle, hboxSizeLbl, hboxSize, hboxAlgorithmLbl, hboxAlgorithm, hboxSeedLbl, hboxSeed, hboxButtons);
+		root.getChildren().addAll(labelTitle, hboxSizeLbl, hboxSize, hboxAlgorithmLbl, hboxAlgorithm, hboxStepByStep, hboxSeedLbl, hboxSeed, hboxButtons);
 		
 		stage.setTitle(locales.getString("title"));
 		stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon_flat.png")));
@@ -190,26 +213,26 @@ public class GameLauncher extends Application {
 		
 		if(this.gameMode == 2) {
 			labyrinth = new Labyrinth(this.width, this.height, this.algorithm, true);
-			
-			if(this.spritePlayer == null) {
-				this.spritePlayer = labyrinth.getPlayer().getSprite();
-			} else {
-				labyrinth.getPlayer().setSprite(this.spritePlayer);
-			}
-			
-			labyrinth.generate(this.seed);
 			game = new GameGraphicalView(this, displayInfoStart, 0);
 		} else {
 			labyrinth = new Labyrinth(this.width, this.height, this.algorithm, false);
-			
-			if(this.spritePlayer == null) {
-				this.spritePlayer = labyrinth.getPlayer().getSprite();
-			} else {
-				labyrinth.getPlayer().setSprite(this.spritePlayer);
-			}
-			
-			labyrinth.generate(this.seed);
 			game = new GameGraphicalView(this, displayInfoStart, this.level);
+		}
+		
+		if(this.spritePlayer == null) {
+			this.spritePlayer = labyrinth.getPlayer().getSprite();
+		} else {
+			labyrinth.getPlayer().setSprite(this.spritePlayer);
+		}
+		
+		if(stepByStep) {
+			this.stepByStepThread = new Thread(() -> {
+				labyrinth.generate(this.seed, true);
+			});
+			
+			this.stepByStepThread.start();
+		} else {
+			labyrinth.generate(this.seed, false);
 		}
 		
 		game.setController(new GameController(labyrinth, game));
@@ -217,16 +240,19 @@ public class GameLauncher extends Application {
 	}
 	
 	public void retry() {
+		stopStepByStep();
 		this.displayInfoStart = false;
 		if(this.gameMode == 1) this.seed++;
 		this.launchGame();
 	}
 	
 	public void exit() {
+		stopStepByStep();
 		// TODO: highscore ladder
 	}
 	
 	public void progress() {
+		stopStepByStep();
 		this.displayInfoStart = false;
 		
 		if(this.gameMode == 1) {
@@ -235,6 +261,16 @@ public class GameLauncher extends Application {
 			this.seed++;
 			this.level++;
 			this.launchGame();
+		}
+	}
+	
+	public void stopStepByStep() {
+		if(this.stepByStepThread != null) {
+			try {
+				this.stepByStepThread.join(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

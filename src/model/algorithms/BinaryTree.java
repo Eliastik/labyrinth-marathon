@@ -20,9 +20,17 @@ import model.util.Position;
  */
 public class BinaryTree implements GenerationAlgorithm {
 	@Override
-	public void generate(Labyrinth labyrinth, Random random, Position start, Position end) {
+	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		for(int i = 0; i < labyrinth.getHeight(); i++) {
 			for(int j = 0; j < labyrinth.getWidth(); j++) {
+				if(stepByStep) {
+					try {
+						Thread.sleep(250);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				Direction dir;
 				List<Direction> directions = new ArrayList<>();
 				if(i > 0) directions.add(Direction.NORTH);

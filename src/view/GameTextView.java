@@ -40,7 +40,7 @@ public class GameTextView implements GameView {
 	 */
 	public GameTextView() {
 		Labyrinth labyrinth = new Labyrinth();
-		labyrinth.generate(System.currentTimeMillis());
+		labyrinth.generate(System.currentTimeMillis(), false);
 		this.controller = new GameController(labyrinth, this);
 	}
 	

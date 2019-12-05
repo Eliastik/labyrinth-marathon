@@ -18,11 +18,19 @@ import model.util.Position;
  */
 public class SideWinder implements GenerationAlgorithm {
 	@Override
-	public void generate(Labyrinth labyrinth, Random random, Position start, Position end) {
+	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		for(int i = 0; i < labyrinth.getHeight(); i++) {
 			int run_start = 0;
 			
 			for(int j = 0; j < labyrinth.getWidth(); j++) {
+				if(stepByStep) {
+					try {
+						Thread.sleep(250);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				if(i > 0 && (j + 1 == labyrinth.getWidth() || random.nextInt(2) == 0)) {
 					int x = run_start + random.nextInt(j - run_start + 1);
 					Position p = new Position(x, i);

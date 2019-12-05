@@ -221,11 +221,12 @@ public class Labyrinth {
 	/**
 	 * Generate the labyrinth
 	 * @param seed (long) Value for the pseudo-random number generator (two same seeds => same labyrinth generated (if start and end positions are identical, same grid size, same algorithm))
+	 * @param stepByStep (boolean) The algorithm sleeps between iterations to demonstrate how it works (to be run by an independent Thread)
 	 */
-	public void generate(long seed) {
+	public void generate(long seed, boolean stepByStep) {
 		Random random = new Random(seed);
 		this.getCell(this.startPosition).setValue(CellValue.EMPTY);
-		algorithm.generate(this, random, this.startPosition, this.endPosition);
+		algorithm.generate(this, random, this.startPosition, this.endPosition, stepByStep);
 	}
 
 	public String toString() {

@@ -17,6 +17,7 @@ public interface GenerationAlgorithm {
 	 * @param random (Random) A seedable Random
 	 * @param start (Position) The start position of the player / some algorithms can use it as start position of the process
 	 * @param end (Position) The end position where the player must go
+	 * @param stepByStep (boolean) The algorithm sleeps between iterations to demonstrate how it works (to be run by an independent Thread)
 	 */
-	public void generate(Labyrinth labyrinth, Random random, Position start, Position end);
+	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep);
 }

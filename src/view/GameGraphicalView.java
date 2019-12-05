@@ -88,7 +88,7 @@ public class GameGraphicalView extends Application implements GameView {
 	 */
 	public GameGraphicalView() {
 		Labyrinth labyrinth = new Labyrinth();
-		labyrinth.generate(System.currentTimeMillis());
+		labyrinth.generate(System.currentTimeMillis(), false);
 		this.controller = new GameController(labyrinth, this);
 	}
 
@@ -446,11 +446,11 @@ public class GameGraphicalView extends Application implements GameView {
 		this.threadAuto = new Thread(() -> {
 			if(this.pathAuto == null) {
 				this.pathAuto = controller.getPathAI();
-				this.pathAuto.poll();
+				if(this.pathAuto != null && !this.pathAuto.isEmpty()) this.pathAuto.poll();
 			}
 		
 			this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.25), ev -> {
-				if(!controller.isGoalAchieved()) {
+				if(!controller.isGoalAchieved() && this.pathAuto != null && !this.pathAuto.isEmpty()) {
 					Position next = this.pathAuto.poll();
 					Position current = controller.getPlayerPosition();
 					

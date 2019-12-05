@@ -132,4 +132,8 @@ public class GameController {
 	public void displayTextLabyrinth() {
 		System.out.println(labyrinth);
 	}
+
+	public void generateLabyrinth(int seed, boolean stepByStep) {
+		labyrinth.generate(seed, stepByStep);
+	}
 }

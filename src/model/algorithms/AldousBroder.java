@@ -22,7 +22,7 @@ import model.util.Position;
  */
 public class AldousBroder implements GenerationAlgorithm {
 	@Override
-	public void generate(Labyrinth labyrinth, Random random, Position start, Position end) {
+	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		int remaining = labyrinth.getWidth() * labyrinth.getHeight() - 1;
 		Position currentPos = start;
 		
@@ -31,6 +31,14 @@ public class AldousBroder implements GenerationAlgorithm {
 			Collections.shuffle(directions, random);
 			
 			for(Direction dir : directions) {
+				if(stepByStep) {
+					try {
+						Thread.sleep(250);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				
 				Position pos = labyrinth.getNeighbour(currentPos, dir, dir);
 				Cell c = labyrinth.getCell(pos);
 				
