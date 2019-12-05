@@ -64,6 +64,10 @@ public class GameGraphicalView extends Application implements GameView {
 	private Queue<Position> pathAuto;
 	private int level = 0;
 	private boolean playerMoved = false;
+	private Position precPosition = new Position(0, 0);
+	private double moveOffset = 1.0;
+	private int xMove = 0;
+	private int yMove = 0;
 	private boolean exited = false;
 	private boolean displayInfoStart = true;
 	protected double[] camera = new double[]{1.0, 0.0, 0.0}; // zoom / posX / posY
@@ -228,7 +232,7 @@ public class GameGraphicalView extends Application implements GameView {
 		
 		if(!controller.isAutoPlayer()) {
 			scene.setOnKeyPressed(e -> {
-				playerMoved = controller.movePlayer(e.getCode());
+				controller.movePlayer(e.getCode());
 			});
 		} else {
 			enableAutoPlayer();
@@ -295,7 +299,7 @@ public class GameGraphicalView extends Application implements GameView {
 		});
 	}
 	
-	public void autoCamera(int x, int y) {
+	public void autoCamera(double x, double y) {
 		this.camera[1] = -((getSizeCase()[0] * x + getStartX()) - this.canvas.getWidth() / 2 + getSizeCase()[0]);
 		this.camera[2] = -((getSizeCase()[1] * y + getStartY()) - this.canvas.getHeight() / 2 + getSizeCase()[1]);
 	}
@@ -318,12 +322,36 @@ public class GameGraphicalView extends Application implements GameView {
 	}
 	
 	public void draw(Image brick, Image crossed, Image start, Image background, Image current, ResourceBundle locales) {
-		if(this.autoCamera) {
-			this.autoCamera(controller.getPlayerPosition().getX() * 2, controller.getPlayerPosition().getY() * 2);
-		}
-		
 		int widthCase = getSizeCase()[0];
 		int heightCase = getSizeCase()[1];
+
+		double offsetXPlayer = 0;
+		double offsetYPlayer = 0;
+		
+		if(this.moveOffset >= 0.0 && this.moveOffset <= 1.0) {
+			offsetXPlayer = (controller.getPlayerPosition().getX() - this.xMove);
+			offsetYPlayer = (controller.getPlayerPosition().getY() - this.yMove);
+			
+			if(offsetXPlayer > 0) {
+				offsetXPlayer = offsetXPlayer - this.moveOffset;
+			} else if(offsetXPlayer < 0) {
+				offsetXPlayer = offsetXPlayer + this.moveOffset;
+			} else {
+				offsetXPlayer = 0;
+			}
+			
+			if(offsetYPlayer > 0) {
+				offsetYPlayer = offsetYPlayer - this.moveOffset;
+			} else if(offsetYPlayer < 0) {
+				offsetYPlayer = offsetYPlayer + this.moveOffset;
+			} else {
+				offsetYPlayer = 0;
+			}
+		}
+		
+		if(this.autoCamera) {
+			this.autoCamera((controller.getPlayerPosition().getX() * 2 - offsetXPlayer * 2), (controller.getPlayerPosition().getY() * 2 - offsetYPlayer * 2));
+		}
 		
 		int widthGrid = widthCase * (controller.getLabyrinthWidth() * 2);
 		int heightGrid = heightCase * (controller.getLabyrinthHeight() * 2);
@@ -384,7 +412,7 @@ public class GameGraphicalView extends Application implements GameView {
 									break;
 							}
 							
-							gc.drawImage(controller.getSprite(), 1, 10 * (numImageY) + 55 * (numImageY - 1), 55, 55, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
+							gc.drawImage(controller.getSprite(), 1, 10 * (numImageY) + 55 * (numImageY - 1), 55, 55, (double) widthCase * j + startX - offsetXPlayer * widthCase, heightCase * i + startY - offsetYPlayer * heightCase, widthCase, heightCase);
 						} else if(pos.equals(controller.getEndPosition())) {
 							gc.drawImage(start, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 						} else {
@@ -430,6 +458,8 @@ public class GameGraphicalView extends Application implements GameView {
 			gc.setFill(Color.WHITE);
 			gc.fillText(text.getText(), (this.canvas.getWidth() - widthText) / 2, this.canvas.getHeight() / 2);
 		}
+		
+		this.moveOffset += 0.025;
 	}
 	
 	public void stopDraw() {
@@ -461,13 +491,13 @@ public class GameGraphicalView extends Application implements GameView {
 					
 					if(next != null) {
 						if(next.getX() == current.getX() - 1) {
-							playerMoved = controller.movePlayer(Direction.WEST);
+							controller.movePlayer(Direction.WEST);
 						} else if(next.getX() == current.getX() + 1) {
-							playerMoved = controller.movePlayer(Direction.EAST);
+							controller.movePlayer(Direction.EAST);
 						} else if(next.getY() == current.getY() - 1) {
-							playerMoved = controller.movePlayer(Direction.NORTH);
+							controller.movePlayer(Direction.NORTH);
 						} else if(next.getY() == current.getY() + 1) {
-							playerMoved = controller.movePlayer(Direction.SOUTH);
+							controller.movePlayer(Direction.SOUTH);
 						}
 					} else {
 						this.timelineAuto.stop();
@@ -512,6 +542,14 @@ public class GameGraphicalView extends Application implements GameView {
 			this.timelineWin.setDelay(new Duration(1));
 			this.timelineWin.setCycleCount(1);
 			this.timelineWin.play();
+		}
+		
+		if(moveSucceeded) {
+			this.playerMoved = true;
+			this.moveOffset = 0.0;
+			this.xMove = precPosition.getX();
+			this.yMove = precPosition.getY();
+			this.precPosition = controller.getPlayerPosition();
 		}
 	}
 	
