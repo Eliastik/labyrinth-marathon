@@ -21,6 +21,7 @@ public class Labyrinth {
 	private Player player;
 	private boolean autoPlayer;
 	private boolean enableAutoPlayer;
+	private boolean generationFinished = false;
 	
 	public Labyrinth(int width, int height, Position startPosition, Position endPosition, GenerationAlgorithmStrategy algorithm, boolean autoPlayer, boolean enableAutoPlayer) {
 		if((width <= 1 && height <= 1) || width <= 0 || height <= 0) {
@@ -281,6 +282,15 @@ public class Labyrinth {
 		Random random = new Random(seed);
 		this.getCell(this.startPosition).setValue(CellValue.EMPTY);
 		algorithm.generate(this, random, this.startPosition, this.endPosition, stepByStep);
+		this.generationFinished = true;
+	}
+
+	/**
+	 * Inform if the generation of the labyrinth is finished
+	 * @return (boolean) true if the generation is finished, false otherwise
+	 */
+	public boolean isGenerationFinished() {
+		return generationFinished;
 	}
 
 	public String toString() {

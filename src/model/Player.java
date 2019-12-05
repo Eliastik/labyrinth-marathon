@@ -80,6 +80,7 @@ public class Player {
 	 * @see <a href="https://en.wikipedia.org/wiki/Flood_fill">https://en.wikipedia.org/wiki/Flood_fill</a>
 	 */
 	public boolean isBlocked() {
+		if(!this.labyrinth.isGenerationFinished()) return false;
 		if(this.blocked) return true;
 		
 		if(this.checkBlocked) {
