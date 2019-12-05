@@ -8,5 +8,16 @@ package model;
  * @since 30/11/2019
  */
 public enum CellValue {
-	WALL, EMPTY, CROSSED;
+	/**
+	 * Wall value
+	 */
+	WALL,
+	/**
+	 * Empty value
+	 */
+	EMPTY,
+	/**
+	 * Crossed value (if the player crossed the cell)
+	 */
+	CROSSED;
 }

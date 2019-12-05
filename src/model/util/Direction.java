@@ -7,5 +7,20 @@ package model.util;
  * @since 30/11/2019
  */
 public enum Direction {
-	NORTH, SOUTH, EAST, WEST;
+	/**
+	 * The north direction
+	 */
+	NORTH,
+	/**
+	 * The south direction
+	 */
+	SOUTH,
+	/**
+	 * The east direction
+	 */
+	EAST,
+	/**
+	 * The west direction
+	 */
+	WEST;
 }

@@ -71,6 +71,11 @@ public class Labyrinth {
 		this(5, 5);
 	}
 	
+	/**
+	 * Get the cell at the position passed in parameter
+	 * @param position ({@link Position}) The position
+	 * @return The cell
+	 */
 	public Cell getCell(Position position) {
 		return cells[position.getY()][position.getX()];
 	}
@@ -78,7 +83,7 @@ public class Labyrinth {
 	/**
 	 * Generate randoms start and end positions<br />
 	 * Reset the player position
-	 * @param random (Random) The pseudo-random number generator
+	 * @param random ({@link Random}) The pseudo-random number generator
 	 */
 	public void generateStartEndPositions(Random random) {
 		this.startPosition = Position.random(this.getWidth(), this.getHeight(), random);
@@ -90,7 +95,7 @@ public class Labyrinth {
 	
 	/**
 	 * Generate randoms start and end positions<br />
-	 * Reset the player position
+	 * Reset the player position to the new start position generated
 	 * @param seed (long) The value for the pseudo-random number generator
 	 */
 	public void generateStartEndPositions(long seed) {
@@ -98,7 +103,7 @@ public class Labyrinth {
 	}
 	
 	/**
-	 * 
+	 * Get the height of the grid
 	 * @return (int) Return the height of the grid
 	 */
 	public int getHeight() {
@@ -106,63 +111,105 @@ public class Labyrinth {
 	}
 
 	/**
-	 * 
+	 * Get the width of the grid
 	 * @return (int) Return the width of the grid
 	 */
 	public int getWidth() {
 		return this.cells[0].length;
 	}
 	
+	/**
+	 * Get the start position
+	 * @return ({@link Position}) The start position
+	 */
 	public Position getStartPosition() {
 		return this.startPosition;
 	}
 
+	/**
+	 * Set the start position<br />
+	 * Reset the position of the player to the new start position
+	 * @param startPosition ({@link Position}) The new start position
+	 */
 	public void setStartPosition(Position startPosition) {
 		this.startPosition = startPosition;
 		this.player.setPosition(this.startPosition);
 		this.player.setDirection(Direction.SOUTH);
 	}
 
+	/**
+	 * Get the end position
+	 * @return ({@link Position}) The end position
+	 */
 	public Position getEndPosition() {
 		return endPosition;
 	}
 
+	/**
+	 * Set the end position<br />
+	 * Reset the position of the player to the start position
+	 * @param endPosition ({@link Position}) The new end position
+	 */
 	public void setEndPosition(Position endPosition) {
 		this.endPosition = endPosition;
 		this.player.setPosition(this.startPosition);
 		this.player.setDirection(Direction.SOUTH);
 	}
 
+	/**
+	 * Get the player
+	 * @return ({@link Player}) The player
+	 */
 	public Player getPlayer() {
 		return player;
 	}
 
+	/**
+	 * Set the player
+	 * @param player ({@link Player}) The player
+	 */
 	public void setPlayer(Player player) {
 		this.player = player;
 	}
 	
+	/**
+	 * Get the auto player setting
+	 * @return (boolean) true if the player move automatically according to the path to the end position, false otherwise
+	 */
 	public boolean isAutoPlayer() {
 		return autoPlayer;
 	}
 
+	/**
+	 * Set the auto player setting
+	 * @param autoPlayer (boolean) true if the player must move automatically according to the path to the end position, false otherwise
+	 */
 	public void setAutoPlayer(boolean autoPlayer) {
 		this.autoPlayer = autoPlayer;
 	}
 
+	/**
+	 * Get the auto player enabling of this labyrinth
+	 * @return (boolean) false if the auto player is forbidden for this labyrinth, true otherwise
+	 */
 	public boolean isAutoPlayerEnabled() {
 		return enableAutoPlayer;
 	}
 
+	/**
+	 * Set the auto player enabling of this labyrinth
+	 * @param enableJoueurAuto (boolean) false if the auto player must be forbidden for this labyrinth, true otherwise
+	 */
 	public void setAutoPlayerEnabled(boolean enableJoueurAuto) {
 		this.enableAutoPlayer = enableJoueurAuto;
 	}
 
 	/**
 	 * Return the position of a neighbour cell given current cell position and two directions
-	 * @param cellPosition (Position) The position of the cell from where to search
-	 * @param directionX (Direction) The X direction
-	 * @param directionY (Direction) The Y direction
-	 * @return (Position)
+	 * @param cellPosition ({@link Position}) The position of the cell from where to search
+	 * @param directionX ({@link Direction}) The X direction
+	 * @param directionY ({@link Direction}) The Y direction
+	 * @return ({@link Position})
 	 */
 	public Position getNeighbour(Position cellPosition, Direction directionX, Direction directionY) {
 		int x = cellPosition.getX();
@@ -197,6 +244,13 @@ public class Labyrinth {
 		return new Position(x, y);
 	}
 	
+	/**
+	 * Inform if the player can move the other cell passed in parameter according to the direction
+	 * @param currentCell ({@link Cell}) The current cell
+	 * @param neighbourCell ({@link Cell}) The other cell
+	 * @param direction ({@link Direction}) The direction
+	 * @return (boolean) true if the player can move, false otherwise
+	 */
 	public boolean canMoveTo(Cell currentCell, Cell neighbourCell, Direction direction) {
 		boolean canMove = true;
 		

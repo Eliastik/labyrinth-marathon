@@ -10,11 +10,11 @@ import model.util.Direction;
 import model.util.Position;
 
 /**
- * The Side Winder algorithm<br />
- * Reference: http://weblog.jamisbuck.org/2011/2/3/maze-generation-sidewinder-algorithm.html
+ * The Side Winder algorithm
  * @author Eliastik
  * @version 1.0
  * @since 05/12/2019
+ * @see <a href="http://weblog.jamisbuck.org/2011/2/3/maze-generation-sidewinder-algorithm.html">http://weblog.jamisbuck.org/2011/2/3/maze-generation-sidewinder-algorithm.html</a>
  */
 public class SideWinder implements GenerationAlgorithm {
 	@Override

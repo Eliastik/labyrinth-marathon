@@ -42,6 +42,11 @@ jar {
 	}
 }
 
+javadoc {
+	source = sourceSets.main.allJava
+	classpath = configurations.compile
+}
+
 eclipse {
 	classpath {
 		defaultOutputDir = file('build-eclipse')

@@ -12,11 +12,11 @@ import model.util.Direction;
 import model.util.Position;
 
 /**
- * The Binary Tree algorithm<br />
- * Reference: http://weblog.jamisbuck.org/2011/2/1/maze-generation-binary-tree-algorithm.html
+ * The Binary Tree algorithm
  * @author Eliastik
  * @version 1.0
  * @since 30/11/2019
+ * @see <a href="http://weblog.jamisbuck.org/2011/2/1/maze-generation-binary-tree-algorithm.html">http://weblog.jamisbuck.org/2011/2/1/maze-generation-binary-tree-algorithm.html</a>
  */
 public class BinaryTree implements GenerationAlgorithm {
 	@Override

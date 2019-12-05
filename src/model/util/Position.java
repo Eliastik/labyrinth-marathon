@@ -59,8 +59,8 @@ public class Position {
 	 * Return a random position given width and height of a labyrinth
 	 * @param width (int)
 	 * @param height (int)
-	 * @param random (Random)
-	 * @return A random Position
+	 * @param random ({@link Random})
+	 * @return A random {@link Position}
 	 */
 	public static Position random(int width, int height, Random random) {
 		return new Position(random.nextInt(width), random.nextInt(height));

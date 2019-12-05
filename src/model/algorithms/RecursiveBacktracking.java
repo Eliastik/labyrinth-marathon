@@ -15,11 +15,11 @@ import model.util.Direction;
 import model.util.Position;
 
 /**
- * The Recursive Backtracking algorithm<br />
- * Reference: http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking
+ * The Recursive Backtracking algorithm
  * @author Eliastik
  * @version 1.0
  * @since 05/12/2019
+ * @see <a href="http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking">http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking</a>
  */
 public class RecursiveBacktracking implements GenerationAlgorithm {
 	@Override

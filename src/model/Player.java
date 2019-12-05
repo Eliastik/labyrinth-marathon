@@ -48,7 +48,7 @@ public class Player {
 	
 	/**
 	 * Move the player to the given direction if possible
-	 * @param direction (Direction) the direction where to move the player
+	 * @param direction ({@link Direction}) the direction where to move the player
 	 * @return (boolean) true if the player could have moved, false otherwise
 	 */
 	public boolean moveTo(Direction direction) {
@@ -75,8 +75,9 @@ public class Player {
 	
 	/**
 	 * Detect if the player is blocked (if no path leads him to the exit)<br />
-	 * Uses a flood fill algorithm (see https://en.wikipedia.org/wiki/Flood_fill)
+	 * Uses a flood fill algorithm
 	 * @return (boolean) true if the player is blocked, false otherwise
+	 * @see <a href="https://en.wikipedia.org/wiki/Flood_fill">https://en.wikipedia.org/wiki/Flood_fill</a>
 	 */
 	public boolean isBlocked() {
 		if(this.blocked) return true;
@@ -118,8 +119,9 @@ public class Player {
 	}
 	
 	/**
-	 * Calculate a path to the exit and return the next position where to move.
-	 * @return (Position) the next position where to move
+	 * Calculate a path to the exit and return this path.<br />
+	 * Return null if no path was found.
+	 * @return ({@link Queue}<{@link Position}>) The path
 	 */
 	public Queue<Position> getPathAI() {
 		if(this.getPosition().equals(this.labyrinth.getEndPosition())) return null;
@@ -164,34 +166,66 @@ public class Player {
 		return null;
 	}
 
+	/**
+	 * Get the current position of the player
+	 * @return ({@link Position}) The current position of the player
+	 */
 	public Position getPosition() {
 		return position;
 	}
 
+	/**
+	 * Set the position of the player
+	 * @param position ({@link Position}) The new position of the player
+	 */
 	public void setPosition(Position position) {
 		this.position = position;
 	}
 
+	/**
+	 * Get the current direction of the player
+	 * @return ({@link Direction}) The current direction of the player
+	 */
 	public Direction getDirection() {
 		return direction;
 	}
 
+	/**
+	 * Set the direction of the player
+	 * @param direction ({@link Direction}) The new direction of the player
+	 */
 	public void setDirection(Direction direction) {
 		this.direction = direction;
 	}
 
+	/**
+	 * Get the labyrinth where the player is
+	 * @return ({@link Labyrinth}) The labyrinth
+	 */
 	public Labyrinth getLabyrinth() {
 		return labyrinth;
 	}
 
+	/**
+	 * Set the labyrinth where the player is
+	 * @param labyrinth ({@link Labyrinth}) The new labyrinth
+	 */
 	public void setLabyrinth(Labyrinth labyrinth) {
 		this.labyrinth = labyrinth;
 	}
 
+	/**
+	 * Get the sprite of the player
+	 * @return ({@link Image}) The sprite of the player
+	 */
 	public Image getSprite() {
 		return sprite;
 	}
 
+	/**
+	 * Set the sprite of the player
+	 * @param sprite ({@link Image}) The new sprite of the player
+	 */
 	public void setSprite(Image sprite) {
 		this.sprite = sprite;
 	}
