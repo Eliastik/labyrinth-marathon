@@ -4,6 +4,7 @@ package model;
 import java.util.Random;
 
 import model.algorithms.AldousBroder;
+import model.algorithms.GrowingTree;
 import model.util.Direction;
 import model.util.Position;
 
@@ -17,7 +18,7 @@ public class Labyrinth {
 	private Cell[][] cells;
 	private Position startPosition;
 	private Position endPosition;
-	private GenerationAlgorithmStrategy algorithm = new AldousBroder();
+	private GenerationAlgorithmStrategy algorithm = new GrowingTree();
 	private Player player;
 	private boolean autoPlayer;
 	private boolean enableAutoPlayer;

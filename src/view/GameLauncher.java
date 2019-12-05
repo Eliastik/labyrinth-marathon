@@ -28,6 +28,7 @@ import model.Labyrinth;
 import model.algorithms.AldousBroder;
 import model.algorithms.BinaryTree;
 import model.algorithms.GrowingTree;
+import model.algorithms.HuntAndKill;
 import model.algorithms.RecursiveBacktracking;
 import model.algorithms.SideWinder;
 
@@ -108,7 +109,7 @@ public class GameLauncher extends Application {
 		ComboBox<String> algorithms = new ComboBox<>();
 		HBox.setMargin(algorithms, new Insets(5, 5, 5, 5));
 		ObservableList<String> algorithmsList = FXCollections.observableArrayList();
-		algorithmsList.addAll("Aldous Broder", "Binary Tree", "Side Winder", "Recursive Backtracking", "Growing Tree");
+		algorithmsList.addAll("Growing Tree", "Binary Tree", "Side Winder", "Recursive Backtracking", "Aldous Broder", "Hunt and Kill");
 		algorithms.setItems(algorithmsList);
 		algorithms.getSelectionModel().select(0);
 		hboxAlgorithm.getChildren().addAll(algorithms);
@@ -182,8 +183,11 @@ public class GameLauncher extends Application {
 				case "Growing Tree":
 					this.algorithm = new GrowingTree();
 					break;
+				case "Hunt and Kill":
+					this.algorithm = new HuntAndKill();
+					break;
 				default:
-					this.algorithm = new AldousBroder();
+					this.algorithm = new GrowingTree();
 					break;
 			}
 			
