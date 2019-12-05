@@ -51,7 +51,7 @@ import model.util.Position;
  * @version 1.0
  * @since 30/11/2019
  */
-public class GameGraphicalMode extends Application implements GameView {
+public class GameGraphicalView extends Application implements GameView {
 	protected Stage stage;
 	private Canvas canvas;
 	private GameLauncher launcher;
@@ -77,7 +77,7 @@ public class GameGraphicalMode extends Application implements GameView {
 	 * @param displatInfoStart (boolean)
 	 * @param level (int)
 	 */
-	public GameGraphicalMode(GameLauncher launcher, boolean displayInfoStart, int level) {
+	public GameGraphicalView(GameLauncher launcher, boolean displayInfoStart, int level) {
 		this.launcher = launcher;
 		this.level = level;
 		this.displayInfoStart = displayInfoStart;
@@ -86,7 +86,7 @@ public class GameGraphicalMode extends Application implements GameView {
 	/**
 	 * Construct a new graphical game
 	 */
-	public GameGraphicalMode() {
+	public GameGraphicalView() {
 		Labyrinth labyrinth = new Labyrinth();
 		labyrinth.generate(System.currentTimeMillis());
 		this.controller = new GameController(labyrinth, this);
@@ -450,21 +450,23 @@ public class GameGraphicalMode extends Application implements GameView {
 			}
 		
 			this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.25), ev -> {
-				Position next = this.pathAuto.poll();
-				Position current = controller.getPlayerPosition();
-				
-				if(next != null) {
-					if(next.getX() == current.getX() - 1) {
-						playerMoved = controller.movePlayer(Direction.WEST);
-					} else if(next.getX() == current.getX() + 1) {
-						playerMoved = controller.movePlayer(Direction.EAST);
-					} else if(next.getY() == current.getY() - 1) {
-						playerMoved = controller.movePlayer(Direction.NORTH);
-					} else if(next.getY() == current.getY() + 1) {
-						playerMoved = controller.movePlayer(Direction.SOUTH);
+				if(!controller.isGoalAchieved()) {
+					Position next = this.pathAuto.poll();
+					Position current = controller.getPlayerPosition();
+					
+					if(next != null) {
+						if(next.getX() == current.getX() - 1) {
+							playerMoved = controller.movePlayer(Direction.WEST);
+						} else if(next.getX() == current.getX() + 1) {
+							playerMoved = controller.movePlayer(Direction.EAST);
+						} else if(next.getY() == current.getY() - 1) {
+							playerMoved = controller.movePlayer(Direction.NORTH);
+						} else if(next.getY() == current.getY() + 1) {
+							playerMoved = controller.movePlayer(Direction.SOUTH);
+						}
+					} else {
+						this.timelineAuto.stop();
 					}
-				} else {
-					this.timelineAuto.stop();
 				}
 			}));
 			
@@ -541,7 +543,7 @@ public class GameGraphicalMode extends Application implements GameView {
 
 	public static void main(String[] args) {
 		try {
-			new GameGraphicalMode().run();
+			new GameGraphicalView().run();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -17,7 +17,7 @@ import model.util.Direction;
  * @version 1.0
  * @since 30/11/2019
  */
-public class GameTextMode implements GameView {
+public class GameTextView implements GameView {
 	private GameLauncher launcher;
 	private GameController controller;
 	private int level = 0;
@@ -30,7 +30,7 @@ public class GameTextMode implements GameView {
 	 * @param displatInfoStart (boolean)
 	 * @param level (int)
 	 */
-	public GameTextMode(GameLauncher launcher, int level) {
+	public GameTextView(GameLauncher launcher, int level) {
 		this.launcher = launcher;
 		this.level = level;
 	}
@@ -38,7 +38,7 @@ public class GameTextMode implements GameView {
 	/**
 	 * Construct a new text game
 	 */
-	public GameTextMode() {
+	public GameTextView() {
 		Labyrinth labyrinth = new Labyrinth();
 		labyrinth.generate(System.currentTimeMillis());
 		this.controller = new GameController(labyrinth, this);
@@ -130,6 +130,6 @@ public class GameTextMode implements GameView {
 	}
 	
 	public static void main(String[] args) {
-		new GameTextMode().run();
+		new GameTextView().run();
 	}
 }

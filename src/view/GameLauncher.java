@@ -194,7 +194,7 @@ public class GameLauncher extends Application {
 			}
 			
 			labyrinth.generate(this.seed);
-			game = new GameGraphicalMode(this, displayInfoStart, 0);
+			game = new GameGraphicalView(this, displayInfoStart, 0);
 		} else {
 			labyrinth = new Labyrinth(this.width, this.height, this.algorithm, false);
 			
@@ -205,7 +205,7 @@ public class GameLauncher extends Application {
 			}
 			
 			labyrinth.generate(this.seed);
-			game = new GameGraphicalMode(this, displayInfoStart, this.level);
+			game = new GameGraphicalView(this, displayInfoStart, this.level);
 		}
 		
 		game.setController(new GameController(labyrinth, game));
