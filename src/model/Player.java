@@ -10,8 +10,8 @@ import java.util.Random;
 import java.util.Stack;
 
 import javafx.scene.image.Image;
-import util.Direction;
-import util.Position;
+import model.util.Direction;
+import model.util.Position;
 
 /**
  * The class representing the player

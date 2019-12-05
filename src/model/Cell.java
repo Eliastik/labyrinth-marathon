@@ -1,6 +1,6 @@
 package model;
 
-import util.Direction;
+import model.util.Direction;
 
 /**
  * A cell

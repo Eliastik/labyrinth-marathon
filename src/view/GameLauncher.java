@@ -3,8 +3,6 @@ package view;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-import algorithms.AldousBroder;
-import algorithms.BinaryTree;
 import controller.GameController;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
@@ -25,6 +23,8 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.GenerationAlgorithm;
 import model.Labyrinth;
+import model.algorithms.AldousBroder;
+import model.algorithms.BinaryTree;
 
 /**
  * The launcher with settings

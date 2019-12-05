@@ -3,9 +3,9 @@ package model;
 
 import java.util.Random;
 
-import algorithms.AldousBroder;
-import util.Direction;
-import util.Position;
+import model.algorithms.AldousBroder;
+import model.util.Direction;
+import model.util.Position;
 
 /**
  * A labyrinth

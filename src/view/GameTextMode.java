@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 import controller.GameController;
 import model.Labyrinth;
-import util.Direction;
+import model.util.Direction;
 
 /**
  * The game (text mode)<br />

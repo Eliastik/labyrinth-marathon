@@ -2,7 +2,7 @@ package model;
 
 import java.util.Random;
 
-import util.Position;
+import model.util.Position;
 
 /**
  * The interface that must be implemented by a labyrinth generation algorithm

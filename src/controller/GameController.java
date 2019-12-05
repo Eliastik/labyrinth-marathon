@@ -6,8 +6,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import model.Cell;
 import model.Labyrinth;
-import util.Direction;
-import util.Position;
+import model.util.Direction;
+import model.util.Position;
 import view.GameView;
 
 public class GameController {

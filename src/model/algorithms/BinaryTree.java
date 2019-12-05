@@ -1,4 +1,4 @@
-package algorithms;
+package model.algorithms;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,8 +8,8 @@ import model.Cell;
 import model.CellValue;
 import model.GenerationAlgorithm;
 import model.Labyrinth;
-import util.Direction;
-import util.Position;
+import model.util.Direction;
+import model.util.Position;
 
 /**
  * The Binary Tree algorithm<br />

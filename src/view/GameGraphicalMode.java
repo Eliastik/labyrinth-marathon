@@ -42,8 +42,8 @@ import javafx.util.Duration;
 import model.Cell;
 import model.CellValue;
 import model.Labyrinth;
-import util.Direction;
-import util.Position;
+import model.util.Direction;
+import model.util.Position;
 
 /**
  * Graphical game
