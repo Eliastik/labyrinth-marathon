@@ -6,7 +6,7 @@ import java.util.Random;
 
 import model.Cell;
 import model.CellValue;
-import model.GenerationAlgorithm;
+import model.GenerationAlgorithmStrategy;
 import model.Labyrinth;
 import model.util.Direction;
 import model.util.Position;
@@ -18,19 +18,11 @@ import model.util.Position;
  * @since 30/11/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/2/1/maze-generation-binary-tree-algorithm.html">http://weblog.jamisbuck.org/2011/2/1/maze-generation-binary-tree-algorithm.html</a>
  */
-public class BinaryTree implements GenerationAlgorithm {
+public class BinaryTree implements GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		for(int i = 0; i < labyrinth.getHeight(); i++) {
 			for(int j = 0; j < labyrinth.getWidth(); j++) {
-				if(stepByStep) {
-					try {
-						Thread.sleep(250);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				
 				Direction dir;
 				List<Direction> directions = new ArrayList<>();
 				if(i > 0) directions.add(Direction.NORTH);
@@ -41,9 +33,18 @@ public class BinaryTree implements GenerationAlgorithm {
 					
 					Position pos = new Position(j, i);
 					Cell c = labyrinth.getCell(pos);
+					c.setValue(CellValue.CURRENT);
 					
 					Position posOther = labyrinth.getNeighbour(pos, dir, dir);
 					Cell cOther = labyrinth.getCell(posOther);
+					
+					if(stepByStep) {
+						try {
+							Thread.sleep(250);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
 
 					c.setEdgeToDirection(dir, CellValue.EMPTY);
 					cOther.setOppositeEdge(dir, CellValue.EMPTY);

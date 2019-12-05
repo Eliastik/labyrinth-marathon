@@ -17,12 +17,12 @@ public class Labyrinth {
 	private Cell[][] cells;
 	private Position startPosition;
 	private Position endPosition;
-	private GenerationAlgorithm algorithm = new AldousBroder();
+	private GenerationAlgorithmStrategy algorithm = new AldousBroder();
 	private Player player;
 	private boolean autoPlayer;
 	private boolean enableAutoPlayer;
 	
-	public Labyrinth(int width, int height, Position startPosition, Position endPosition, GenerationAlgorithm algorithm, boolean autoPlayer, boolean enableAutoPlayer) {
+	public Labyrinth(int width, int height, Position startPosition, Position endPosition, GenerationAlgorithmStrategy algorithm, boolean autoPlayer, boolean enableAutoPlayer) {
 		if((width <= 1 && height <= 1) || width <= 0 || height <= 0) {
 			throw new IllegalArgumentException("Impossible to build a labyrinth with only one cell or less");
 		}
@@ -43,11 +43,11 @@ public class Labyrinth {
 		this.algorithm = algorithm;
 	}
 	
-	public Labyrinth(int width, int height, Position startPosition, Position endPosition, GenerationAlgorithm algorithm, boolean enableAutoPlayer) {
+	public Labyrinth(int width, int height, Position startPosition, Position endPosition, GenerationAlgorithmStrategy algorithm, boolean enableAutoPlayer) {
 		this(width, height, startPosition, endPosition, algorithm, false, enableAutoPlayer);
 	}
 	
-	public Labyrinth(int width, int height, GenerationAlgorithm algorithm, boolean enableAutoPlayer) {
+	public Labyrinth(int width, int height, GenerationAlgorithmStrategy algorithm, boolean enableAutoPlayer) {
 		this(width, height, new Position(0, 0), new Position(width - 1, height - 1), algorithm, enableAutoPlayer);
 	}
 	

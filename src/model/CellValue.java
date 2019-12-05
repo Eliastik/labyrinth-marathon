@@ -19,5 +19,9 @@ public enum CellValue {
 	/**
 	 * Crossed value (if the player crossed the cell)
 	 */
-	CROSSED;
+	CROSSED,
+	/**
+	 * Current value (used in step-by-step algorithm)
+	 */
+	CURRENT;
 }

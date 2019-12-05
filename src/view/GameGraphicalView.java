@@ -108,9 +108,10 @@ public class GameGraphicalView extends Application implements GameView {
 		
 		// Assets
 		Image brick = new Image(getClass().getResourceAsStream("/images/brick.png"));
-		Image visite = new Image(getClass().getResourceAsStream("/images/crossed.png"));
-		Image debut = new Image(getClass().getResourceAsStream("/images/start.png"));
-		Image fond = new Image(getClass().getResourceAsStream("/images/back.png"));
+		Image crossed = new Image(getClass().getResourceAsStream("/images/crossed.png"));
+		Image start = new Image(getClass().getResourceAsStream("/images/start.png"));
+		Image background = new Image(getClass().getResourceAsStream("/images/back.png"));
+		Image current = new Image(getClass().getResourceAsStream("/images/current.png"));
 		ResourceBundle locales = ResourceBundle.getBundle("locales.graphical", Locale.getDefault()); // Locale
 		
 		BorderPane root = new BorderPane();
@@ -238,7 +239,7 @@ public class GameGraphicalView extends Application implements GameView {
 				@Override
 				public void handle(long time) {
 					if(!exited) {
-						draw(brick, visite, debut, fond, locales);
+						draw(brick, crossed, start, background, current, locales);
 					} else {
 						this.stop();
 					}
@@ -316,7 +317,7 @@ public class GameGraphicalView extends Application implements GameView {
 		return (int) (((this.canvas.getHeight() - getSizeCase()[1] * ((controller.getLabyrinthHeight() * 2) + 1)) / 2));
 	}
 	
-	public void draw(Image brick, Image visite, Image debut, Image fond, ResourceBundle locales) {
+	public void draw(Image brick, Image crossed, Image start, Image background, Image current, ResourceBundle locales) {
 		if(this.autoCamera) {
 			this.autoCamera(controller.getPlayerPosition().getX() * 2, controller.getPlayerPosition().getY() * 2);
 		}
@@ -333,10 +334,10 @@ public class GameGraphicalView extends Application implements GameView {
 		GraphicsContext gc = this.canvas.getGraphicsContext2D();
 		gc.clearRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 		
-		for(int i = 0; i < heightGrid; i += fond.getHeight()) {
-			for(int j = 0; j < widthGrid; j += fond.getWidth()) {
-				double widthImage = fond.getWidth();
-				double heightImage = fond.getHeight();
+		for(int i = 0; i < heightGrid; i += background.getHeight()) {
+			for(int j = 0; j < widthGrid; j += background.getWidth()) {
+				double widthImage = background.getWidth();
+				double heightImage = background.getHeight();
 				
 				if(j + widthImage >= widthGrid) {
 					widthImage = widthGrid - j;
@@ -346,7 +347,7 @@ public class GameGraphicalView extends Application implements GameView {
 					heightImage = heightGrid - i;
 				}
 				
-				gc.drawImage(fond, 0, 0, widthImage, heightImage, j + startX, i + startY, widthImage, heightImage);
+				gc.drawImage(background, 0, 0, widthImage, heightImage, j + startX, i + startY, widthImage, heightImage);
 			}
 		}
 		
@@ -385,14 +386,18 @@ public class GameGraphicalView extends Application implements GameView {
 							
 							gc.drawImage(controller.getSprite(), 1, 10 * (numImageY) + 55 * (numImageY - 1), 55, 55, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 						} else if(pos.equals(controller.getEndPosition())) {
-							gc.drawImage(debut, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
+							gc.drawImage(start, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 						} else {
 							if(c.getValue() == CellValue.WALL) {
 								gc.drawImage(brick, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 							}
 							
 							if(c.getValue() == CellValue.CROSSED) {
-								gc.drawImage(visite, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
+								gc.drawImage(crossed, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
+							}
+							
+							if(c.getValue() == CellValue.CURRENT) {
+								gc.drawImage(current, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 							}
 						}
 					}

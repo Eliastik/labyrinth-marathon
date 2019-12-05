@@ -9,7 +9,7 @@ import java.util.Stack;
 
 import model.Cell;
 import model.CellValue;
-import model.GenerationAlgorithm;
+import model.GenerationAlgorithmStrategy;
 import model.Labyrinth;
 import model.util.Direction;
 import model.util.Position;
@@ -21,7 +21,7 @@ import model.util.Position;
  * @since 05/12/2019
  * @see <a href="http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking">http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking</a>
  */
-public class RecursiveBacktracking implements GenerationAlgorithm {
+public class RecursiveBacktracking implements GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		Stack<Position> s = new Stack<>();
@@ -34,20 +34,22 @@ public class RecursiveBacktracking implements GenerationAlgorithm {
 			Position current = s.pop();
 			
 			for(Direction d : directions) {
-				if(stepByStep) {
-					try {
-						Thread.sleep(150);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-				
 				Cell cCurrent = labyrinth.getCell(current);
 				
 				Position pNew = labyrinth.getNeighbour(current, d, d);
 				Cell cNew = labyrinth.getCell(pNew);
 				
 				if(pNew.getY() >= 0 && pNew.getY() < labyrinth.getHeight() && pNew.getX() >= 0 && pNew.getX() < labyrinth.getWidth() && cNew.getValue() == CellValue.WALL) {
+					if(stepByStep) {
+						cCurrent.setValue(CellValue.CURRENT);
+						
+						try {
+							Thread.sleep(150);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+					}
+					
 					cCurrent.setValue(CellValue.EMPTY);
 					cCurrent.setEdgeToDirection(d, CellValue.EMPTY);
 					cNew.setOppositeEdge(d, CellValue.EMPTY);

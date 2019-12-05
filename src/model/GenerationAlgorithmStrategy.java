@@ -10,7 +10,7 @@ import model.util.Position;
  * @version 1.0
  * @since 30/11/2019
  */
-public interface GenerationAlgorithm {
+public interface GenerationAlgorithmStrategy {
 	/**
 	 * Generate a labyrinth
 	 * @param labyrinth ({@link Labyrinth})

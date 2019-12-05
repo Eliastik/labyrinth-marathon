@@ -23,7 +23,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import model.GenerationAlgorithm;
+import model.GenerationAlgorithmStrategy;
 import model.Labyrinth;
 import model.algorithms.AldousBroder;
 import model.algorithms.BinaryTree;
@@ -40,7 +40,7 @@ public class GameLauncher extends Application {
 	private int gameMode = 1; // 1 = marathon mode / 2 = labyrinth mode
 	private int width = 15;
 	private int height = 15;
-	private GenerationAlgorithm algorithm = new AldousBroder();
+	private GenerationAlgorithmStrategy algorithm = new AldousBroder();
 	private long seed = System.currentTimeMillis();
 	private Image spritePlayer;
 	private int level = 1;
