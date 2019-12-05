@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Stack;
 
 import model.Cell;
 import model.CellValue;
@@ -23,30 +24,36 @@ import model.util.Position;
 public class RecursiveBacktracking implements GenerationAlgorithm {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
-		List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST));
-		Collections.shuffle(directions, random);
+		Stack<Position> s = new Stack<>();
+		s.push(start);
 		
-		for(Direction d : directions) {
-			if(stepByStep) {
-				try {
-					Thread.sleep(150);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
+		while(!s.isEmpty()) {
+			List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST));
+			Collections.shuffle(directions, random);
+			
+			Position current = s.pop();
+			
+			for(Direction d : directions) {
+				if(stepByStep) {
+					try {
+						Thread.sleep(150);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
-			}
-			
-			Position current = start;
-			Cell cCurrent = labyrinth.getCell(current);
-			
-			Position pNew = labyrinth.getNeighbour(current, d, d);
-			Cell cNew = labyrinth.getCell(pNew);
-			
-			if(pNew.getY() >= 0 && pNew.getY() < labyrinth.getHeight() && pNew.getX() >= 0 && pNew.getX() < labyrinth.getWidth() && cNew.getValue() == CellValue.WALL) {
-				cCurrent.setValue(CellValue.EMPTY);
-				cCurrent.setEdgeToDirection(d, CellValue.EMPTY);
-				cNew.setOppositeEdge(d, CellValue.EMPTY);
-				cNew.setValue(CellValue.EMPTY);
-				this.generate(labyrinth, random, pNew, end, stepByStep);
+				
+				Cell cCurrent = labyrinth.getCell(current);
+				
+				Position pNew = labyrinth.getNeighbour(current, d, d);
+				Cell cNew = labyrinth.getCell(pNew);
+				
+				if(pNew.getY() >= 0 && pNew.getY() < labyrinth.getHeight() && pNew.getX() >= 0 && pNew.getX() < labyrinth.getWidth() && cNew.getValue() == CellValue.WALL) {
+					cCurrent.setValue(CellValue.EMPTY);
+					cCurrent.setEdgeToDirection(d, CellValue.EMPTY);
+					cNew.setOppositeEdge(d, CellValue.EMPTY);
+					cNew.setValue(CellValue.EMPTY);
+					s.push(pNew);
+				}
 			}
 		}
 	}
