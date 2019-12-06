@@ -20,7 +20,7 @@ import model.util.Position;
  * @since 05/12/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm.html">http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm.html</a>
  */
-public class GrowingTree implements GenerationAlgorithmStrategy {
+public class GrowingTree extends GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		List<Position> cells = new ArrayList<>();
@@ -28,6 +28,8 @@ public class GrowingTree implements GenerationAlgorithmStrategy {
 		int index = 0;
 		
 		while(!cells.isEmpty()) {
+			if(this.isStopped()) return;
+			
 			index = random.nextInt(cells.size());
 			Position p = cells.get(index);
 			Cell c = labyrinth.getCell(p);
@@ -49,6 +51,8 @@ public class GrowingTree implements GenerationAlgorithmStrategy {
 			Collections.shuffle(directions, random);
 			
 			for(Direction dir : directions) {
+				if(this.isStopped()) return;
+				
 				Position pNext = labyrinth.getNeighbour(p, dir, dir);
 				Cell cNext = labyrinth.getCell(pNext);
 				

@@ -20,7 +20,6 @@ public class Labyrinth {
 	private Position endPosition;
 	private GenerationAlgorithmStrategy algorithm = new GrowingTree();
 	private Player player;
-	private boolean autoPlayer;
 	private boolean enableAutoPlayer;
 	private boolean generationFinished = false;
 	
@@ -40,7 +39,7 @@ public class Labyrinth {
 		}
 		
 		this.player = new Player(this.startPosition, Direction.SOUTH, this);
-		this.autoPlayer = autoPlayer;
+		this.setAutoPlayer(autoPlayer);
 		this.enableAutoPlayer = enableAutoPlayer;
 		this.algorithm = algorithm;
 	}
@@ -175,19 +174,18 @@ public class Labyrinth {
 	}
 	
 	/**
-	 * Get the auto player setting
-	 * @return (boolean) true if the player move automatically according to the path to the end position, false otherwise
+	 * {@link model.Player#isAutoPlayer()}
 	 */
 	public boolean isAutoPlayer() {
-		return autoPlayer;
+		return this.player != null && this.player.isAutoPlayer();
 	}
 
 	/**
-	 * Set the auto player setting
+	 * {@link model.Player#setAutoPlayer(boolean autoPlayer)}
 	 * @param autoPlayer (boolean) true if the player must move automatically according to the path to the end position, false otherwise
 	 */
 	public void setAutoPlayer(boolean autoPlayer) {
-		this.autoPlayer = autoPlayer;
+		if(this.player != null) this.player.setAutoPlayer(autoPlayer);
 	}
 
 	/**

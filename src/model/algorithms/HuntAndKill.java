@@ -20,12 +20,14 @@ import model.util.Position;
  * @since 05/12/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/1/24/maze-generation-hunt-and-kill-algorithm.html">http://weblog.jamisbuck.org/2011/1/24/maze-generation-hunt-and-kill-algorithm.html</a>
  */
-public class HuntAndKill implements GenerationAlgorithmStrategy {
+public class HuntAndKill extends GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		Position current = start;
 		
 		while(true) {
+			if(this.isStopped()) return;
+			
 			current = this.walk(labyrinth, random, current, end, stepByStep);
 			if(current == null) current = this.hunt(labyrinth, random, stepByStep);
 			if(current == null) break;
@@ -55,6 +57,8 @@ public class HuntAndKill implements GenerationAlgorithmStrategy {
 		Collections.shuffle(directions, random);
 		
 		for(Direction dir : directions) {
+			if(this.isStopped()) return null;
+			
 			Position pNext = labyrinth.getNeighbour(p, dir, dir);
 			Cell cNext = labyrinth.getCell(pNext);
 			
@@ -74,6 +78,8 @@ public class HuntAndKill implements GenerationAlgorithmStrategy {
 	private Position hunt(Labyrinth labyrinth, Random random, boolean stepByStep) {
 		for(int i = 0; i < labyrinth.getHeight(); i++) {
 			for(int j = 0; j < labyrinth.getWidth(); j++) {
+				if(this.isStopped()) return null;
+				
 				Position p = new Position(j, i);
 				Cell c = labyrinth.getCell(p);
 				

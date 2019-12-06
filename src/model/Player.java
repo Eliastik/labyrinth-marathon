@@ -24,8 +24,10 @@ public class Player {
 	private Direction direction;
 	private Labyrinth labyrinth;
 	private Image sprite;
+	private boolean isAutoPlayer = false;
 	private boolean blocked = false;
 	private boolean searchingPath = false;
+	private boolean checkBlocked = false;
 	
 	public Player(Position position, Direction direction, Labyrinth labyrinth) {
 		this.labyrinth = labyrinth;
@@ -92,15 +94,21 @@ public class Player {
 	 */
 	public void checkBlocked() {
 		if(this.labyrinth.isGenerationFinished() && !this.blocked) {
+			this.checkBlocked = true;
+			
 			Stack<Position> checkList = new Stack<>();
 			checkList.add(this.labyrinth.getEndPosition());
 			List<Position> complete = new ArrayList<>();
 			
 			while(!checkList.isEmpty()) {
+		    	  if(this.blocked || !this.checkBlocked) return;
+		    	  
 			      Position currentPosition = checkList.pop();
 			      Direction[] directions = new Direction[]{Direction.NORTH, Direction.SOUTH, Direction.WEST, Direction.EAST};
 		
 			      for(int i = 0; i < directions.length; i++) {
+			    	  if(this.blocked || !this.checkBlocked) return;
+			    	  
 			    	  Position pos = this.labyrinth.getNeighbour(currentPosition, directions[i], directions[i]);
 			    	  Cell c = this.labyrinth.getCell(pos);
 			    	  
@@ -124,11 +132,20 @@ public class Player {
 	}
 	
 	/**
+	 * Stop the previous launched {@link #checkBlocked()} method
+	 */
+	public void stopCheckBlocked() {
+		this.checkBlocked = false;
+	}
+	
+	/**
 	 * Calculate a path to the exit and return this path.<br />
 	 * Return null if no path was found.
 	 * @return ({@link Queue}<{@link Position}>) The path
 	 */
 	public Queue<Position> getPathAI() {
+		if(!this.labyrinth.isAutoPlayer()) return null;
+		if(this.searchingPath) return null;
 		if(this.getPosition().equals(this.labyrinth.getEndPosition())) return null;
 		
 		this.searchingPath = true;
@@ -140,6 +157,8 @@ public class Player {
 		queue.add(pathToEnd);
 		
 		while(!queue.isEmpty()) {
+			if(!this.labyrinth.isAutoPlayer()) return null;
+			
 			pathToEnd = queue.poll();
 			Position current = pathToEnd.get(pathToEnd.size() - 1);
 			
@@ -239,7 +258,27 @@ public class Player {
 		this.sprite = sprite;
 	}
 
+	/**
+	 * Inform is the computer is still searching a path (when auto player is enabled)
+	 * @return (boolean) true if the computer search a path, false otherwise
+	 */
 	public boolean isSearchingPath() {
 		return searchingPath;
+	}
+
+	/**
+	 * Get the auto player setting
+	 * @return (boolean) true if the player move automatically according to the path to the end position, false otherwise
+	 */
+	public boolean isAutoPlayer() {
+		return isAutoPlayer;
+	}
+
+	/**
+	 * Set the auto player setting
+	 * @param autoPlayer (boolean) true if the player must move automatically according to the path to the end position, false otherwise
+	 */
+	public void setAutoPlayer(boolean isAutoPlayer) {
+		this.isAutoPlayer = isAutoPlayer;
 	}
 }

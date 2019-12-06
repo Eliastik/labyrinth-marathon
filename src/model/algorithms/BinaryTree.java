@@ -18,11 +18,13 @@ import model.util.Position;
  * @since 30/11/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/2/1/maze-generation-binary-tree-algorithm.html">http://weblog.jamisbuck.org/2011/2/1/maze-generation-binary-tree-algorithm.html</a>
  */
-public class BinaryTree implements GenerationAlgorithmStrategy {
+public class BinaryTree extends GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		for(int i = 0; i < labyrinth.getHeight(); i++) {
 			for(int j = 0; j < labyrinth.getWidth(); j++) {
+				if(this.isStopped()) return;
+				
 				Direction dir;
 				List<Direction> directions = new ArrayList<>();
 				if(i > 0) directions.add(Direction.NORTH);

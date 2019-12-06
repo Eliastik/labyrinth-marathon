@@ -136,21 +136,9 @@ public class GameController {
 			}
 		}
 		
-		if(this.threadCheckBlocked != null) {
-			try {
-				threadCheckBlocked.join(50);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-		
-		this.threadCheckBlocked = new Thread(() -> {
-			this.labyrinth.getPlayer().checkBlocked();
-		});
-		
-		this.threadCheckBlocked.start();
-		
 		view.update(moved);
+		this.createThreadCheckBlocked();
+		
 		return moved;
 	}
 	
@@ -162,9 +150,31 @@ public class GameController {
 	public boolean movePlayer(Direction direction) {
 		boolean moved = false;
 		if(!labyrinth.getPlayer().goalAchieved()) moved = labyrinth.getPlayer().moveTo(direction);
-		this.labyrinth.getPlayer().checkBlocked();
 		view.update(moved);
+		this.createThreadCheckBlocked();
 		return moved;
+	}
+	
+	private void createThreadCheckBlocked() {
+		this.stopThreadCheckBlocked();
+		
+		this.threadCheckBlocked = new Thread(() -> {
+			this.labyrinth.getPlayer().checkBlocked();
+		});
+		
+		this.threadCheckBlocked.setDaemon(true);
+		this.threadCheckBlocked.start();
+	}
+	
+	private void stopThreadCheckBlocked() {
+		if(this.threadCheckBlocked != null) {
+			try {
+				this.labyrinth.getPlayer().stopCheckBlocked();
+				threadCheckBlocked.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	/**
@@ -226,7 +236,17 @@ public class GameController {
 		labyrinth.generate(seed, stepByStep);
 	}
 	
+	/**
+	 * {@link model.Player#isSearchingPath()}
+	 */
 	public boolean searchingPath() {
 		return labyrinth.getPlayer().isSearchingPath();
+	}
+	
+	/**
+	 * Exit properly the controller (end threads, etc.)
+	 */
+	public void exit() {
+		this.stopThreadCheckBlocked();
 	}
 }

@@ -18,7 +18,7 @@ import model.util.Position;
  * @since 06/12/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/1/10/maze-generation-prim-s-algorithm.html">http://weblog.jamisbuck.org/2011/1/10/maze-generation-prim-s-algorithm.html</a>
  */
-public class Prim implements GenerationAlgorithmStrategy {
+public class Prim extends GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		List<Position> frontier = new ArrayList<>();
@@ -27,6 +27,8 @@ public class Prim implements GenerationAlgorithmStrategy {
 		this.mark(labyrinth, start, frontier);
 		
 		while(!frontier.isEmpty()) {
+			if(this.isStopped()) return;
+			
 			position = frontier.remove(random.nextInt(frontier.size()));
 			Cell c = labyrinth.getCell(position);
 			

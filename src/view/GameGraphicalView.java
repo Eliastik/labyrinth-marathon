@@ -104,6 +104,7 @@ public class GameGraphicalView extends Application implements GameView {
 
 	public void setController(GameController controller) {
 		this.controller = controller;
+		this.prevPosition = controller.getPlayerPosition();
 	}
 	
 	@Override
@@ -156,20 +157,35 @@ public class GameGraphicalView extends Application implements GameView {
 		
 		retry.setOnAction(e -> {
 			if(!controller.isGoalAchieved() || controller.isAutoPlayer()) {
-				stop();
+				try {
+					this.stop();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				
 				if(this.launcher != null) this.launcher.retry();
 			}
 		});
 		
 		quit.setOnAction(e -> {
 			if(!controller.isGoalAchieved() || controller.isAutoPlayer()) {
-				stop();
+				try {
+					this.stop();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				
 				if(this.launcher != null) this.launcher.exit();
 			}
 		});
 		
 		stage.setOnCloseRequest(e -> {
-			stop();
+			try {
+				this.stop();
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+			
 			if(this.launcher != null) this.launcher.exit();
 		});
 		
@@ -250,13 +266,20 @@ public class GameGraphicalView extends Application implements GameView {
 						prevTime = time;
 					} else {
 						this.stop();
+						
+						try {
+							threadDraw.join();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 				}
 			};
 			
 			this.timerDraw.start();
 		});
-		
+
+		this.threadDraw.setDaemon(true);
 		this.threadDraw.start();
 		
 		// Events camera
@@ -482,7 +505,7 @@ public class GameGraphicalView extends Application implements GameView {
 			gc.fillText(text.getText(), (this.canvas.getWidth() - widthText) / 2, this.canvas.getHeight() / 2);
 		}
 		
-		this.moveOffset += (((double) timeOffset / 1000000) / 750);
+		if(this.moveOffset >= 0.0 && this.moveOffset <= 1.0) this.moveOffset += (((double) timeOffset / 1000000) / 750);
 	}
 	
 	public void stopDraw() {
@@ -498,41 +521,48 @@ public class GameGraphicalView extends Application implements GameView {
 	}
 	
 	public void enableAutoPlayer() {
-		stopAutoPlayer();
-		controller.setAutoPlayer(true);
-
-		this.threadAuto = new Thread(() -> {
-			if(this.pathAuto == null) {
-				this.pathAuto = controller.getPathAI();
-				if(this.pathAuto != null && !this.pathAuto.isEmpty()) this.pathAuto.poll();
-			}
-		
-			this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.7), ev -> {
-				if(!controller.isGoalAchieved() && this.pathAuto != null && !this.pathAuto.isEmpty()) {
-					Position next = this.pathAuto.poll();
-					Position current = controller.getPlayerPosition();
-					
-					if(next != null) {
-						if(next.getX() == current.getX() - 1) {
-							controller.movePlayer(Direction.WEST);
-						} else if(next.getX() == current.getX() + 1) {
-							controller.movePlayer(Direction.EAST);
-						} else if(next.getY() == current.getY() - 1) {
-							controller.movePlayer(Direction.NORTH);
-						} else if(next.getY() == current.getY() + 1) {
-							controller.movePlayer(Direction.SOUTH);
+		if(!this.controller.searchingPath() && this.threadAuto == null) {
+			stopAutoPlayer();
+			controller.setAutoPlayer(true);
+	
+			this.threadAuto = new Thread(() -> {
+				if(this.pathAuto == null) {
+					this.pathAuto = controller.getPathAI();
+					if(this.pathAuto != null && !this.pathAuto.isEmpty()) this.pathAuto.poll();
+				}
+			
+				this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.7), ev -> {
+					if(!exited) {
+						if(!controller.isGoalAchieved() && this.pathAuto != null && !this.pathAuto.isEmpty()) {
+							Position next = this.pathAuto.poll();
+							Position current = controller.getPlayerPosition();
+							
+							if(next != null) {
+								if(next.getX() == current.getX() - 1) {
+									controller.movePlayer(Direction.WEST);
+								} else if(next.getX() == current.getX() + 1) {
+									controller.movePlayer(Direction.EAST);
+								} else if(next.getY() == current.getY() - 1) {
+									controller.movePlayer(Direction.NORTH);
+								} else if(next.getY() == current.getY() + 1) {
+									controller.movePlayer(Direction.SOUTH);
+								}
+							} else {
+								this.stopAutoPlayer();
+							}
 						}
 					} else {
-						this.timelineAuto.stop();
+						this.stopAutoPlayer();
 					}
-				}
-			}));
-			
-			this.timelineAuto.setCycleCount(Animation.INDEFINITE);
-			this.timelineAuto.play();
-		});
-		
-		this.threadAuto.start();
+				}));
+				
+				this.timelineAuto.setCycleCount(Animation.INDEFINITE);
+				this.timelineAuto.play();
+			});
+
+			this.threadAuto.setDaemon(true);
+			this.threadAuto.start();
+		}
 	}
 	
 	public void stopAutoPlayer() {
@@ -542,7 +572,8 @@ public class GameGraphicalView extends Application implements GameView {
 		
 		if(this.threadAuto != null) {
 			try {
-				this.threadAuto.join(500);
+				this.controller.setAutoPlayer(false);
+				this.threadAuto.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -552,13 +583,15 @@ public class GameGraphicalView extends Application implements GameView {
 	@Override
 	public void update(boolean moveSucceeded) {
 		if(controller.isGoalAchieved() && !controller.isAutoPlayer()) {
-			if(timelineWin != null) timelineWin.stop();
+			this.stopWin();
 			
 			this.timelineWin = new Timeline(new KeyFrame(Duration.seconds(2), ev -> {
-				this.exited = true;
-				this.timelineWin.stop();
-				this.timerDraw.stop();
-				this.stage.close();
+				try {
+					this.stop();
+				} catch (Exception e1) {
+					e1.printStackTrace();
+				}
+				
 				if(this.launcher != null) this.launcher.progress();
 			}));
 			
@@ -599,12 +632,13 @@ public class GameGraphicalView extends Application implements GameView {
 		}
 	}
 	
-	public void stop() {
+	public void stop() throws Exception {
 		this.exited = true;
 		this.stopDraw();
 		this.stopAutoPlayer();
 		this.stopWin();
 		this.stage.close();
+		super.stop();
 	}
 
 	public static void main(String[] args) {

@@ -246,7 +246,8 @@ public class GameLauncher extends Application {
 			this.stepByStepThread = new Thread(() -> {
 				labyrinth.generate(this.seed, true);
 			});
-			
+
+			this.stepByStepThread.setDaemon(true);
 			this.stepByStepThread.start();
 		} else {
 			labyrinth.generate(this.seed, false);
@@ -258,6 +259,7 @@ public class GameLauncher extends Application {
 	
 	public void retry() {
 		stopStepByStep();
+		this.algorithm.restart();
 		this.displayInfoStart = false;
 		if(this.gameMode == 1) this.seed++;
 		this.launchGame();
@@ -270,6 +272,7 @@ public class GameLauncher extends Application {
 	
 	public void progress() {
 		stopStepByStep();
+		this.algorithm.restart();
 		this.displayInfoStart = false;
 		
 		if(this.gameMode == 1) {
@@ -284,7 +287,9 @@ public class GameLauncher extends Application {
 	public void stopStepByStep() {
 		if(this.stepByStepThread != null) {
 			try {
-				this.stepByStepThread.join(500);
+				this.algorithm.stop();
+				this.stepByStepThread.join();
+				this.stepByStepThread = null;
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

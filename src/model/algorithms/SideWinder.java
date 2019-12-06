@@ -16,13 +16,15 @@ import model.util.Position;
  * @since 05/12/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/2/3/maze-generation-sidewinder-algorithm.html">http://weblog.jamisbuck.org/2011/2/3/maze-generation-sidewinder-algorithm.html</a>
  */
-public class SideWinder implements GenerationAlgorithmStrategy {
+public class SideWinder extends GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		for(int i = 0; i < labyrinth.getHeight(); i++) {
 			int run_start = 0;
 			
 			for(int j = 0; j < labyrinth.getWidth(); j++) {
+				if(this.isStopped()) return;
+				
 				if(i > 0 && (j + 1 == labyrinth.getWidth() || random.nextInt(2) == 0)) {
 					int x = run_start + random.nextInt(j - run_start + 1);
 					Position p = new Position(x, i);

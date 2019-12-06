@@ -21,19 +21,23 @@ import model.util.Position;
  * @since 05/12/2019
  * @see <a href="http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking">http://weblog.jamisbuck.org/2010/12/27/maze-generation-recursive-backtracking</a>
  */
-public class RecursiveBacktracking implements GenerationAlgorithmStrategy {
+public class RecursiveBacktracking extends GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		Stack<Position> s = new Stack<>();
 		s.push(start);
 		
 		while(!s.isEmpty()) {
+			if(this.isStopped()) return;
+			
 			List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST));
 			Collections.shuffle(directions, random);
 			
 			Position current = s.pop();
 			
 			for(Direction d : directions) {
+				if(this.isStopped()) return;
+				
 				Cell cCurrent = labyrinth.getCell(current);
 				
 				Position pNew = labyrinth.getNeighbour(current, d, d);

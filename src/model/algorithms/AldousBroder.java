@@ -20,17 +20,21 @@ import model.util.Position;
  * @since 30/11/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/1/17/maze-generation-aldous-broder-algorithm.html">http://weblog.jamisbuck.org/2011/1/17/maze-generation-aldous-broder-algorithm.html</a>
  */
-public class AldousBroder implements GenerationAlgorithmStrategy {
+public class AldousBroder extends GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		int remaining = labyrinth.getWidth() * labyrinth.getHeight() - 1;
 		Position currentPos = start;
 		
 		while(remaining > 0) {
+			if(this.isStopped()) return;
+			
 			List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST));
 			Collections.shuffle(directions, random);
 			
 			for(Direction dir : directions) {
+				if(this.isStopped()) return;
+				
 				Position pos = labyrinth.getNeighbour(currentPos, dir, dir);
 				Cell c = labyrinth.getCell(pos);
 				
