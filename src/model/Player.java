@@ -24,8 +24,8 @@ public class Player {
 	private Direction direction;
 	private Labyrinth labyrinth;
 	private Image sprite;
-	private boolean checkBlocked = true;
 	private boolean blocked = false;
+	private boolean searchingPath = false;
 	
 	public Player(Position position, Direction direction, Labyrinth labyrinth) {
 		this.labyrinth = labyrinth;
@@ -57,7 +57,6 @@ public class Player {
 		if(peuxSeDeplacer) {
 			this.labyrinth.getCell(this.getPosition()).setValue(CellValue.CROSSED);
 			this.setPosition(labyrinth.getNeighbour(this.getPosition(), direction, direction));
-			this.checkBlocked = true;
 		}
 		
 		this.setDirection(direction);
@@ -82,10 +81,17 @@ public class Player {
 	public boolean isBlocked() {
 		if(!this.labyrinth.isGenerationFinished()) return false;
 		if(this.blocked) return true;
-		
-		if(this.checkBlocked) {
-			this.checkBlocked = false;
-			
+		return false;
+	}
+	
+	/**
+	 * Detect if the player is blocked (if no path leads him to the exit)<br />
+	 * Uses a flood fill algorithm
+	 * @return (boolean) true if the player is blocked, false otherwise
+	 * @see <a href="https://en.wikipedia.org/wiki/Flood_fill">https://en.wikipedia.org/wiki/Flood_fill</a>
+	 */
+	public void checkBlocked() {
+		if(this.labyrinth.isGenerationFinished() && !this.blocked) {
 			Stack<Position> checkList = new Stack<>();
 			checkList.add(this.labyrinth.getEndPosition());
 			List<Position> complete = new ArrayList<>();
@@ -103,7 +109,8 @@ public class Player {
 						        checkList.add(pos);
 						        
 						        if(pos.equals(this.getPosition())) {
-						        	return false;
+						    		this.blocked = false;
+						    		return;
 						        }
 					        }
 			    	  }
@@ -113,10 +120,7 @@ public class Player {
 		    }
 			
 			this.blocked = true;
-		    return true;
 		}
-		
-		return false;
 	}
 	
 	/**
@@ -127,6 +131,7 @@ public class Player {
 	public Queue<Position> getPathAI() {
 		if(this.getPosition().equals(this.labyrinth.getEndPosition())) return null;
 		
+		this.searchingPath = true;
 		Queue<List<Position>> queue = new LinkedList<>();
 		List<Position> explore = new ArrayList<>();
 		List<Position> pathToEnd = new ArrayList<>();
@@ -139,6 +144,7 @@ public class Player {
 			Position current = pathToEnd.get(pathToEnd.size() - 1);
 			
 			if(current.equals(this.labyrinth.getEndPosition())) {
+				this.searchingPath = false;
 				return new LinkedList<>(pathToEnd);
 			} else {
 				ArrayList<Position> neightbours = new ArrayList<>();
@@ -159,11 +165,13 @@ public class Player {
 				}
 				
 				if(neightbours.isEmpty() && queue.isEmpty()) {
+					this.searchingPath = false;
 					return null;
 				}
 			}
         }
-		
+
+		this.searchingPath = false;
 		return null;
 	}
 
@@ -229,5 +237,9 @@ public class Player {
 	 */
 	public void setSprite(Image sprite) {
 		this.sprite = sprite;
+	}
+
+	public boolean isSearchingPath() {
+		return searchingPath;
 	}
 }

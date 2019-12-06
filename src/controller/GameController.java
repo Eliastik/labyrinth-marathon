@@ -20,6 +20,7 @@ import view.GameView;
 public class GameController {
 	private Labyrinth labyrinth;
 	private GameView view;
+	private Thread threadCheckBlocked;
 	
 	public GameController(Labyrinth labyrinth, GameView view) {
 		super();
@@ -93,6 +94,7 @@ public class GameController {
 	 * @return (boolean) true if the player moved successfully, false otherwise
 	 */
 	public boolean movePlayer(KeyCode key) {
+		if(this.isAutoPlayer() || !this.labyrinth.isGenerationFinished()) return true;
 		boolean moved = false;
 		
 		if(!labyrinth.getPlayer().goalAchieved()) {
@@ -134,6 +136,20 @@ public class GameController {
 			}
 		}
 		
+		if(this.threadCheckBlocked != null) {
+			try {
+				threadCheckBlocked.join(50);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		this.threadCheckBlocked = new Thread(() -> {
+			this.labyrinth.getPlayer().checkBlocked();
+		});
+		
+		this.threadCheckBlocked.start();
+		
 		view.update(moved);
 		return moved;
 	}
@@ -146,6 +162,7 @@ public class GameController {
 	public boolean movePlayer(Direction direction) {
 		boolean moved = false;
 		if(!labyrinth.getPlayer().goalAchieved()) moved = labyrinth.getPlayer().moveTo(direction);
+		this.labyrinth.getPlayer().checkBlocked();
 		view.update(moved);
 		return moved;
 	}
@@ -207,5 +224,9 @@ public class GameController {
 	 */
 	public void generateLabyrinth(long seed, boolean stepByStep) {
 		labyrinth.generate(seed, stepByStep);
+	}
+	
+	public boolean searchingPath() {
+		return labyrinth.getPlayer().isSearchingPath();
 	}
 }

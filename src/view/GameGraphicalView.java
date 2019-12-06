@@ -118,6 +118,7 @@ public class GameGraphicalView extends Application implements GameView {
 		Image start = new Image(getClass().getResourceAsStream("/images/start.png"));
 		Image background = new Image(getClass().getResourceAsStream("/images/back.png"));
 		Image current = new Image(getClass().getResourceAsStream("/images/current.png"));
+		Image frontier = new Image(getClass().getResourceAsStream("/images/frontier.png"));
 		ResourceBundle locales = ResourceBundle.getBundle("locales.graphical", Locale.getDefault()); // Locale
 		
 		BorderPane root = new BorderPane();
@@ -245,7 +246,7 @@ public class GameGraphicalView extends Application implements GameView {
 				@Override
 				public void handle(long time) {
 					if(!exited) {
-						draw(time, (time - prevTime), brick, crossed, start, background, current, locales);
+						draw(time, (time - prevTime), brick, crossed, start, background, current, frontier, locales);
 						prevTime = time;
 					} else {
 						this.stop();
@@ -324,7 +325,7 @@ public class GameGraphicalView extends Application implements GameView {
 		return (int) (((this.canvas.getHeight() - getSizeCase()[1] * ((controller.getLabyrinthHeight() * 2) + 1)) / 2));
 	}
 	
-	public void draw(long time, long timeOffset, Image brick, Image crossed, Image start, Image background, Image current, ResourceBundle locales) {
+	public void draw(long time, long timeOffset, Image brick, Image crossed, Image start, Image background, Image current, Image frontier, ResourceBundle locales) {
 		int widthCase = getSizeCase()[0];
 		int heightCase = getSizeCase()[1];
 
@@ -428,7 +429,7 @@ public class GameGraphicalView extends Application implements GameView {
 								}
 							}
 							
-							gc.drawImage(controller.getSprite(), 48 * (numImageX - 1), 10 * (numImageY) + 55 * (numImageY - 1), 48, 55, (double) widthCase * j + startX - offsetXPlayer * widthCase, heightCase * i + startY - offsetYPlayer * heightCase, widthCase, heightCase);
+							gc.drawImage(controller.getSprite(), 48 * (numImageX - 1), 56 * (numImageY - 1) + 8 * numImageY, 48, 56, (double) widthCase * j + startX - offsetXPlayer * widthCase, heightCase * i + startY - offsetYPlayer * heightCase, widthCase, heightCase);
 						} else if(pos.equals(controller.getEndPosition())) {
 							gc.drawImage(start, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 						} else {
@@ -443,6 +444,10 @@ public class GameGraphicalView extends Application implements GameView {
 							if(c.getValue() == CellValue.CURRENT) {
 								gc.drawImage(current, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 							}
+							
+							if(c.getValue() == CellValue.FRONTIER) {
+								gc.drawImage(frontier, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
+							}
 						}
 					}
 				}
@@ -454,7 +459,9 @@ public class GameGraphicalView extends Application implements GameView {
 		gc.setFont(new Font(45));
 		gc.setTextBaseline(VPos.CENTER);
 		
-		if(!playerMoved && displayInfoStart) {
+		if(controller.searchingPath()) {
+			text.setText(locales.getString("searchingPath"));
+		} else if(!playerMoved && displayInfoStart) {
 			text.setText(locales.getString("infos"));
 			text.setFont(new Font(30));
 			gc.setFont(new Font(30));

@@ -27,12 +27,12 @@ public class HuntAndKill implements GenerationAlgorithmStrategy {
 		
 		while(true) {
 			current = this.walk(labyrinth, random, current, end, stepByStep);
-			current = this.hunt(labyrinth, random, stepByStep);
+			if(current == null) current = this.hunt(labyrinth, random, stepByStep);
 			if(current == null) break;
 		}
 	}
 	
-	public Position walk(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
+	private Position walk(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		if(start == null) return null;
 		
 		Position p = start;
@@ -71,7 +71,7 @@ public class HuntAndKill implements GenerationAlgorithmStrategy {
 		return null;
 	}
 	
-	public Position hunt(Labyrinth labyrinth, Random random, boolean stepByStep) {
+	private Position hunt(Labyrinth labyrinth, Random random, boolean stepByStep) {
 		for(int i = 0; i < labyrinth.getHeight(); i++) {
 			for(int j = 0; j < labyrinth.getWidth(); j++) {
 				Position p = new Position(j, i);
@@ -82,7 +82,7 @@ public class HuntAndKill implements GenerationAlgorithmStrategy {
 					c.setValue(CellValue.CURRENT);
 					
 					try {
-						Thread.sleep(50);
+						Thread.sleep(25);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -90,7 +90,7 @@ public class HuntAndKill implements GenerationAlgorithmStrategy {
 					c.setValue(initialValue);
 				}
 				
-				if(c.getValue() != CellValue.EMPTY) {
+				if(c.getValue() == CellValue.WALL) {
 					List<Direction> neighbours = new ArrayList<>();
 					
 					Cell cNorth = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.NORTH, Direction.NORTH));

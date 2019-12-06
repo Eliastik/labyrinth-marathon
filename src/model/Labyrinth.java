@@ -247,6 +247,32 @@ public class Labyrinth {
 	}
 	
 	/**
+	 * Return the direction to the neighbour cell given current cell position and neighbour position
+	 * @param cellPosition ({@link Position}) The position of the cell from where to search
+	 * @param neighbourPosition ({@link Position}) The position of the cell from where to search
+	 * @return ({@link Direction})
+	 */
+	public Direction getNeighbour(Position cellPosition, Position neighbourPosition) {
+		int x = cellPosition.getX();
+		int y = cellPosition.getY();
+		
+		int xNeighbour = neighbourPosition.getX();
+		int yNeighbour = neighbourPosition.getY();
+		
+		if(x >= 0 && x < this.getWidth() && xNeighbour >= 0 && xNeighbour < this.getWidth()) {
+			if(xNeighbour - x == -1) return Direction.WEST;
+			if(xNeighbour - x == 1) return Direction.EAST;
+		}
+		
+		if(y >= 0 && y < this.getHeight() && yNeighbour >= 0 && yNeighbour < this.getHeight()) {
+			if(yNeighbour - y == -1) return Direction.NORTH;
+			if(yNeighbour - y == 1) return Direction.SOUTH;
+		}
+		
+		return null;
+	}
+	
+	/**
 	 * Inform if the player can move the other cell passed in parameter according to the direction
 	 * @param currentCell ({@link Cell}) The current cell
 	 * @param neighbourCell ({@link Cell}) The other cell
