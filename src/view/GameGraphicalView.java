@@ -479,7 +479,6 @@ public class GameGraphicalView extends Application implements GameView {
 		
 		Text text = new Text("");
 		text.setFont(new Font(45));
-		gc.setFont(new Font(45));
 		gc.setTextBaseline(VPos.CENTER);
 		
 		if(controller.searchingPath()) {
@@ -487,16 +486,24 @@ public class GameGraphicalView extends Application implements GameView {
 		} else if(!playerMoved && displayInfoStart) {
 			text.setText(locales.getString("infos"));
 			text.setFont(new Font(30));
-			gc.setFont(new Font(30));
 		} else if(controller.isGoalAchieved()) {
 			text.setText(locales.getString("exitFound"));
 		} else if(controller.isPlayerBlocked()) {
 			text.setText(locales.getString("blocked"));
 		}
 		
+		int widthText = (int) text.getLayoutBounds().getWidth();
+		int heightText = (int) text.getLayoutBounds().getHeight();
+		
+		if(widthText * 1.25 >= this.canvas.getWidth()) {
+			text.setFont(new Font(text.getFont().getSize() / ((widthText * 1.25 / this.canvas.getWidth() * 1.25))));
+		}
+		
+		gc.setFont(new Font(text.getFont().getSize()));
+		
 		if(!text.getText().trim().equals("")) {
-			int widthText = (int) text.getLayoutBounds().getWidth();
-			int heightText = (int) text.getLayoutBounds().getHeight();
+			widthText = (int) text.getLayoutBounds().getWidth();
+			heightText = (int) text.getLayoutBounds().getHeight();
 			
 			gc.setFill(Color.rgb(125, 125, 125, 0.65));
 			gc.fillRoundRect((this.canvas.getWidth() - widthText * 1.25) / 2, (this.canvas.getHeight() - heightText * 1.25) / 2, widthText * 1.25, heightText * 1.25, 5, 5);
@@ -513,7 +520,7 @@ public class GameGraphicalView extends Application implements GameView {
 		
 		if(this.threadDraw != null) {
 			try {
-				this.threadDraw.join(500);
+				this.threadDraw.join();
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -521,7 +528,7 @@ public class GameGraphicalView extends Application implements GameView {
 	}
 	
 	public void enableAutoPlayer() {
-		if(!this.controller.searchingPath() && this.threadAuto == null) {
+		if(!this.controller.searchingPath() && !this.controller.isPlayerBlocked() && this.threadAuto == null) {
 			stopAutoPlayer();
 			controller.setAutoPlayer(true);
 	
@@ -632,6 +639,7 @@ public class GameGraphicalView extends Application implements GameView {
 		}
 	}
 	
+	@Override
 	public void stop() throws Exception {
 		this.exited = true;
 		this.stopDraw();
