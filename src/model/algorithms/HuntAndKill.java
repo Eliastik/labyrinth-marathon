@@ -24,12 +24,13 @@ public class HuntAndKill extends GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		Position current = start;
+		boolean[] huntFinished = new boolean[labyrinth.getHeight()];
 		
 		while(current != null) {
 			if(this.isStopped()) return;
 			
 			current = this.walk(labyrinth, random, current, end, stepByStep);
-			if(current == null) current = this.hunt(labyrinth, random, stepByStep);
+			if(current == null) current = this.hunt(labyrinth, random, stepByStep, huntFinished);
 		}
 	}
 	
@@ -74,63 +75,67 @@ public class HuntAndKill extends GenerationAlgorithmStrategy {
 		return null;
 	}
 	
-	private Position hunt(Labyrinth labyrinth, Random random, boolean stepByStep) {
+	private Position hunt(Labyrinth labyrinth, Random random, boolean stepByStep, boolean[] finished) {
 		for(int i = 0; i < labyrinth.getHeight(); i++) {
-			for(int j = 0; j < labyrinth.getWidth(); j++) {
-				if(this.isStopped()) return null;
-				
-				Position p = new Position(j, i);
-				Cell c = labyrinth.getCell(p);
-				
-				if(stepByStep) {
-					CellValue initialValue = c.getValue();
-					c.setValue(CellValue.CURRENT);
+			if(!finished[i]) {
+				for(int j = 0; j < labyrinth.getWidth(); j++) {
+					if(this.isStopped()) return null;
 					
-					try {
-						Thread.sleep(25);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+					Position p = new Position(j, i);
+					Cell c = labyrinth.getCell(p);
+					
+					if(stepByStep) {
+						CellValue initialValue = c.getValue();
+						c.setValue(CellValue.CURRENT);
+						
+						try {
+							Thread.sleep(25);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						
+						c.setValue(initialValue);
 					}
 					
-					c.setValue(initialValue);
-				}
-				
-				if(c.getValue() == CellValue.WALL) {
-					List<Direction> neighbours = new ArrayList<>();
-					
-					Cell cNorth = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.NORTH, Direction.NORTH));
-					Cell cSouth = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.SOUTH, Direction.SOUTH));
-					Cell cEast = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.EAST, Direction.EAST));
-					Cell cWest = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.WEST, Direction.WEST));
-					
-					if(cNorth != null && cNorth.getValue() != CellValue.WALL) {
-						neighbours.add(Direction.NORTH);
+					if(c.getValue() == CellValue.WALL) {
+						List<Direction> neighbours = new ArrayList<>();
+						
+						Cell cNorth = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.NORTH, Direction.NORTH));
+						Cell cSouth = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.SOUTH, Direction.SOUTH));
+						Cell cEast = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.EAST, Direction.EAST));
+						Cell cWest = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.WEST, Direction.WEST));
+						
+						if(cNorth != null && cNorth.getValue() != CellValue.WALL) {
+							neighbours.add(Direction.NORTH);
+						}
+						
+						if(cSouth != null && cSouth.getValue() != CellValue.WALL) {
+							neighbours.add(Direction.SOUTH);
+						}
+						
+						if(cEast != null && cEast.getValue() != CellValue.WALL) {
+							neighbours.add(Direction.EAST);
+						}
+						
+						if(cWest != null && cWest.getValue() != CellValue.WALL) {
+							neighbours.add(Direction.WEST);
+						}
+						
+						if(neighbours.size() <= 0) continue;
+						
+						Direction dirChoice = neighbours.get(random.nextInt(neighbours.size()));
+						
+						c.setValue(CellValue.EMPTY);
+						c.setEdgeToDirection(dirChoice, CellValue.EMPTY);
+						labyrinth.getCell(labyrinth.getNeighbour(p, dirChoice, dirChoice)).setValue(CellValue.EMPTY);
+						labyrinth.getCell(labyrinth.getNeighbour(p, dirChoice, dirChoice)).setOppositeEdge(dirChoice, CellValue.EMPTY);
+
+						finished[i] = false;
+						return p;
+					} else {
+						finished[i] = true;
+						continue;
 					}
-					
-					if(cSouth != null && cSouth.getValue() != CellValue.WALL) {
-						neighbours.add(Direction.SOUTH);
-					}
-					
-					if(cEast != null && cEast.getValue() != CellValue.WALL) {
-						neighbours.add(Direction.EAST);
-					}
-					
-					if(cWest != null && cWest.getValue() != CellValue.WALL) {
-						neighbours.add(Direction.WEST);
-					}
-					
-					if(neighbours.size() <= 0) continue;
-					
-					Direction dirChoice = neighbours.get(random.nextInt(neighbours.size()));
-					
-					c.setValue(CellValue.EMPTY);
-					c.setEdgeToDirection(dirChoice, CellValue.EMPTY);
-					labyrinth.getCell(labyrinth.getNeighbour(p, dirChoice, dirChoice)).setValue(CellValue.EMPTY);
-					labyrinth.getCell(labyrinth.getNeighbour(p, dirChoice, dirChoice)).setOppositeEdge(dirChoice, CellValue.EMPTY);
-					
-					return p;
-				} else {
-					continue;
 				}
 			}
 		}
