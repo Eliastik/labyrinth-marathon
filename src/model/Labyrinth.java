@@ -78,7 +78,7 @@ public class Labyrinth {
 	 * @return The cell
 	 */
 	public Cell getCell(Position position) {
-		return cells[position.getY()][position.getX()];
+		return position == null ? null : cells[position.getY()][position.getX()];
 	}
 
 	/**
@@ -218,10 +218,10 @@ public class Labyrinth {
 		if(directionX != null && x >= 0 && x < this.getWidth()) {
 			switch(directionX) {
 				case EAST:
-					if(x + 1 >= 0 && x + 1 < this.getWidth()) x++;
+					if(x + 1 >= 0 && x + 1 < this.getWidth()) return new Position(x + 1, y);
 					break;
 				case WEST:
-					if(x - 1 >= 0 && x - 1 < this.getWidth()) x--;
+					if(x - 1 >= 0 && x - 1 < this.getWidth()) return new Position(x - 1, y);
 					break;
 				default:
 					break;
@@ -231,17 +231,17 @@ public class Labyrinth {
 		if(directionY != null && y >= 0 && y < this.getHeight()) {
 			switch(directionY) {
 				case NORTH:
-					if(y - 1 >= 0 && y - 1 < this.getHeight()) y--;
+					if(y - 1 >= 0 && y - 1 < this.getHeight()) return new Position(x, y - 1);
 					break;
 				case SOUTH:
-					if(y + 1 >= 0 && y + 1 < this.getHeight()) y++;
+					if(y + 1 >= 0 && y + 1 < this.getHeight()) return new Position(x, y + 1);
 					break;
 				default:
 					break;
 			}
 		}
 		
-		return new Position(x, y);
+		return null;
 	}
 	
 	/**
@@ -339,7 +339,7 @@ public class Labyrinth {
 					if(c.getValue() == CellValue.EMPTY) res += "  ";
 				}
 				
-				if(posEst.equals(pos) || (c.getEast() == CellValue.WALL && cEst.getWest() == CellValue.WALL)) {
+				if((posEst != null && posEst.equals(pos)) || ((c != null && c.getEast() == CellValue.WALL) || (cEst != null && cEst.getWest() == CellValue.WALL))) {
 					res += "|";
 				} else {
 					res += " ";
@@ -356,7 +356,7 @@ public class Labyrinth {
 				
 				res += "+";
 				
-				if(posSud.equals(pos) || (c.getSouth() == CellValue.WALL && cSud.getNorth() == CellValue.WALL)) {
+				if((posSud != null && posSud.equals(pos)) || ((c != null && c.getSouth() == CellValue.WALL) || (cSud != null && cSud.getNorth() == CellValue.WALL))) {
 					res += "--";
 				} else {
 					res += "  ";

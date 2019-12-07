@@ -173,7 +173,7 @@ public class Player {
 					Position posNeighbour = this.labyrinth.getNeighbour(current, directions.get(i), directions.get(i));
 					Cell neighbour = this.labyrinth.getCell(posNeighbour);
 					
-					if(!explore.contains(posNeighbour) && !posNeighbour.equals(current) && this.labyrinth.canMoveTo(this.labyrinth.getCell(current), neighbour, directions.get(i))) {
+					if(posNeighbour != null && !explore.contains(posNeighbour) && !posNeighbour.equals(current) && this.labyrinth.canMoveTo(this.labyrinth.getCell(current), neighbour, directions.get(i))) {
 						List<Position> path = new ArrayList<>(pathToEnd);
 						path.add(posNeighbour);
 						queue.add(path);

@@ -32,6 +32,7 @@ import model.algorithms.HuntAndKill;
 import model.algorithms.Prim;
 import model.algorithms.RecursiveBacktracking;
 import model.algorithms.SideWinder;
+import model.algorithms.Wilson;
 
 /**
  * The launcher with settings
@@ -110,7 +111,7 @@ public class GameLauncher extends Application {
 		ComboBox<String> algorithms = new ComboBox<>();
 		HBox.setMargin(algorithms, new Insets(5, 5, 5, 5));
 		ObservableList<String> algorithmsList = FXCollections.observableArrayList();
-		algorithmsList.addAll("Growing Tree", "Binary Tree", "Side Winder", "Recursive Backtracking", "Prim", "Hunt and Kill", "Aldous Broder");
+		algorithmsList.addAll("Growing Tree", "Binary Tree", "Side Winder", "Recursive Backtracking", "Prim", "Hunt and Kill", "Wilson", "Aldous Broder");
 		algorithms.setItems(algorithmsList);
 		algorithms.getSelectionModel().select(0);
 		hboxAlgorithm.getChildren().addAll(algorithms);
@@ -189,6 +190,9 @@ public class GameLauncher extends Application {
 					break;
 				case "Prim":
 					this.algorithm = new Prim();
+					break;
+				case "Wilson":
+					this.algorithm = new Wilson();
 					break;
 				default:
 					this.algorithm = new GrowingTree();

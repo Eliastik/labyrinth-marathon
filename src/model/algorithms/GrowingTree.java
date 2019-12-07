@@ -54,16 +54,19 @@ public class GrowingTree extends GenerationAlgorithmStrategy {
 				if(this.isStopped()) return;
 				
 				Position pNext = labyrinth.getNeighbour(p, dir, dir);
-				Cell cNext = labyrinth.getCell(pNext);
 				
-				if(pNext.getX() >= 0 && pNext.getY() >= 0 && pNext.getX() < labyrinth.getWidth() && pNext.getY() < labyrinth.getHeight() && cNext.getValue() == CellValue.WALL) {
-					c.setValue(CellValue.EMPTY);
-					c.setEdgeToDirection(dir, CellValue.EMPTY);
-					cNext.setValue(CellValue.EMPTY);
-					cNext.setOppositeEdge(dir, CellValue.EMPTY);
-					cells.add(pNext);
-					index = -1;
-					break;
+				if(pNext != null) {
+					Cell cNext = labyrinth.getCell(pNext);
+					
+					if(cNext.getValue() == CellValue.WALL) {
+						c.setValue(CellValue.EMPTY);
+						c.setEdgeToDirection(dir, CellValue.EMPTY);
+						cNext.setValue(CellValue.EMPTY);
+						cNext.setOppositeEdge(dir, CellValue.EMPTY);
+						cells.add(pNext);
+						index = -1;
+						break;
+					}
 				}
 			}
 			

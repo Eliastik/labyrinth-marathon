@@ -61,7 +61,7 @@ public class GameController {
 	 * @param position (Position)
 	 */
 	public Cell getCell(Position position) {
-		return labyrinth.getCell(position);
+		return (position == null) ? null : labyrinth.getCell(position);
 	}
 	
 	/**

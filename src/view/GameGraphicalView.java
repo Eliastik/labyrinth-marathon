@@ -645,6 +645,7 @@ public class GameGraphicalView extends Application implements GameView {
 		this.stopDraw();
 		this.stopAutoPlayer();
 		this.stopWin();
+		this.controller.exit();
 		this.stage.close();
 		super.stop();
 	}

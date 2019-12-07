@@ -67,8 +67,11 @@ public class SideWinder extends GenerationAlgorithmStrategy {
 					
 					c.setValue(CellValue.EMPTY);
 					c.setEast(CellValue.EMPTY);
-					cEast.setValue(CellValue.EMPTY);
-					cEast.setWest(CellValue.EMPTY);
+					
+					if(cEast != null) {
+						cEast.setValue(CellValue.EMPTY);
+						cEast.setWest(CellValue.EMPTY);
+					}
 				}
 			}
 		}

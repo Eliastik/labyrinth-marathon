@@ -25,12 +25,11 @@ public class HuntAndKill extends GenerationAlgorithmStrategy {
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		Position current = start;
 		
-		while(true) {
+		while(current != null) {
 			if(this.isStopped()) return;
 			
 			current = this.walk(labyrinth, random, current, end, stepByStep);
 			if(current == null) current = this.hunt(labyrinth, random, stepByStep);
-			if(current == null) break;
 		}
 	}
 	
@@ -62,7 +61,7 @@ public class HuntAndKill extends GenerationAlgorithmStrategy {
 			Position pNext = labyrinth.getNeighbour(p, dir, dir);
 			Cell cNext = labyrinth.getCell(pNext);
 			
-			if(pNext.getX() >= 0 && pNext.getY() >= 0 && pNext.getX() < labyrinth.getWidth() && pNext.getY() < labyrinth.getHeight() && cNext.getValue() == CellValue.WALL) {
+			if(cNext != null && cNext.getValue() == CellValue.WALL) {
 				c.setValue(CellValue.EMPTY);
 				c.setEdgeToDirection(dir, CellValue.EMPTY);
 				cNext.setValue(CellValue.EMPTY);
@@ -104,19 +103,19 @@ public class HuntAndKill extends GenerationAlgorithmStrategy {
 					Cell cEast = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.EAST, Direction.EAST));
 					Cell cWest = labyrinth.getCell(labyrinth.getNeighbour(p, Direction.WEST, Direction.WEST));
 					
-					if(cNorth.getValue() != CellValue.WALL) {
+					if(cNorth != null && cNorth.getValue() != CellValue.WALL) {
 						neighbours.add(Direction.NORTH);
 					}
 					
-					if(cSouth.getValue() != CellValue.WALL) {
+					if(cSouth != null && cSouth.getValue() != CellValue.WALL) {
 						neighbours.add(Direction.SOUTH);
 					}
 					
-					if(cEast.getValue() != CellValue.WALL) {
+					if(cEast != null && cEast.getValue() != CellValue.WALL) {
 						neighbours.add(Direction.EAST);
 					}
 					
-					if(cWest.getValue() != CellValue.WALL) {
+					if(cWest != null && cWest.getValue() != CellValue.WALL) {
 						neighbours.add(Direction.WEST);
 					}
 					

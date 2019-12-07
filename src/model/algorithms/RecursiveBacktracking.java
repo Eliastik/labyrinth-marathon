@@ -43,7 +43,7 @@ public class RecursiveBacktracking extends GenerationAlgorithmStrategy {
 				Position pNew = labyrinth.getNeighbour(current, d, d);
 				Cell cNew = labyrinth.getCell(pNew);
 				
-				if(pNew.getY() >= 0 && pNew.getY() < labyrinth.getHeight() && pNew.getX() >= 0 && pNew.getX() < labyrinth.getWidth() && cNew.getValue() == CellValue.WALL) {
+				if(cNew != null && cNew.getValue() == CellValue.WALL) {
 					if(stepByStep) {
 						cCurrent.setValue(CellValue.CURRENT);
 						

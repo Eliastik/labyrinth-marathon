@@ -75,7 +75,7 @@ public class Prim extends GenerationAlgorithmStrategy {
 	}
 	
 	private void addFrontier(Labyrinth labyrinth, Position current, Position other, List<Position> frontier) {
-		if(!current.equals(other)) {
+		if(current != null && other != null && !current.equals(other)) {
 			Cell c = labyrinth.getCell(other);
 			
 			if(other.getX() >= 0 && other.getY() >= 0 && other.getX() < labyrinth.getWidth() && other.getY() < labyrinth.getHeight() && c.getValue() == CellValue.WALL) {
@@ -93,19 +93,19 @@ public class Prim extends GenerationAlgorithmStrategy {
 		Position west = labyrinth.getNeighbour(position, Direction.WEST, Direction.WEST);
 		Position south = labyrinth.getNeighbour(position, Direction.SOUTH, Direction.SOUTH);
 		
-		if(labyrinth.getCell(north).getValue() == CellValue.EMPTY) {
+		if(north != null && labyrinth.getCell(north).getValue() == CellValue.EMPTY) {
 			p.add(north);
 		}
 		
-		if(labyrinth.getCell(east).getValue() == CellValue.EMPTY) {
+		if(east != null && labyrinth.getCell(east).getValue() == CellValue.EMPTY) {
 			p.add(east);
 		}
 	
-		if(labyrinth.getCell(west).getValue() == CellValue.EMPTY) {
+		if(west != null && labyrinth.getCell(west).getValue() == CellValue.EMPTY) {
 			p.add(west);
 		}
 		
-		if(labyrinth.getCell(south).getValue() == CellValue.EMPTY) {
+		if(south != null && labyrinth.getCell(south).getValue() == CellValue.EMPTY) {
 			p.add(south);
 		}
 		

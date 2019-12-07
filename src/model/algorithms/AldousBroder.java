@@ -51,7 +51,7 @@ public class AldousBroder extends GenerationAlgorithmStrategy {
 					c.setValue(initialValue);
 				}
 				
-				if(pos.getX() >= 0 && pos.getX() < labyrinth.getWidth() && pos.getY() >= 0 && pos.getY() < labyrinth.getHeight()) {
+				if(pos != null) {
 					if(c.getValue() == CellValue.WALL) {
 						labyrinth.getCell(currentPos).setEdgeToDirection(dir, CellValue.EMPTY);
 						c.setOppositeEdge(dir, CellValue.EMPTY);
