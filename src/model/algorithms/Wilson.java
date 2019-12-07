@@ -87,6 +87,7 @@ public class Wilson extends GenerationAlgorithmStrategy {
 			Map<Position, Direction> visits = new HashMap<>();
 			
 			Position start = pCurrent;
+			labyrinth.getCell(start).setValue(CellValue.FRONTIER);
 			boolean walking = true;
 			
 			while(walking) {
@@ -106,7 +107,7 @@ public class Wilson extends GenerationAlgorithmStrategy {
 					if(pNext != null) {
 						if(stepByStep) {
 							CellValue initialValue = cNext.getValue();
-							cNext.setValue(CellValue.FRONTIER);
+							cNext.setValue(CellValue.CURRENT);
 							
 							try {
 								Thread.sleep(100);
@@ -119,7 +120,7 @@ public class Wilson extends GenerationAlgorithmStrategy {
 						
  						visits.put(pCurrent, dir);
 						
-						if(labyrinth.getCell(pNext).getValue() != CellValue.WALL) {
+						if(labyrinth.getCell(pNext).getValue() == CellValue.EMPTY) {
 							break;
 						} else {
 							pCurrent = pNext;
@@ -129,6 +130,8 @@ public class Wilson extends GenerationAlgorithmStrategy {
 					}
 				}
 			}
+			
+			labyrinth.getCell(start).setValue(CellValue.WALL);
 			
 			List<Map.Entry<Position, Direction>> path = new ArrayList<>();
 			Position p = start;
