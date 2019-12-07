@@ -129,10 +129,11 @@ public class Wilson extends GenerationAlgorithmStrategy {
 			List<Map.Entry<Position, Direction>> path = new ArrayList<>();
 			Position p = start;
 			
-			while(!p.equals(start)) {
+			while(true) {
 				if(this.isStopped()) return null;
 				
 				Direction dir = visits.get(p);
+				if(dir == null) break;
 				path.add(new AbstractMap.SimpleEntry<Position, Direction>(p, dir));
 				p = labyrinth.getNeighbour(p, dir, dir);
 			}
