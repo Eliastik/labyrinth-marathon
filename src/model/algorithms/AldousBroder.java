@@ -38,20 +38,20 @@ public class AldousBroder extends GenerationAlgorithmStrategy {
 				Position pos = labyrinth.getNeighbour(currentPos, dir, dir);
 				Cell c = labyrinth.getCell(pos);
 				
-				if(stepByStep) {
-					CellValue initialValue = c.getValue();
-					c.setValue(CellValue.CURRENT);
-					
-					try {
-						Thread.sleep(150);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+				if(pos != null) {
+					if(stepByStep) {
+						CellValue initialValue = c.getValue();
+						c.setValue(CellValue.CURRENT);
+						
+						try {
+							Thread.sleep(150);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						
+						c.setValue(initialValue);
 					}
 					
-					c.setValue(initialValue);
-				}
-				
-				if(pos != null) {
 					if(c.getValue() == CellValue.WALL) {
 						labyrinth.getCell(currentPos).setEdgeToDirection(dir, CellValue.EMPTY);
 						c.setOppositeEdge(dir, CellValue.EMPTY);
