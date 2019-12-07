@@ -59,10 +59,15 @@ public class Wilson extends GenerationAlgorithmStrategy {
 					Position next = labyrinth.getNeighbour(e.getKey(), e.getValue(), e.getValue());
 					Cell cNext = labyrinth.getCell(next);
 					
-					cCurrent.setValue(CellValue.EMPTY);
-					cCurrent.setOppositeEdge(e.getValue(), CellValue.EMPTY);
-					cNext.setValue(CellValue.EMPTY);
-					cNext.setEdgeToDirection(e.getValue(), CellValue.EMPTY);
+					if(cCurrent != null && e.getValue() != null) {
+						cCurrent.setValue(CellValue.EMPTY);
+						cCurrent.setEdgeToDirection(e.getValue(), CellValue.EMPTY);
+					}
+					
+					if(cNext != null && e.getValue() != null) {
+						cNext.setValue(CellValue.EMPTY);
+						cNext.setOppositeEdge(e.getValue(), CellValue.EMPTY);
+					}
 					
 					remaining--;
 				}
@@ -80,7 +85,6 @@ public class Wilson extends GenerationAlgorithmStrategy {
 			if(cCurrent.getValue() != CellValue.WALL) continue;
 			
 			Map<Position, Direction> visits = new HashMap<>();
-			visits.put(pCurrent, null);
 			
 			Position start = pCurrent;
 			boolean walking = true;
@@ -102,10 +106,10 @@ public class Wilson extends GenerationAlgorithmStrategy {
 					if(pNext != null) {
 						if(stepByStep) {
 							CellValue initialValue = cNext.getValue();
-							cNext.setValue(CellValue.CURRENT);
+							cNext.setValue(CellValue.FRONTIER);
 							
 							try {
-								Thread.sleep(50);
+								Thread.sleep(100);
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							}
@@ -133,7 +137,7 @@ public class Wilson extends GenerationAlgorithmStrategy {
 				if(this.isStopped()) return null;
 				
 				Direction dir = visits.get(p);
-				if(dir == null) break;
+				if(p != null && labyrinth.getCell(p).getValue() == CellValue.EMPTY || dir == null) break;
 				path.add(new AbstractMap.SimpleEntry<Position, Direction>(p, dir));
 				p = labyrinth.getNeighbour(p, dir, dir);
 			}
