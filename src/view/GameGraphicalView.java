@@ -1,7 +1,10 @@
 package view;
 
 
+import java.util.AbstractMap;
+import java.util.LinkedHashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Queue;
 import java.util.ResourceBundle;
 
@@ -56,26 +59,30 @@ public class GameGraphicalView extends Application implements GameView {
 	private Canvas canvas;
 	private GameLauncher launcher;
 	private GameController controller;
+	// Thread / Timeline
 	private AnimationTimer timerDraw;
 	private Thread threadDraw;
 	private Timeline timelineAuto;
 	private Thread threadAuto;
 	private Timeline timelineWin;
+	// Autopath
 	private Queue<Position> pathAuto;
-	private int level = 0;
-	private boolean playerMoved = false;
+	// Animation
 	private long prevTime = 0;
 	private int frameAnimate = 0;
 	private Position prevPosition = new Position(0, 0);
-	private double moveOffset = 1.0;
-	private int xMove = 0;
-	private int yMove = 0;
-	private boolean exited = false;
-	private boolean displayInfoStart = true;
+	private Map<Map.Entry<Position, Direction>, Double> moveAnimDir = new LinkedHashMap<>();
+	private long durationAnimation = 250; // ms
+	// Camera
 	protected double[] camera = new double[]{1.0, 0.0, 0.0}; // zoom / posX / posY
 	private double precXDrag = -1.0;
 	private double precYDrag = -1.0;
 	private boolean autoCamera = false;
+	// Others
+	private int level = 0;
+	private boolean playerMoved = false;
+	private boolean exited = false;
+	private boolean displayInfoStart = true;
 	
 	/**
 	 * Construct a new graphical game
@@ -354,30 +361,56 @@ public class GameGraphicalView extends Application implements GameView {
 
 		double offsetXPlayer = 0;
 		double offsetYPlayer = 0;
+		double moveOffset = 1.0;
 		
-		if(this.moveOffset >= 0.0 && this.moveOffset <= 1.0) {
-			offsetXPlayer = (controller.getPlayerPosition().getX() - this.xMove);
-			offsetYPlayer = (controller.getPlayerPosition().getY() - this.yMove);
+		Position currentPlayerPosition = controller.getPlayerPosition();
+		Direction currentPlayerDirection = controller.getPlayerDirection();
+		
+		if(this.moveAnimDir.size() > 0) {
+			currentPlayerPosition = this.moveAnimDir.entrySet().stream().findFirst().get().getKey().getKey();
+			currentPlayerDirection = this.moveAnimDir.entrySet().stream().findFirst().get().getKey().getValue();
+			moveOffset = this.moveAnimDir.entrySet().stream().findFirst().get().getValue();
 			
-			if(offsetXPlayer > 0) {
-				offsetXPlayer = offsetXPlayer - this.moveOffset;
-			} else if(offsetXPlayer < 0) {
-				offsetXPlayer = offsetXPlayer + this.moveOffset;
+			int xMove = 0;
+			int yMove = 0;
+			
+			if(currentPlayerDirection == Direction.EAST) {
+				xMove = 1;
+			} else if(currentPlayerDirection == Direction.WEST) {
+				xMove = -1;
+			}
+			
+			if(currentPlayerDirection == Direction.NORTH) {
+				yMove = -1;
+			} else if(currentPlayerDirection == Direction.SOUTH) {
+				yMove = 1;
+			}
+			
+			if(xMove > 0) {
+				offsetXPlayer = xMove - moveOffset;
+			} else if(xMove < 0) {
+				offsetXPlayer = xMove + moveOffset;
 			} else {
 				offsetXPlayer = 0;
 			}
 			
-			if(offsetYPlayer > 0) {
-				offsetYPlayer = offsetYPlayer - this.moveOffset;
-			} else if(offsetYPlayer < 0) {
-				offsetYPlayer = offsetYPlayer + this.moveOffset;
+			if(yMove > 0) {
+				offsetYPlayer = yMove - moveOffset;
+			} else if(yMove < 0) {
+				offsetYPlayer = yMove + moveOffset;
 			} else {
 				offsetYPlayer = 0;
+			}
+			
+			this.moveAnimDir.entrySet().stream().findFirst().get().setValue(moveOffset + (((double) timeOffset / 1000000) / this.durationAnimation));
+			
+			if(moveOffset > 1.0) {
+				this.moveAnimDir.remove(this.moveAnimDir.entrySet().stream().findFirst().get().getKey());
 			}
 		}
 		
 		if(this.autoCamera) {
-			this.autoCamera((controller.getPlayerPosition().getX() * 2 - offsetXPlayer), (controller.getPlayerPosition().getY() * 2 - offsetYPlayer));
+			this.autoCamera((currentPlayerPosition.getX() * 2 - offsetXPlayer), (currentPlayerPosition.getY() * 2 - offsetYPlayer));
 		}
 		
 		int widthGrid = widthCase * (controller.getLabyrinthWidth() * 2);
@@ -421,11 +454,11 @@ public class GameGraphicalView extends Application implements GameView {
 					if(i == 0 || j == 0 || ((i + 1) % 2 == 0 && j % 2 == 0 && cWest.getEast() == CellValue.WALL && c.getWest() == CellValue.WALL) || ((i % 2 == 0 && j % 2 == 0) || (i % 2 == 0 && cNorth.getSouth() == CellValue.WALL && c.getNorth() == CellValue.WALL))) {
 						gc.drawImage(brick, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 					} else if((i + 1) % 2 == 0 && (j + 1) % 2 == 0) {
-						if(pos.equals(controller.getPlayerPosition())) {
+						if(pos.equals(currentPlayerPosition)) {
 							int numImageY = 1;
 							int numImageX = 1;
 							
-							switch(controller.getPlayerDirection()) {
+							switch(currentPlayerDirection) {
 								case NORTH:
 									numImageY = 4;
 									break;
@@ -440,7 +473,7 @@ public class GameGraphicalView extends Application implements GameView {
 									break;
 							}
 							
-							if(this.moveOffset >= 0.0 && this.moveOffset <= 1.0) {
+							if(moveOffset >= 0.0 && moveOffset < 1.0) {
 								if(this.frameAnimate >= 0 && this.frameAnimate <= 30) {
 									numImageX = 4;
 									this.frameAnimate++;
@@ -511,8 +544,6 @@ public class GameGraphicalView extends Application implements GameView {
 			gc.setFill(Color.WHITE);
 			gc.fillText(text.getText(), (this.canvas.getWidth() - widthText) / 2, this.canvas.getHeight() / 2);
 		}
-		
-		if(this.moveOffset >= 0.0 && this.moveOffset <= 1.0) this.moveOffset += (((double) timeOffset / 1000000) / 750);
 	}
 	
 	public void stopDraw() {
@@ -609,9 +640,7 @@ public class GameGraphicalView extends Application implements GameView {
 		
 		if(moveSucceeded) {
 			this.playerMoved = true;
-			this.moveOffset = 0.0;
-			this.xMove = prevPosition.getX();
-			this.yMove = prevPosition.getY();
+			if(!this.controller.getPlayerPosition().equals(this.prevPosition)) this.moveAnimDir.put(new AbstractMap.SimpleEntry<>(controller.getPlayerPosition(), controller.getPlayerDirection()), 0.0);
 			this.prevPosition = controller.getPlayerPosition();
 		}
 	}

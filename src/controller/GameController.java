@@ -58,7 +58,7 @@ public class GameController {
 	
 	/**
 	 * {@link model.Labyrinth#getCell(Position position)}
-	 * @param position (Position)
+	 * @param position ({@link Position})
 	 */
 	public Cell getCell(Position position) {
 		return (position == null) ? null : labyrinth.getCell(position);
@@ -66,12 +66,22 @@ public class GameController {
 	
 	/**
 	 * {@link model.Labyrinth#getNeighbour(Position cellPosition, Direction directionX, Direction directionY)}
-	 * @param cellPosition (Position)
-	 * @param directionX (Direction)
-	 * @param directionY (Direction)
+	 * @param cellPosition ({@link Position})
+	 * @param directionX ({@link Direction})
+	 * @param directionY ({@link Direction})
 	 */
 	public Position getNeighbour(Position cellPosition, Direction directionX, Direction directionY) {
 		return labyrinth.getNeighbour(cellPosition, directionX, directionY);
+	}
+	
+	/**
+	 * {@link model.Labyrinth#getNeighbour(Position cellPosition, Position neighbourPosition)}
+	 * @param cellPosition ({@link Position})
+	 * @param neighbourPosition ({@link Position})
+	 * @return ({@link Direction})
+	 */
+	public Direction getNeighbour(Position cellPosition, Position neighbourPosition) {
+		return labyrinth.getNeighbour(cellPosition, neighbourPosition);
 	}
 	
 	/**
