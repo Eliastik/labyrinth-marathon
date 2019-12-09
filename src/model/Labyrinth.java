@@ -282,16 +282,16 @@ public class Labyrinth {
 		
 		switch(direction) {
 			case NORTH:
-				canMove = currentCell.getNorth() == CellValue.EMPTY && neighbourCell.getSouth() == CellValue.EMPTY && neighbourCell.getValue() == CellValue.EMPTY;
+				canMove = currentCell != null && neighbourCell != null && currentCell.getNorth() == CellValue.EMPTY && neighbourCell.getSouth() == CellValue.EMPTY && neighbourCell.getValue() == CellValue.EMPTY;
 				break;
 			case SOUTH:
-				canMove = currentCell.getSouth() == CellValue.EMPTY && neighbourCell.getNorth() == CellValue.EMPTY && neighbourCell.getValue() == CellValue.EMPTY;
+				canMove = currentCell != null && neighbourCell != null && currentCell.getSouth() == CellValue.EMPTY && neighbourCell.getNorth() == CellValue.EMPTY && neighbourCell.getValue() == CellValue.EMPTY;
 				break;
 			case EAST:
-				canMove = currentCell.getEast() == CellValue.EMPTY && neighbourCell.getWest() == CellValue.EMPTY && neighbourCell.getValue() == CellValue.EMPTY;
+				canMove = currentCell != null && neighbourCell != null && currentCell.getEast() == CellValue.EMPTY && neighbourCell.getWest() == CellValue.EMPTY && neighbourCell.getValue() == CellValue.EMPTY;
 				break;
 			case WEST:
-				canMove = currentCell.getWest() == CellValue.EMPTY && neighbourCell.getEast() == CellValue.EMPTY && neighbourCell.getValue() == CellValue.EMPTY;
+				canMove = currentCell != null && neighbourCell != null && currentCell.getWest() == CellValue.EMPTY && neighbourCell.getEast() == CellValue.EMPTY && neighbourCell.getValue() == CellValue.EMPTY;
 				break;
 		}
 		

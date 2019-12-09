@@ -569,7 +569,7 @@ public class GameGraphicalView extends Application implements GameView {
 					if(this.pathAuto != null && !this.pathAuto.isEmpty()) this.pathAuto.poll();
 				}
 			
-				this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.7), ev -> {
+				this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.25), ev -> {
 					if(!exited) {
 						if(!controller.isGoalAchieved() && this.pathAuto != null && !this.pathAuto.isEmpty()) {
 							Position next = this.pathAuto.poll();

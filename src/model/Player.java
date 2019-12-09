@@ -54,16 +54,16 @@ public class Player {
 	 * @return (boolean) true if the player could have moved, false otherwise
 	 */
 	public boolean moveTo(Direction direction) {
-		boolean peuxSeDeplacer = this.labyrinth.canMoveTo(this.labyrinth.getCell(this.getPosition()), this.labyrinth.getCell(this.labyrinth.getNeighbour(this.getPosition(), direction, direction)), direction);
+		boolean canMove = this.labyrinth.canMoveTo(this.labyrinth.getCell(this.getPosition()), this.labyrinth.getCell(this.labyrinth.getNeighbour(this.getPosition(), direction, direction)), direction);
 		
-		if(peuxSeDeplacer) {
+		if(canMove) {
 			this.labyrinth.getCell(this.getPosition()).setValue(CellValue.CROSSED);
 			this.setPosition(labyrinth.getNeighbour(this.getPosition(), direction, direction));
 		}
 		
 		this.setDirection(direction);
 		
-		return peuxSeDeplacer;
+		return canMove;
 	}
 	
 	/**
