@@ -37,6 +37,7 @@ public class RecursiveDivision extends GenerationAlgorithmStrategy {
 				
 				for(Direction dir : directions) {
 					cell.setEdgeToDirection(dir, CellValue.EMPTY);
+					cell.setOppositeEdge(dir, CellValue.EMPTY);
 					
 					Cell neighbour = labyrinth.getCell(labyrinth.getNeighbour(pos, dir, dir));
 					
