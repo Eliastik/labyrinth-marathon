@@ -5,6 +5,7 @@ import java.util.Queue;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 import model.Cell;
+import model.CellValue;
 import model.Labyrinth;
 import model.util.Direction;
 import model.util.Position;
@@ -258,5 +259,13 @@ public class GameController {
 	 */
 	public void exit() {
 		this.stopThreadCheckBlocked();
+	}
+	
+	/**
+	 * {@link model.Labyrinth#getCellAround(Position pos)}
+	 * @param pos ({@link Position}) The position of the cell
+	 */
+	public CellValue[] getCellAround(Position pos) {
+		return this.labyrinth.getCellAround(pos);
 	}
 }

@@ -317,6 +317,39 @@ public class Labyrinth {
 	public boolean isGenerationFinished() {
 		return generationFinished;
 	}
+	
+	/**
+	 * Get CellValue ({@link CellValue#WALL} or {@link CellValue#EMPTY}) of the edges around the current cell<br />
+	 * Used to display the labyrinth
+	 * @param pos ({@link Position}) The position of the cell
+	 * @return ({@link CellValue}[3]) An array of CellValue which contains three entries :<br />
+	 * {@link CellValue}[0] = The west value<br />
+	 * {@link CellValue}[1] = The north value<br />
+	 * {@link CellValue}[2] = The north-west value
+	 */
+	public CellValue[] getCellAround(Position pos) {
+		CellValue[] res = new CellValue[3];
+		
+		Cell c = this.getCell(pos);
+		
+		Position posWest = this.getNeighbour(pos, Direction.WEST, null);
+		Cell cWest = this.getCell(posWest);
+		CellValue vWest = (cWest != null && c.getWest() == CellValue.WALL && cWest.getEast() == CellValue.WALL) ? CellValue.WALL : CellValue.EMPTY;
+		
+		res[0] = vWest;
+		
+		Position posNorth = this.getNeighbour(pos, null, Direction.NORTH);
+		Cell cNorth = this.getCell(posNorth);
+		CellValue vNorth = (cNorth != null && c.getNorth() == CellValue.WALL && cNorth.getSouth() == CellValue.WALL) ? CellValue.WALL : CellValue.EMPTY;
+		
+		res[1] = vNorth;
+		
+		CellValue vNorthWest = (vWest == CellValue.WALL || vNorth == CellValue.WALL || (posNorth != null && this.getCellAround(posNorth)[0] == CellValue.WALL) || (posWest != null && this.getCellAround(posWest)[1] == CellValue.WALL)) ? CellValue.WALL : CellValue.EMPTY;
+		
+		res[2] = vNorthWest;
+		
+		return res;
+	}
 
 	public String toString() {
 		String res = "+";

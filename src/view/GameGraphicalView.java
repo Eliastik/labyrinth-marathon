@@ -446,21 +446,9 @@ public class GameGraphicalView extends Application implements GameView {
 				} else {
 					Position pos = new Position(j / 2, i / 2);
 					Cell c = controller.getCell(pos);
-					CellValue v = c.getValue();
-					Position posNorth = controller.getNeighbour(pos, Direction.NORTH, Direction.NORTH);
-					Cell cNorth = controller.getCell(posNorth);
-					CellValue vNorth = (cNorth != null && c.getNorth() == CellValue.WALL && cNorth.getSouth() == CellValue.WALL) ? CellValue.WALL : CellValue.EMPTY;
-					Position posSouth = controller.getNeighbour(pos, Direction.SOUTH, Direction.SOUTH);
-					Cell cSouth = controller.getCell(posSouth);
-					CellValue vSouth = (cSouth != null && c.getSouth() == CellValue.WALL && cSouth.getNorth() == CellValue.WALL) ? CellValue.WALL : CellValue.EMPTY;
-					Position posWest = controller.getNeighbour(pos, Direction.WEST, Direction.WEST);
-					Cell cWest = controller.getCell(posWest);
-					CellValue vWest = (cWest != null && c.getWest() == CellValue.WALL && cWest.getEast() == CellValue.WALL) ? CellValue.WALL : CellValue.EMPTY;
-					Position posEast = controller.getNeighbour(pos, Direction.EAST, Direction.EAST);
-					Cell cEast = controller.getCell(posEast);
-					CellValue vEast = (cEast != null && c.getEast() == CellValue.WALL && cEast.getWest() == CellValue.WALL) ? CellValue.WALL : CellValue.EMPTY;
+					CellValue[] values = controller.getCellAround(pos);
 					
-					if(i == 0 || j == 0 || ((i + 1) % 2 == 0 && j % 2 == 0 && vWest == CellValue.WALL) || ((j % 2 == 0 && i % 2 == 0) || (i % 2 == 0 && vNorth == CellValue.WALL))) {
+					if(i == 0 || j == 0 || ((i + 1) % 2 == 0 && j % 2 == 0 && values[0] == CellValue.WALL) || ((j % 2 == 0 && i % 2 == 0) && values[2] == CellValue.WALL) || (i % 2 == 0 && values[1] == CellValue.WALL)) {
 						gc.drawImage(brick, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 					} else if((i + 1) % 2 == 0 && (j + 1) % 2 == 0) {
 						if(pos.equals(currentPlayerPosition)) {
