@@ -1,4 +1,4 @@
-package model.algorithms;
+package model.generationAlgorithm;
 
 import java.util.AbstractMap;
 import java.util.ArrayList;

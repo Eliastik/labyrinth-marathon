@@ -562,7 +562,7 @@ public class GameGraphicalView extends Application implements GameView {
 	
 			this.threadAuto = new Thread(() -> {
 				if(this.pathAuto == null) {
-					this.pathAuto = controller.getPathAI();
+					this.pathAuto = controller.getPath();
 					if(this.pathAuto != null && !this.pathAuto.isEmpty()) this.pathAuto.poll();
 				}
 			

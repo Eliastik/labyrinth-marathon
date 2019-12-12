@@ -25,15 +25,17 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import model.GenerationAlgorithmStrategy;
 import model.Labyrinth;
-import model.algorithms.AldousBroder;
-import model.algorithms.BinaryTree;
-import model.algorithms.GrowingTree;
-import model.algorithms.HuntAndKill;
-import model.algorithms.Prim;
-import model.algorithms.RecursiveBacktracking;
-import model.algorithms.RecursiveDivision;
-import model.algorithms.SideWinder;
-import model.algorithms.Wilson;
+import model.SolvingAlgorithmStrategy;
+import model.generationAlgorithm.AldousBroder;
+import model.generationAlgorithm.BinaryTree;
+import model.generationAlgorithm.GrowingTree;
+import model.generationAlgorithm.HuntAndKill;
+import model.generationAlgorithm.Prim;
+import model.generationAlgorithm.RecursiveBacktracking;
+import model.generationAlgorithm.RecursiveDivision;
+import model.generationAlgorithm.SideWinder;
+import model.generationAlgorithm.Wilson;
+import model.solvingAlgorithm.BreadthFirstSearch;
 
 /**
  * The launcher with settings
@@ -46,6 +48,7 @@ public class GameLauncher extends Application {
 	private int width = 15;
 	private int height = 15;
 	private GenerationAlgorithmStrategy algorithm = new AldousBroder();
+	private SolvingAlgorithmStrategy algorithmSolve = new BreadthFirstSearch();
 	private long seed = System.currentTimeMillis();
 	private Image spritePlayer;
 	private int level = 1;
@@ -117,12 +120,6 @@ public class GameLauncher extends Application {
 		algorithms.getSelectionModel().select(0);
 		hboxAlgorithm.getChildren().addAll(algorithms);
 		
-		HBox hboxSeedLbl = new HBox();
-		Label seedLbl = new Label(locales.getString("seed"));
-		seedLbl.setFont(new Font(20));
-		HBox.setMargin(seedLbl, new Insets(5, 5, 5, 5));
-		hboxSeedLbl.getChildren().addAll(seedLbl);
-		
 		HBox hboxStepByStep = new HBox();
 		CheckBox checkStepByStep = new CheckBox();
 		Label stepByStepLbl = new Label(locales.getString("stepByStep"));
@@ -137,6 +134,27 @@ public class GameLauncher extends Application {
 				checkStepByStep.setSelected(true);
 			}
 		});
+		
+		HBox hboxAlgorithmLblSolve = new HBox();
+		Label algorithmLblSolve = new Label(locales.getString("algorithmSolve"));
+		algorithmLblSolve.setFont(new Font(20));
+		HBox.setMargin(algorithmLblSolve, new Insets(5, 5, 5, 5));
+		hboxAlgorithmLblSolve.getChildren().addAll(algorithmLblSolve);
+		
+		HBox hboxAlgorithmSolve = new HBox();
+		ComboBox<String> algorithmsSolve = new ComboBox<>();
+		HBox.setMargin(algorithmsSolve, new Insets(5, 5, 5, 5));
+		ObservableList<String> algorithmsSolveList = FXCollections.observableArrayList();
+		algorithmsSolveList.addAll("Breadth First Search");
+		algorithmsSolve.setItems(algorithmsSolveList);
+		algorithmsSolve.getSelectionModel().select(0);
+		hboxAlgorithmSolve.getChildren().addAll(algorithmsSolve);
+		
+		HBox hboxSeedLbl = new HBox();
+		Label seedLbl = new Label(locales.getString("seed"));
+		seedLbl.setFont(new Font(20));
+		HBox.setMargin(seedLbl, new Insets(5, 5, 5, 5));
+		hboxSeedLbl.getChildren().addAll(seedLbl);
 		
 		HBox hboxSeed = new HBox();
 		TextField seedField = new TextField("" + this.seed);
@@ -203,11 +221,28 @@ public class GameLauncher extends Application {
 					break;
 			}
 			
+			if(this.gameMode == 2) {
+				switch(algorithmsSolve.getValue()) {
+					case "Breadth First Search":
+						this.algorithmSolve = new BreadthFirstSearch();
+						break;
+					default:
+						this.algorithmSolve = new BreadthFirstSearch();
+						break;
+				}
+			}
+			
 			this.launchGame();
 			stage.close();
 		});
 		
-		root.getChildren().addAll(labelTitle, hboxSizeLbl, hboxSize, hboxAlgorithmLbl, hboxAlgorithm, hboxStepByStep, hboxSeedLbl, hboxSeed, hboxButtons);
+		root.getChildren().addAll(labelTitle, hboxSizeLbl, hboxSize, hboxAlgorithmLbl, hboxAlgorithm, hboxStepByStep);
+		
+		if(this.gameMode == 2) {
+			root.getChildren().addAll(hboxAlgorithmLblSolve, hboxAlgorithmSolve);
+		}
+		
+		root.getChildren().addAll(hboxSeedLbl, hboxSeed, hboxButtons);
 		
 		stage.setTitle(locales.getString("title"));
 		stage.getIcons().add(new Image(getClass().getResourceAsStream("/images/icon_flat.png")));
@@ -237,10 +272,10 @@ public class GameLauncher extends Application {
 		GameView game;
 		
 		if(this.gameMode == 2) {
-			labyrinth = new Labyrinth(this.width, this.height, this.algorithm, true);
+			labyrinth = new Labyrinth(this.width, this.height, this.algorithm, this.algorithmSolve, true);
 			game = new GameGraphicalView(this, displayInfoStart, 0);
 		} else {
-			labyrinth = new Labyrinth(this.width, this.height, this.algorithm, false);
+			labyrinth = new Labyrinth(this.width, this.height, this.algorithm, this.algorithmSolve, false);
 			game = new GameGraphicalView(this, displayInfoStart, this.level);
 		}
 		

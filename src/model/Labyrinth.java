@@ -1,10 +1,11 @@
 package model;
 
 
+import java.util.Queue;
 import java.util.Random;
 
-import model.algorithms.AldousBroder;
-import model.algorithms.GrowingTree;
+import model.generationAlgorithm.GrowingTree;
+import model.solvingAlgorithm.BreadthFirstSearch;
 import model.util.Direction;
 import model.util.Position;
 
@@ -19,11 +20,12 @@ public class Labyrinth {
 	private Position startPosition;
 	private Position endPosition;
 	private GenerationAlgorithmStrategy algorithm = new GrowingTree();
+	private SolvingAlgorithmStrategy solver = new BreadthFirstSearch();
 	private Player player;
 	private boolean enableAutoPlayer;
 	private boolean generationFinished = false;
 	
-	public Labyrinth(int width, int height, Position startPosition, Position endPosition, GenerationAlgorithmStrategy algorithm, boolean autoPlayer, boolean enableAutoPlayer) {
+	public Labyrinth(int width, int height, Position startPosition, Position endPosition, GenerationAlgorithmStrategy algorithm, SolvingAlgorithmStrategy algorithmSolve, boolean autoPlayer, boolean enableAutoPlayer) {
 		if((width <= 1 && height <= 1) || width <= 0 || height <= 0) {
 			throw new IllegalArgumentException("Impossible to build a labyrinth with only one cell or less");
 		}
@@ -42,18 +44,19 @@ public class Labyrinth {
 		this.setAutoPlayer(autoPlayer);
 		this.enableAutoPlayer = enableAutoPlayer;
 		this.algorithm = algorithm;
+		this.solver = algorithmSolve;
 	}
 	
-	public Labyrinth(int width, int height, Position startPosition, Position endPosition, GenerationAlgorithmStrategy algorithm, boolean enableAutoPlayer) {
-		this(width, height, startPosition, endPosition, algorithm, false, enableAutoPlayer);
+	public Labyrinth(int width, int height, Position startPosition, Position endPosition, GenerationAlgorithmStrategy algorithm, SolvingAlgorithmStrategy algorithmSolve, boolean enableAutoPlayer) {
+		this(width, height, startPosition, endPosition, algorithm, algorithmSolve, false, enableAutoPlayer);
 	}
 	
-	public Labyrinth(int width, int height, GenerationAlgorithmStrategy algorithm, boolean enableAutoPlayer) {
-		this(width, height, new Position(0, 0), new Position(width - 1, height - 1), algorithm, enableAutoPlayer);
+	public Labyrinth(int width, int height, GenerationAlgorithmStrategy algorithm, SolvingAlgorithmStrategy algorithmSolve, boolean enableAutoPlayer) {
+		this(width, height, new Position(0, 0), new Position(width - 1, height - 1), algorithm, algorithmSolve, enableAutoPlayer);
 	}
 	
 	public Labyrinth(int width, int height, Position startPosition, Position endPosition, boolean enableAutoPlayer) {
-		this(width, height, startPosition, endPosition, new AldousBroder(), false, enableAutoPlayer);
+		this(width, height, startPosition, endPosition, new GrowingTree(), new BreadthFirstSearch(), enableAutoPlayer);
 	}
 	
 	public Labyrinth(int width, int height, boolean enableAutoPlayer) {
@@ -318,6 +321,23 @@ public class Labyrinth {
 		return generationFinished;
 	}
 	
+	/**
+	 * Calculate a path to the exit and return this path.<br />
+	 * Return null if no path was found.
+	 * @return ({@link Queue}<{@link Position}>) The path
+	 */
+	public Queue<Position> getPath() {
+		return this.solver.getPath(this);
+	}
+	
+	/**
+	 * Inform is the computer is still searching a path (when auto player is enabled)
+	 * @return (boolean) true if the computer search a path, false otherwise
+	 */
+	public boolean isSearchingPath() {
+		return this.solver.isSearchingPath();
+	}
+
 	/**
 	 * Get CellValue ({@link CellValue#WALL} or {@link CellValue#EMPTY}) of the edges around the current cell<br />
 	 * Used to display the labyrinth

@@ -2,8 +2,6 @@ package model;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
@@ -26,7 +24,6 @@ public class Player {
 	private Image sprite;
 	private boolean isAutoPlayer = false;
 	private boolean blocked = false;
-	private boolean searchingPath = false;
 	private boolean checkBlocked = false;
 	
 	public Player(Position position, Direction direction, Labyrinth labyrinth) {
@@ -139,59 +136,10 @@ public class Player {
 	}
 	
 	/**
-	 * Calculate a path to the exit and return this path.<br />
-	 * Return null if no path was found.
-	 * @return ({@link Queue}<{@link Position}>) The path
+	 * {@link Labyrinth#getPath()}
 	 */
-	public Queue<Position> getPathAI() {
-		if(!this.labyrinth.isAutoPlayer()) return null;
-		if(this.searchingPath) return null;
-		if(this.getPosition().equals(this.labyrinth.getEndPosition())) return null;
-		
-		this.searchingPath = true;
-		Queue<List<Position>> queue = new LinkedList<>();
-		List<Position> explore = new ArrayList<>();
-		List<Position> pathToEnd = new ArrayList<>();
-		
-		pathToEnd.add(this.getPosition());
-		queue.add(pathToEnd);
-		
-		while(!queue.isEmpty()) {
-			if(!this.labyrinth.isAutoPlayer()) return null;
-			
-			pathToEnd = queue.poll();
-			Position current = pathToEnd.get(pathToEnd.size() - 1);
-			
-			if(current.equals(this.labyrinth.getEndPosition())) {
-				this.searchingPath = false;
-				return new LinkedList<>(pathToEnd);
-			} else {
-				ArrayList<Position> neightbours = new ArrayList<>();
-				List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST));
-				
-				for(int i = 0; i < directions.size(); i++) {
-					Position posNeighbour = this.labyrinth.getNeighbour(current, directions.get(i), directions.get(i));
-					Cell neighbour = this.labyrinth.getCell(posNeighbour);
-					
-					if(posNeighbour != null && !explore.contains(posNeighbour) && !posNeighbour.equals(current) && this.labyrinth.canMoveTo(this.labyrinth.getCell(current), neighbour, directions.get(i))) {
-						List<Position> path = new ArrayList<>(pathToEnd);
-						path.add(posNeighbour);
-						queue.add(path);
-						
-						neightbours.add(posNeighbour);
-						explore.add(posNeighbour);
-					}
-				}
-				
-				if(neightbours.isEmpty() && queue.isEmpty()) {
-					this.searchingPath = false;
-					return null;
-				}
-			}
-        }
-
-		this.searchingPath = false;
-		return null;
+	public Queue<Position> getPath() {
+		return this.labyrinth.getPath();
 	}
 
 	/**
@@ -259,11 +207,10 @@ public class Player {
 	}
 
 	/**
-	 * Inform is the computer is still searching a path (when auto player is enabled)
-	 * @return (boolean) true if the computer search a path, false otherwise
+	 * {@link Labyrinth#isSearchingPath()}
 	 */
 	public boolean isSearchingPath() {
-		return searchingPath;
+		return this.labyrinth.isSearchingPath();
 	}
 
 	/**

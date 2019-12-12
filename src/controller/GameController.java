@@ -211,10 +211,10 @@ public class GameController {
 	}
 	
 	/**
-	 * {@link model.Player#getPathAI()}
+	 * {@link model.Labyrinth#getPath()}
 	 */
-	public Queue<Position> getPathAI() {
-		return labyrinth.getPlayer().getPathAI();
+	public Queue<Position> getPath() {
+		return labyrinth.getPath();
 	}
 	
 	/**
@@ -248,10 +248,10 @@ public class GameController {
 	}
 	
 	/**
-	 * {@link model.Player#isSearchingPath()}
+	 * {@link model.Labyrinth#isSearchingPath()}
 	 */
 	public boolean searchingPath() {
-		return labyrinth.getPlayer().isSearchingPath();
+		return labyrinth.isSearchingPath();
 	}
 	
 	/**
