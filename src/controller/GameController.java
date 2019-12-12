@@ -22,6 +22,7 @@ public class GameController {
 	private Labyrinth labyrinth;
 	private GameView view;
 	private Thread threadCheckBlocked;
+	private boolean useThreadedCheckBlocked = true;
 	
 	public GameController(Labyrinth labyrinth, GameView view) {
 		super();
@@ -147,8 +148,13 @@ public class GameController {
 			}
 		}
 		
+		if(this.useThreadedCheckBlocked) {
+			this.createThreadCheckBlocked();
+		} else {
+			this.labyrinth.getPlayer().checkBlocked();
+		}
+		
 		view.update(moved);
-		this.createThreadCheckBlocked();
 		
 		return moved;
 	}
@@ -161,8 +167,15 @@ public class GameController {
 	public boolean movePlayer(Direction direction) {
 		boolean moved = false;
 		if(!labyrinth.getPlayer().goalAchieved()) moved = labyrinth.getPlayer().moveTo(direction);
+		
+		if(this.useThreadedCheckBlocked) {
+			this.createThreadCheckBlocked();
+		} else {
+			this.labyrinth.getPlayer().checkBlocked();
+		}
+		
 		view.update(moved);
-		this.createThreadCheckBlocked();
+		
 		return moved;
 	}
 	
@@ -267,5 +280,22 @@ public class GameController {
 	 */
 	public CellValue[] getCellAround(Position pos) {
 		return this.labyrinth.getCellAround(pos);
+	}
+
+	/**
+	 * Inform if the blocked player check is using a {@link Thread}
+	 * @return (boolean)
+	 */
+	public boolean isUseThreadedCheckBlocked() {
+		return useThreadedCheckBlocked;
+	}
+	
+	/**
+	 * Set if the blocked player check must use a {@link Thread}<br />
+	 * Defaults to true
+	 * @param useThreadedCheckBlocked (boolean) true to use a {@link Thread}, false otherwise
+	 */
+	public void setUseThreadedCheckBlocked(boolean useThreadedCheckBlocked) {
+		this.useThreadedCheckBlocked = useThreadedCheckBlocked;
 	}
 }

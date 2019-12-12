@@ -45,6 +45,7 @@ public class GameTextView implements GameView {
 	}
 	
 	public void run() {
+		this.controller.setUseThreadedCheckBlocked(false);
 		this.update(true);
 	}
 
@@ -68,7 +69,10 @@ public class GameTextView implements GameView {
 			
 			do {
 				validEntry = false;
-				choice = scanner.nextLine().trim().toUpperCase();
+				
+				if(scanner.hasNextLine()) {
+					choice = scanner.nextLine().trim().toUpperCase();
+				}
 				
 				if(choice.equals("") || (choice.charAt(0) != 'T' && choice.charAt(0) != 'B' && choice.charAt(0) != 'R' && choice.charAt(0) != 'L')) {
 					System.out.println(locales.getString("invalidChoice"));
@@ -120,8 +124,6 @@ public class GameTextView implements GameView {
 				}
 			}
 		}
-		
-		scanner.close();
 	}
 
 	@Override
