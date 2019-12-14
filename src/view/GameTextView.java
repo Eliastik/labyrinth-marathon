@@ -61,39 +61,41 @@ public class GameTextView implements GameView {
 			if(this.level > 0) System.out.println(locales.getString("level") + " " + locales.getString("num") + this.level);
 			System.out.println(MessageFormat.format(locales.getString("infos"), controller.getEndPosition().getX() + " - " + controller.getEndPosition().getY()));
 			
-			if(!moveSucceeded) {
-				System.out.println(locales.getString("moveFailed"));
-			}
-			
-			System.out.println(locales.getString("move"));
-			
-			do {
-				validEntry = false;
-				
-				if(scanner.hasNextLine()) {
-					choice = scanner.nextLine().trim().toUpperCase();
+			if(controller.isGenerationFinished()) {
+				if(!moveSucceeded) {
+					System.out.println(locales.getString("moveFailed"));
 				}
 				
-				if(choice.equals("") || (choice.charAt(0) != 'T' && choice.charAt(0) != 'B' && choice.charAt(0) != 'R' && choice.charAt(0) != 'L')) {
-					System.out.println(locales.getString("invalidChoice"));
-				} else {
-					validEntry = true;
+				System.out.println(locales.getString("move"));
+				
+				do {
+					validEntry = false;
+					
+					if(scanner.hasNextLine()) {
+						choice = scanner.nextLine().trim().toUpperCase();
+					}
+					
+					if(choice.equals("") || (choice.charAt(0) != 'T' && choice.charAt(0) != 'B' && choice.charAt(0) != 'R' && choice.charAt(0) != 'L')) {
+						System.out.println(locales.getString("invalidChoice"));
+					} else {
+						validEntry = true;
+					}
+				} while(!validEntry);
+				
+				switch(choice.charAt(0)) {
+					case 'T':
+						moveSucceeded = controller.movePlayer(Direction.NORTH);
+						break;
+					case 'B':
+						moveSucceeded = controller.movePlayer(Direction.SOUTH);
+						break;
+					case 'L':
+						moveSucceeded = controller.movePlayer(Direction.WEST);
+						break;
+					case 'R':
+						moveSucceeded = controller.movePlayer(Direction.EAST);
+						break;
 				}
-			} while(!validEntry);
-			
-			switch(choice.charAt(0)) {
-				case 'T':
-					moveSucceeded = controller.movePlayer(Direction.NORTH);
-					break;
-				case 'B':
-					moveSucceeded = controller.movePlayer(Direction.SOUTH);
-					break;
-				case 'L':
-					moveSucceeded = controller.movePlayer(Direction.WEST);
-					break;
-				case 'R':
-					moveSucceeded = controller.movePlayer(Direction.EAST);
-					break;
 			}
 		} else {
 			if(controller.isGoalAchieved()) {

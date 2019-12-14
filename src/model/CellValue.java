@@ -25,7 +25,7 @@ public enum CellValue {
 	 */
 	CURRENT,
 	/**
-	 * Frontier (used in Prim's algorithm)
+	 * Frontier (used in Prim's algorithm and step-by-step solving algorithm)
 	 */
 	FRONTIER;
 }

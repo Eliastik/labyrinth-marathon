@@ -298,4 +298,12 @@ public class GameController {
 	public void setUseThreadedCheckBlocked(boolean useThreadedCheckBlocked) {
 		this.useThreadedCheckBlocked = useThreadedCheckBlocked;
 	}
+	
+	/**
+	 * {@link model.Labyrinth#isGenerationFinished()}
+	 * @return (boolean)
+	 */
+	public boolean isGenerationFinished() {
+		return this.labyrinth.isGenerationFinished();
+	}
 }

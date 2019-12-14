@@ -13,12 +13,36 @@ import model.util.Position;
 public abstract class SolvingAlgorithmStrategy {
 	private boolean stopped = false;
 	protected boolean searchingPath = false;
+	private boolean stepByStep = false;
+	
+	public SolvingAlgorithmStrategy(boolean stepByStep) {
+		this.stepByStep = stepByStep;
+	}
+	
+	public SolvingAlgorithmStrategy() {
+		this(false);
+	}
 	
 	/**
 	 * Solve the labyrinth
 	 * @return ({@link Queue}<{@link Position}>) The path to the end position, or null if no path was found
 	 */
 	public abstract Queue<Position> getPath(Labyrinth labyrinth);
+	
+	/**
+	 * Clean for step-by-step algorithm
+	 */
+	protected void cleanStepByStep(Labyrinth labyrinth) {
+		for(int i = 0; i < labyrinth.getHeight(); i++) {
+			for(int j = 0; j < labyrinth.getWidth(); j++) {
+				Cell cell = labyrinth.getCell(new Position(j, i));
+				
+				if(cell.getValue() == CellValue.CURRENT || cell.getValue() == CellValue.FRONTIER) {
+					cell.setValue(CellValue.EMPTY);
+				}
+			}
+		}
+	}
 	
 	/**
 	 * Stop the solving
@@ -48,5 +72,13 @@ public abstract class SolvingAlgorithmStrategy {
 	 */
 	public boolean isSearchingPath() {
 		return searchingPath;
+	}
+
+	/**
+	 * Inform if the algorithm is running step-by-step
+	 * @return (boolean)
+	 */
+	public boolean isStepByStep() {
+		return stepByStep;
 	}
 }

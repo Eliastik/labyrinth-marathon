@@ -150,6 +150,21 @@ public class GameLauncher extends Application {
 		algorithmsSolve.getSelectionModel().select(0);
 		hboxAlgorithmSolve.getChildren().addAll(algorithmsSolve);
 		
+		HBox hboxStepByStepSolve = new HBox();
+		CheckBox checkStepByStepSolve = new CheckBox();
+		Label stepByStepLblSolve = new Label(locales.getString("stepByStep"));
+		HBox.setMargin(checkStepByStepSolve, new Insets(5, 5, 5, 5));
+		HBox.setMargin(stepByStepLblSolve, new Insets(5, 5, 5, 5));
+		hboxStepByStepSolve.getChildren().addAll(checkStepByStepSolve, stepByStepLblSolve);
+		
+		stepByStepLblSolve.addEventHandler(MouseEvent.MOUSE_CLICKED, e -> {
+			if(checkStepByStepSolve.isSelected()) {
+				checkStepByStepSolve.setSelected(false);
+			} else {
+				checkStepByStepSolve.setSelected(true);
+			}
+		});
+		
 		HBox hboxSeedLbl = new HBox();
 		Label seedLbl = new Label(locales.getString("seed"));
 		seedLbl.setFont(new Font(20));
@@ -222,12 +237,18 @@ public class GameLauncher extends Application {
 			}
 			
 			if(this.gameMode == 2) {
+				boolean stepByStepSolve = false;
+				
+				if(checkStepByStepSolve.isSelected()) {
+					stepByStepSolve = true;
+				}
+				
 				switch(algorithmsSolve.getValue()) {
 					case "Breadth First Search":
-						this.algorithmSolve = new BreadthFirstSearch();
+						this.algorithmSolve = new BreadthFirstSearch(stepByStepSolve);
 						break;
 					default:
-						this.algorithmSolve = new BreadthFirstSearch();
+						this.algorithmSolve = new BreadthFirstSearch(stepByStepSolve);
 						break;
 				}
 			}
@@ -239,7 +260,7 @@ public class GameLauncher extends Application {
 		root.getChildren().addAll(labelTitle, hboxSizeLbl, hboxSize, hboxAlgorithmLbl, hboxAlgorithm, hboxStepByStep);
 		
 		if(this.gameMode == 2) {
-			root.getChildren().addAll(hboxAlgorithmLblSolve, hboxAlgorithmSolve);
+			root.getChildren().addAll(hboxAlgorithmLblSolve, hboxAlgorithmSolve, hboxStepByStepSolve);
 		}
 		
 		root.getChildren().addAll(hboxSeedLbl, hboxSeed, hboxButtons);
