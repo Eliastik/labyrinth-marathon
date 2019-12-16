@@ -39,6 +39,7 @@ public class AStar extends SolvingAlgorithmStrategy {
 		
 		if(this.searchingPath) return null;
 		if(labyrinth.getPlayer().getPosition().equals(labyrinth.getEndPosition())) return null;
+		this.searchingPath = true;
 		
 		Queue<Node> open = new PriorityQueue<>();
 		open.add(new Node(null, labyrinth.getPlayer().getPosition(), labyrinth.getEndPosition()));
@@ -65,7 +66,7 @@ public class AStar extends SolvingAlgorithmStrategy {
 			if(this.isStepByStep()) {
 				try {
 					if(current != null && !current.getPosition().equals(labyrinth.getEndPosition())) labyrinth.getCell(current.getPosition()).setValue(CellValue.CURRENT);
-					Thread.sleep(25);
+					Thread.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -87,16 +88,16 @@ public class AStar extends SolvingAlgorithmStrategy {
 					Cell currentCell = labyrinth.getCell(current.getPosition());
 					Cell successorCell = labyrinth.getCell(successorPosition);
 					
-					if(this.isStepByStep()) {
-						try {
-							if(successorPosition != null && !successorPosition.equals(labyrinth.getEndPosition())) labyrinth.getCell(successorPosition).setValue(CellValue.FRONTIER);
-							Thread.sleep(25);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					
 					if(labyrinth.canMoveTo(currentCell, successorCell, directions.get(i)) && closed.indexOf(successor) <= -1) {
+						if(this.isStepByStep()) {
+							try {
+								if(successorPosition != null && !successorPosition.equals(labyrinth.getEndPosition())) labyrinth.getCell(successorPosition).setValue(CellValue.FRONTIER);
+								Thread.sleep(50);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						
 						Node samePositionInOpenList = this.samePosition(open, successor);
 						
 						if(current.getCost() > successor.getCost() || samePositionInOpenList == null) {
@@ -217,7 +218,7 @@ public class AStar extends SolvingAlgorithmStrategy {
 		
 		@Override
 		public String toString() {
-			return "[Node] position = " + this.getPosition() + " ; startDistance = " + this.getDistanceFromStart() + " ; heuristicDistance = " + this.getHeuristicDistance() + " ; cost = " + this.getCost();
+			return "[Node] position = " + this.getPosition() + " ; startDistance = " + this.getDistanceFromStart() + " ; heuristicDistance = " + this.getHeuristicDistance() + " ; cost = " + this.getCost() + " ; parent = " + this.parent;
 		}
 	}
 }

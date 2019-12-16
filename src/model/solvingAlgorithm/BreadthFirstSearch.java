@@ -79,16 +79,16 @@ public class BreadthFirstSearch extends SolvingAlgorithmStrategy {
 					Position posNeighbour = labyrinth.getNeighbour(current, directions.get(i), directions.get(i));
 					Cell neighbour = labyrinth.getCell(posNeighbour);
 					
-					if(this.isStepByStep()) {
-						try {
-							if(neighbour != null && !posNeighbour.equals(labyrinth.getEndPosition())) neighbour.setValue(CellValue.FRONTIER);
-							Thread.sleep(50);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					
 					if(posNeighbour != null && !explore.contains(posNeighbour) && !posNeighbour.equals(current) && labyrinth.canMoveTo(labyrinth.getCell(current), neighbour, directions.get(i))) {
+						if(this.isStepByStep()) {
+							try {
+								if(neighbour != null && !posNeighbour.equals(labyrinth.getEndPosition())) neighbour.setValue(CellValue.FRONTIER);
+								Thread.sleep(50);
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						
 						List<Position> path = new ArrayList<>(pathToEnd);
 						path.add(posNeighbour);
 						queue.add(path);
