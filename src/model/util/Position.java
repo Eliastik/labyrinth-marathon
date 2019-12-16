@@ -14,7 +14,7 @@ public class Position {
 	int y;
 	
 	/**
-	 * Construct a new Positino
+	 * Construct a new Position
 	 * @param x (int) x position (abscissa)
 	 * @param y (int) y position (ordinate)
 	 */

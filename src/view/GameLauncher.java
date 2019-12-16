@@ -37,6 +37,7 @@ import model.generationAlgorithm.SideWinder;
 import model.generationAlgorithm.Wilson;
 import model.solvingAlgorithm.AStar;
 import model.solvingAlgorithm.BreadthFirstSearch;
+import model.solvingAlgorithm.Dijkstra;
 
 /**
  * The launcher with settings
@@ -146,7 +147,7 @@ public class GameLauncher extends Application {
 		ComboBox<String> algorithmsSolve = new ComboBox<>();
 		HBox.setMargin(algorithmsSolve, new Insets(5, 5, 5, 5));
 		ObservableList<String> algorithmsSolveList = FXCollections.observableArrayList();
-		algorithmsSolveList.addAll("A-Star", "Breadth First Search");
+		algorithmsSolveList.addAll("A-Star", "Dijkstra", "Breadth First Search");
 		algorithmsSolve.setItems(algorithmsSolveList);
 		algorithmsSolve.getSelectionModel().select(0);
 		hboxAlgorithmSolve.getChildren().addAll(algorithmsSolve);
@@ -250,6 +251,9 @@ public class GameLauncher extends Application {
 						break;
 					case "A-Star":
 						this.algorithmSolve = new AStar(stepByStepSolve);
+						break;
+					case "Dijkstra":
+						this.algorithmSolve = new Dijkstra(stepByStepSolve);
 						break;
 					default:
 						this.algorithmSolve = new AStar(stepByStepSolve);

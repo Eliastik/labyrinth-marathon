@@ -1,11 +1,7 @@
 package model.generationAlgorithm;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
-import model.Cell;
 import model.CellValue;
 import model.GenerationAlgorithmStrategy;
 import model.Labyrinth;

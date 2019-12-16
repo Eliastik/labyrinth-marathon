@@ -22,12 +22,19 @@ import model.util.Position;
  * @see <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">https://en.wikipedia.org/wiki/A*_search_algorithm</a>
  */
 public class AStar extends SolvingAlgorithmStrategy {
-	public AStar(boolean stepByStepSolve) {
+	private AStarHeuristic heuristic = new AStarHeuristicManhattan();
+	
+	public AStar(AStarHeuristic heuristic, boolean stepByStepSolve) {
 		super(stepByStepSolve);
+		this.heuristic = heuristic;
+	}
+	
+	public AStar(boolean stepByStepSolve) {
+		this(new AStarHeuristicManhattan(), stepByStepSolve);
 	}
 
 	public AStar() {
-		super(false);
+		this(false);
 	}
 	
 	@Override
@@ -176,15 +183,15 @@ public class AStar extends SolvingAlgorithmStrategy {
 		}
 		
 		/**
-		 * Process the distance between this node and the end node using Manhattan distance
+		 * Process the distance between this node and the end node using the heuristic distance
 		 * @return (int) The distance
 		 */
 		public int getHeuristicDistance() {
-			return Math.abs(this.getPosition().getX() - this.endPosition.getX()) + Math.abs(this.getPosition().getY() - this.endPosition.getY());
+			return heuristic.distance(this.getPosition(), this.endPosition);
 		}
 		
 		/**
-		 * Process the distance between this node and the start node using Manhattan distance to parent
+		 * Process the distance between this node and the start node using the distance to parent
 		 * @return (int) The distance
 		 */
 		public int getDistanceFromStart() {
