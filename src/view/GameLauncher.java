@@ -146,7 +146,7 @@ public class GameLauncher extends Application {
 		ComboBox<String> algorithmsSolve = new ComboBox<>();
 		HBox.setMargin(algorithmsSolve, new Insets(5, 5, 5, 5));
 		ObservableList<String> algorithmsSolveList = FXCollections.observableArrayList();
-		algorithmsSolveList.addAll("Breadth First Search", "AStar");
+		algorithmsSolveList.addAll("Breadth First Search", "A-Star");
 		algorithmsSolve.setItems(algorithmsSolveList);
 		algorithmsSolve.getSelectionModel().select(0);
 		hboxAlgorithmSolve.getChildren().addAll(algorithmsSolve);
@@ -248,7 +248,7 @@ public class GameLauncher extends Application {
 					case "Breadth First Search":
 						this.algorithmSolve = new BreadthFirstSearch(stepByStepSolve);
 						break;
-					case "AStar":
+					case "A-Star":
 						this.algorithmSolve = new AStar(stepByStepSolve);
 						break;
 					default:

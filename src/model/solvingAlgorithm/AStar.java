@@ -41,7 +41,7 @@ public class AStar extends SolvingAlgorithmStrategy {
 		if(labyrinth.getPlayer().getPosition().equals(labyrinth.getEndPosition())) return null;
 		
 		Queue<Node> open = new PriorityQueue<>();
-		open.add(new Node(labyrinth.getStartPosition(), labyrinth.getPlayer().getPosition(), labyrinth.getEndPosition()));
+		open.add(new Node(null, labyrinth.getPlayer().getPosition(), labyrinth.getEndPosition()));
 		List<Node> closed = new ArrayList<>();
 		
 		Node current = null;
@@ -54,11 +54,18 @@ public class AStar extends SolvingAlgorithmStrategy {
 			}
 			
 			current = open.poll();
+			closed.add(current);
+			
+			if(current.getPosition().equals(labyrinth.getEndPosition())) {
+				this.searchingPath = false;
+				if(this.isStepByStep()) this.cleanStepByStep(labyrinth);
+				return this.reconstructPath(closed);
+			}
 			
 			if(this.isStepByStep()) {
 				try {
 					if(current != null && !current.getPosition().equals(labyrinth.getEndPosition())) labyrinth.getCell(current.getPosition()).setValue(CellValue.CURRENT);
-					Thread.sleep(50);
+					Thread.sleep(25);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -74,6 +81,7 @@ public class AStar extends SolvingAlgorithmStrategy {
 				}
 				
 				Position successorPosition = labyrinth.getNeighbour(current.getPosition(), directions.get(i), directions.get(i));
+				Node successor = new Node(current, successorPosition, labyrinth.getEndPosition());
 				
 				if(successorPosition != null) {
 					Cell currentCell = labyrinth.getCell(current.getPosition());
@@ -82,53 +90,42 @@ public class AStar extends SolvingAlgorithmStrategy {
 					if(this.isStepByStep()) {
 						try {
 							if(successorPosition != null && !successorPosition.equals(labyrinth.getEndPosition())) labyrinth.getCell(successorPosition).setValue(CellValue.FRONTIER);
-							Thread.sleep(50);
+							Thread.sleep(25);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
 					}
 					
-					if(labyrinth.canMoveTo(currentCell, successorCell, directions.get(i))) {
-						if(successorPosition.equals(labyrinth.getEndPosition())) {
-							this.searchingPath = false;
-							return this.reconstructPath(closed);
-						}
-						
-						Node successor = new Node(labyrinth.getStartPosition(), successorPosition, labyrinth.getEndPosition());
+					if(labyrinth.canMoveTo(currentCell, successorCell, directions.get(i)) && closed.indexOf(successor) <= -1) {
 						Node samePositionInOpenList = this.samePosition(open, successor);
 						
-						if(samePositionInOpenList != null && samePositionInOpenList.getCost() < successor.getCost()) {
-							System.out.println(samePositionInOpenList.getPosition() + " " + successor.getPosition());
-							continue;
-						}
-						
-						if(closed.indexOf(successor) > -1) {
-							Node samePositionInClosedList = closed.get(closed.indexOf(successor));
-							
-							if(samePositionInClosedList.getCost() < successor.getCost()) {
-								continue;
+						if(current.getCost() > successor.getCost() || samePositionInOpenList == null) {
+							if(samePositionInOpenList == null) {
+								open.add(successor);
 							}
 						}
-						
-						open.add(successor);
 					}
 				}
 			}
-			
-			closed.add(current);
 		}
 		
 		return null;
 	}
 	
 	public Queue<Position> reconstructPath(List<Node> nodes) {
+		List<Position> tmp = new ArrayList<>();
+		Node current = nodes.get(nodes.size() - 1);
+		
+		while(current != null) {
+			tmp.add(current.getPosition());
+			current = current.parent;
+		}
+
 		Queue<Position> result = new LinkedList<>();
 		
-		for(int i = 0; i < nodes.size(); i++) {
-			result.add(nodes.get(i).getPosition());
+		for(int i = tmp.size() - 1; i >= 0; i--) {
+			result.add(tmp.get(i));
 		}
-		
-		System.out.println(result);
 		
 		return result;
 	}
@@ -145,11 +142,11 @@ public class AStar extends SolvingAlgorithmStrategy {
 	
 	private class Node implements Comparable<Node> {
 		private Position position;
-		private Position startPosition;
+		private Node parent;
 		private Position endPosition;
 		
-		Node(Position startPosition, Position position, Position endPosition) {
-			this.startPosition = startPosition;
+		Node(Node parentPosition, Position position, Position endPosition) {
+			this.parent = parentPosition;
 			this.position = position;
 			this.endPosition = endPosition;
 		}
@@ -163,23 +160,20 @@ public class AStar extends SolvingAlgorithmStrategy {
 		}
 		
 		/**
-		 * Process the distance between this node and its parent
+		 * Process the distance between this node and the start node using Manhattan distance
 		 * @return (int) The distance
 		 */
-		public int getDistanceFromParent() {
-			if(this.startPosition == null) {
-				return 0;
-			}
-			
-			return Math.abs(this.getPosition().getX() - this.startPosition.getX()) + Math.abs(this.getPosition().getY() - this.startPosition.getY());
+		public int getDistanceFromStart() {
+			if(this.parent == null) return 0;
+			return this.parent.getDistanceFromStart() + Math.abs(this.getPosition().getX() - this.parent.getPosition().getX()) + Math.abs(this.getPosition().getY() - this.parent.getPosition().getY());
 		}
 
 		/**
-		 * Process the heuristic and parent distance then calculate the cost of this node
+		 * Process the heuristic and start distance then calculate the cost of this node
 		 * @return (int) The cost
 		 */
 		public int getCost() {
-			return this.getDistanceFromParent() + this.getHeuristicDistance();
+			return this.getDistanceFromStart() + this.getHeuristicDistance();
 		}
 		
 		/**
@@ -223,7 +217,7 @@ public class AStar extends SolvingAlgorithmStrategy {
 		
 		@Override
 		public String toString() {
-			return "[Node] position = " + this.getPosition() + " ; parentDistance = " + this.getDistanceFromParent() + " ; heuristicDistance = " + this.getHeuristicDistance() + " ; cost = " + this.getCost();
+			return "[Node] position = " + this.getPosition() + " ; startDistance = " + this.getDistanceFromStart() + " ; heuristicDistance = " + this.getHeuristicDistance() + " ; cost = " + this.getCost();
 		}
 	}
 }
