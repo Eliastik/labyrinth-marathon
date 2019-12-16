@@ -33,6 +33,7 @@ public class BreadthFirstSearch extends SolvingAlgorithmStrategy {
 	public Queue<Position> getPath(Labyrinth labyrinth) {
 		if(!labyrinth.isAutoPlayer()) {
 			this.searchingPath = false;
+			if(this.isStepByStep()) this.cleanStepByStep(labyrinth);
 			return null;
 		}
 		
@@ -52,6 +53,7 @@ public class BreadthFirstSearch extends SolvingAlgorithmStrategy {
 			// Stop algorithm if game exited
 			if(!labyrinth.isAutoPlayer()) {
 				this.searchingPath = false;
+				if(this.isStepByStep()) this.cleanStepByStep(labyrinth);
 				return null;
 			}
 			

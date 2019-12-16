@@ -5,6 +5,7 @@ import java.util.Queue;
 import java.util.Random;
 
 import model.generationAlgorithm.GrowingTree;
+import model.solvingAlgorithm.AStar;
 import model.solvingAlgorithm.BreadthFirstSearch;
 import model.util.Direction;
 import model.util.Position;
@@ -20,7 +21,7 @@ public class Labyrinth {
 	private Position startPosition;
 	private Position endPosition;
 	private GenerationAlgorithmStrategy algorithm = new GrowingTree();
-	private SolvingAlgorithmStrategy solver = new BreadthFirstSearch();
+	private SolvingAlgorithmStrategy solver = new AStar();
 	private Player player;
 	private boolean enableAutoPlayer;
 	private boolean generationFinished = false;

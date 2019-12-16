@@ -26,31 +26,6 @@ public class RecursiveDivision extends GenerationAlgorithmStrategy {
 		this.divide(labyrinth, random, start, labyrinth.getWidth(), labyrinth.getHeight(), this.choose_orientation(labyrinth.getWidth(), labyrinth.getHeight(), random), stepByStep);
 	}
 	
-	private void eraseGrid(Labyrinth labyrinth) {
-		for(int i = 0; i < labyrinth.getHeight(); i++) {
-			for(int j = 0; j < labyrinth.getWidth(); j++) {
-				Position pos = new Position(j, i);
-				Cell cell = labyrinth.getCell(pos);
-				cell.setValue(CellValue.EMPTY);
-				
-				List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST));
-				
-				for(Direction dir : directions) {
-					cell.setEdgeToDirection(dir, CellValue.EMPTY);
-					cell.setOppositeEdge(dir, CellValue.EMPTY);
-					
-					Cell neighbour = labyrinth.getCell(labyrinth.getNeighbour(pos, dir, dir));
-					
-					if(neighbour != null) {
-						neighbour.setValue(CellValue.EMPTY);
-						neighbour.setEdgeToDirection(dir, CellValue.EMPTY);
-						neighbour.setOppositeEdge(dir, CellValue.EMPTY);
-					}
-				}
-			}
-		}
-	}
-	
 	private void divide(Labyrinth labyrinth, Random random, Position pos, int width, int height, Orientation orientation, boolean stepByStep) {
 		if(this.isStopped()) return;
 		if(width <= 2 || height <= 2) return;

@@ -51,6 +51,7 @@ public class AStar extends SolvingAlgorithmStrategy {
 			// Stop algorithm if game exited
 			if(!labyrinth.isAutoPlayer()) {
 				this.searchingPath = false;
+				if(this.isStepByStep()) this.cleanStepByStep(labyrinth);
 				return null;
 			}
 			
@@ -78,6 +79,7 @@ public class AStar extends SolvingAlgorithmStrategy {
 				// Stop algorithm if game exited
 				if(!labyrinth.isAutoPlayer()) {
 					this.searchingPath = false;
+					if(this.isStepByStep()) this.cleanStepByStep(labyrinth);
 					return null;
 				}
 				
@@ -109,11 +111,20 @@ public class AStar extends SolvingAlgorithmStrategy {
 				}
 			}
 		}
-		
+
+		this.searchingPath = false;
+		if(this.isStepByStep()) this.cleanStepByStep(labyrinth);
 		return null;
 	}
 	
-	public Queue<Position> reconstructPath(List<Node> nodes) {
+	/**
+	 * Reconstruct the path found with the A* algorithm<br />
+	 * We begin with the last node found (usually the end position of the labyrinth), then we iterate through the parent of each node<br />
+	 * Finally we reverse the constructed list into a Queue
+	 * @param nodes ({@link List}&lt;{@link Node}&gt;) The list of the nodes found with the A* algorithm
+	 * @return ({@link Queue}&lt;{@link Position}&gt;) The final path
+	 */
+	private Queue<Position> reconstructPath(List<Node> nodes) {
 		List<Position> tmp = new ArrayList<>();
 		Node current = nodes.get(nodes.size() - 1);
 		
@@ -131,7 +142,13 @@ public class AStar extends SolvingAlgorithmStrategy {
 		return result;
 	}
 	
-	public Node samePosition(Queue<Node> queue, Node node) {
+	/**
+	 * Return the first node on the queue with the same position as the node passed in parameter
+	 * @param queue ({@link Queue}&lt;{@link Node}&gt;) The queue
+	 * @param node ({@link Node}) The node
+	 * @return ({@link Node})
+	 */
+	private Node samePosition(Queue<Node> queue, Node node) {
 		for(Node other : queue) {
 			if(other.equals(node)) {
 				return other;
@@ -141,6 +158,12 @@ public class AStar extends SolvingAlgorithmStrategy {
 		return null;
 	}
 	
+	/**
+	 * Data structure used for the A* algorithm
+	 * @author Eliastik
+	 * @since 16/12/2019
+	 *
+	 */
 	private class Node implements Comparable<Node> {
 		private Position position;
 		private Node parent;
@@ -161,7 +184,7 @@ public class AStar extends SolvingAlgorithmStrategy {
 		}
 		
 		/**
-		 * Process the distance between this node and the start node using Manhattan distance
+		 * Process the distance between this node and the start node using Manhattan distance to parent
 		 * @return (int) The distance
 		 */
 		public int getDistanceFromStart() {
@@ -170,7 +193,7 @@ public class AStar extends SolvingAlgorithmStrategy {
 		}
 
 		/**
-		 * Process the heuristic and start distance then calculate the cost of this node
+		 * Calculate and return the cost of this node
 		 * @return (int) The cost
 		 */
 		public int getCost() {

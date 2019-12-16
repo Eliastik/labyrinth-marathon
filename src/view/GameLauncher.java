@@ -48,8 +48,8 @@ public class GameLauncher extends Application {
 	private int gameMode = 1; // 1 = marathon mode / 2 = labyrinth mode
 	private int width = 15;
 	private int height = 15;
-	private GenerationAlgorithmStrategy algorithm = new AldousBroder();
-	private SolvingAlgorithmStrategy algorithmSolve = new BreadthFirstSearch();
+	private GenerationAlgorithmStrategy algorithm = new GrowingTree();
+	private SolvingAlgorithmStrategy algorithmSolve = new AStar();
 	private long seed = System.currentTimeMillis();
 	private Image spritePlayer;
 	private int level = 1;
@@ -146,7 +146,7 @@ public class GameLauncher extends Application {
 		ComboBox<String> algorithmsSolve = new ComboBox<>();
 		HBox.setMargin(algorithmsSolve, new Insets(5, 5, 5, 5));
 		ObservableList<String> algorithmsSolveList = FXCollections.observableArrayList();
-		algorithmsSolveList.addAll("Breadth First Search", "A-Star");
+		algorithmsSolveList.addAll("A-Star", "Breadth First Search");
 		algorithmsSolve.setItems(algorithmsSolveList);
 		algorithmsSolve.getSelectionModel().select(0);
 		hboxAlgorithmSolve.getChildren().addAll(algorithmsSolve);
@@ -252,7 +252,7 @@ public class GameLauncher extends Application {
 						this.algorithmSolve = new AStar(stepByStepSolve);
 						break;
 					default:
-						this.algorithmSolve = new BreadthFirstSearch(stepByStepSolve);
+						this.algorithmSolve = new AStar(stepByStepSolve);
 						break;
 				}
 			}
