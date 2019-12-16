@@ -13,6 +13,13 @@ import model.SolvingAlgorithmStrategy;
 import model.util.Direction;
 import model.util.Position;
 
+/**
+ * The Breadth First Search solving algorithm
+ * @author Eliastik
+ * @version 1.0
+ * @since 16/12/2019
+ * @see <a href="https://en.wikipedia.org/wiki/Breadth-first_search">https://en.wikipedia.org/wiki/Breadth-first_search</a>
+ */
 public class BreadthFirstSearch extends SolvingAlgorithmStrategy {
 	public BreadthFirstSearch(boolean stepByStepSolve) {
 		super(stepByStepSolve);
@@ -42,6 +49,7 @@ public class BreadthFirstSearch extends SolvingAlgorithmStrategy {
 		queue.add(pathToEnd);
 		
 		while(!queue.isEmpty()) {
+			// Stop algorithm if game exited
 			if(!labyrinth.isAutoPlayer()) {
 				this.searchingPath = false;
 				return null;
@@ -64,7 +72,7 @@ public class BreadthFirstSearch extends SolvingAlgorithmStrategy {
 				if(this.isStepByStep()) this.cleanStepByStep(labyrinth);
 				return new LinkedList<>(pathToEnd);
 			} else {
-				ArrayList<Position> neightbours = new ArrayList<>();
+				ArrayList<Position> neighbours = new ArrayList<>();
 				List<Direction> directions = new ArrayList<>(Arrays.asList(Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST));
 				
 				for(int i = 0; i < directions.size(); i++) {
@@ -85,12 +93,12 @@ public class BreadthFirstSearch extends SolvingAlgorithmStrategy {
 						path.add(posNeighbour);
 						queue.add(path);
 						
-						neightbours.add(posNeighbour);
+						neighbours.add(posNeighbour);
 						explore.add(posNeighbour);
 					}
 				}
 				
-				if(neightbours.isEmpty() && queue.isEmpty()) {
+				if(neighbours.isEmpty() && queue.isEmpty()) {
 					this.searchingPath = false;
 					if(this.isStepByStep()) this.cleanStepByStep(labyrinth);
 					return null;

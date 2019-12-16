@@ -35,6 +35,7 @@ import model.generationAlgorithm.RecursiveBacktracking;
 import model.generationAlgorithm.RecursiveDivision;
 import model.generationAlgorithm.SideWinder;
 import model.generationAlgorithm.Wilson;
+import model.solvingAlgorithm.AStar;
 import model.solvingAlgorithm.BreadthFirstSearch;
 
 /**
@@ -145,7 +146,7 @@ public class GameLauncher extends Application {
 		ComboBox<String> algorithmsSolve = new ComboBox<>();
 		HBox.setMargin(algorithmsSolve, new Insets(5, 5, 5, 5));
 		ObservableList<String> algorithmsSolveList = FXCollections.observableArrayList();
-		algorithmsSolveList.addAll("Breadth First Search");
+		algorithmsSolveList.addAll("Breadth First Search", "AStar");
 		algorithmsSolve.setItems(algorithmsSolveList);
 		algorithmsSolve.getSelectionModel().select(0);
 		hboxAlgorithmSolve.getChildren().addAll(algorithmsSolve);
@@ -246,6 +247,9 @@ public class GameLauncher extends Application {
 				switch(algorithmsSolve.getValue()) {
 					case "Breadth First Search":
 						this.algorithmSolve = new BreadthFirstSearch(stepByStepSolve);
+						break;
+					case "AStar":
+						this.algorithmSolve = new AStar(stepByStepSolve);
 						break;
 					default:
 						this.algorithmSolve = new BreadthFirstSearch(stepByStepSolve);
