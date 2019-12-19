@@ -1,13 +1,9 @@
 package controller;
 
 import java.util.Queue;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.scene.image.Image;
-import javafx.scene.input.KeyCode;
-import javafx.util.Duration;
 import model.Cell;
 import model.CellValue;
 import model.Labyrinth;
@@ -29,7 +25,7 @@ public class GameController {
 	private boolean useThreadedCheckBlocked = true;
 	// Autoplayer
 	private Queue<Position> pathAuto;
-	private Timeline timelineAuto;
+	private Timer timerAuto;
 	private Thread threadAuto;
 	
 	public GameController(Labyrinth labyrinth, GameView view) {
@@ -97,7 +93,7 @@ public class GameController {
 	/**
 	 * {@link model.Player#getSprite()}
 	 */
-	public Image getSprite() {
+	public String getSprite() {
 		return labyrinth.getPlayer().getSprite();
 	}
 	
@@ -110,61 +106,32 @@ public class GameController {
 	
 	/**
 	 * Move the player according to the key
-	 * @param key (KeyCode) The key pressed
+	 * @param key (String) The key pressed
 	 * @return (boolean) true if the player moved successfully, false otherwise
 	 */
-	public boolean movePlayer(KeyCode key) {
-		if(this.isAutoPlayer() || !this.labyrinth.isGenerationFinished()) return true;
-		boolean moved = false;
-		
-		if(!labyrinth.getPlayer().goalAchieved()) {
-			switch(key) {
-				case UP:
-					labyrinth.getPlayer().moveTo(Direction.NORTH);
-					moved = true;
-					break;
-				case DOWN:
-					labyrinth.getPlayer().moveTo(Direction.SOUTH);
-					moved = true;
-					break;
-				case RIGHT:
-					labyrinth.getPlayer().moveTo(Direction.EAST);
-					moved = true;
-					break;
-				case LEFT:
-					labyrinth.getPlayer().moveTo(Direction.WEST);
-					moved = true;
-					break;
-				case Z:
-					labyrinth.getPlayer().moveTo(Direction.NORTH);
-					moved = true;
-					break;
-				case Q:
-					labyrinth.getPlayer().moveTo(Direction.WEST);
-					moved = true;
-					break;
-				case S:
-					labyrinth.getPlayer().moveTo(Direction.SOUTH);
-					moved = true;
-					break;
-				case D:
-					labyrinth.getPlayer().moveTo(Direction.EAST);
-					moved = true;
-					break;
-				default:
-					break;
-			}
+	public boolean movePlayer(String key) {
+		switch(key) {
+			case "UP":
+				return this.movePlayer(Direction.NORTH);
+			case "DOWN":
+				return this.movePlayer(Direction.SOUTH);
+			case "RIGHT":
+				return this.movePlayer(Direction.EAST);
+			case "LEFT":
+				return this.movePlayer(Direction.WEST);
+			case "Z":
+				return this.movePlayer(Direction.NORTH);
+			case "Q":
+				return this.movePlayer(Direction.WEST);
+			case "S":
+				return this.movePlayer(Direction.SOUTH);
+			case "D":
+				return this.movePlayer(Direction.EAST);
+			default:
+				break;
 		}
 		
-		if(this.useThreadedCheckBlocked) {
-			this.createThreadCheckBlocked();
-		} else {
-			this.labyrinth.getPlayer().checkBlocked();
-		}
-		
-		view.update(moved);
-		
-		return moved;
+		return false;
 	}
 	
 	/**
@@ -173,7 +140,16 @@ public class GameController {
 	 * @return (boolean) true if the player moved successfully, false otherwise
 	 */
 	public boolean movePlayer(Direction direction) {
+		if(this.isAutoPlayer() || !this.labyrinth.isGenerationFinished() || (!labyrinth.getPlayer().goalAchieved() && this.moveTo(direction))) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean moveTo(Direction direction) {
 		boolean moved = false;
+		
 		if(!labyrinth.getPlayer().goalAchieved()) moved = labyrinth.getPlayer().moveTo(direction);
 		
 		if(this.useThreadedCheckBlocked) {
@@ -338,33 +314,35 @@ public class GameController {
 					if(this.pathAuto != null && !this.pathAuto.isEmpty()) this.pathAuto.poll();
 				}
 			
-				this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.25), ev -> {
-					if(!view.isExited()) {
-						if(!this.isGoalAchieved() && this.pathAuto != null && !this.pathAuto.isEmpty()) {
-							Position next = this.pathAuto.poll();
-							Position current = this.getPlayerPosition();
-							
-							if(next != null) {
-								if(next.getX() == current.getX() - 1) {
-									this.movePlayer(Direction.WEST);
-								} else if(next.getX() == current.getX() + 1) {
-									this.movePlayer(Direction.EAST);
-								} else if(next.getY() == current.getY() - 1) {
-									this.movePlayer(Direction.NORTH);
-								} else if(next.getY() == current.getY() + 1) {
-									this.movePlayer(Direction.SOUTH);
-								}
-							} else {
-								this.stopAutoPlayer();
-							}
-						}
-					} else {
-						this.stopAutoPlayer();
-					}
-				}));
+				this.timerAuto = new Timer(true);
 				
-				this.timelineAuto.setCycleCount(Animation.INDEFINITE);
-				this.timelineAuto.play();
+				this.timerAuto.scheduleAtFixedRate(new TimerTask() {
+					@Override
+					public void run() {
+						if(!view.isExited()) {
+							if(!isGoalAchieved() && pathAuto != null && !pathAuto.isEmpty()) {
+								Position next = pathAuto.poll();
+								Position current = getPlayerPosition();
+								
+								if(next != null) {
+									if(next.getX() == current.getX() - 1) {
+										moveTo(Direction.WEST);
+									} else if(next.getX() == current.getX() + 1) {
+										moveTo(Direction.EAST);
+									} else if(next.getY() == current.getY() - 1) {
+										moveTo(Direction.NORTH);
+									} else if(next.getY() == current.getY() + 1) {
+										moveTo(Direction.SOUTH);
+									}
+								} else {
+									stopAutoPlayer();
+								}
+							}
+						} else {
+							stopAutoPlayer();
+						}
+					}
+				}, 0, 250);
 			});
 
 			this.threadAuto.setDaemon(true);
@@ -378,7 +356,10 @@ public class GameController {
 	public void stopAutoPlayer() {
 		this.setAutoPlayer(false);
 		
-		if(this.timelineAuto != null) this.timelineAuto.stop();
+		if(this.timerAuto != null) {
+			this.timerAuto.cancel();
+			this.timerAuto.purge();
+		}
 		
 		if(this.threadAuto != null) {
 			try {

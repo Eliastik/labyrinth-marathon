@@ -54,7 +54,7 @@ public class GameLauncher extends Application {
 	private GenerationAlgorithmStrategy algorithm = new GrowingTree();
 	private SolvingAlgorithmStrategy algorithmSolve = new AStar();
 	private long seed = System.currentTimeMillis();
-	private Image spritePlayer;
+	private String spritePlayer;
 	private int level = 1;
 	private boolean displayInfoStart = true;
 	private boolean stepByStep = false;

@@ -7,7 +7,6 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Stack;
 
-import javafx.scene.image.Image;
 import model.util.Direction;
 import model.util.Position;
 
@@ -21,7 +20,7 @@ public class Player {
 	private Position position;
 	private Direction direction;
 	private Labyrinth labyrinth;
-	private Image sprite;
+	private String sprite;
 	private boolean isAutoPlayer = false;
 	private boolean blocked = false;
 	private boolean checkBlocked = false;
@@ -30,7 +29,7 @@ public class Player {
 		this.labyrinth = labyrinth;
 		this.position = position;
 		this.direction = direction;
-		this.setSprite(new Image(getClass().getResourceAsStream("/images/" + (1 + new Random().nextInt(25)) + ".png")));
+		this.setSprite("/images/" + (1 + new Random().nextInt(25)) + ".png");
 	}
 	
 	public Player(Position position, Direction direction) {
@@ -192,17 +191,17 @@ public class Player {
 
 	/**
 	 * Get the sprite of the player
-	 * @return ({@link Image}) The sprite of the player
+	 * @return ({@link String}) The sprite of the player
 	 */
-	public Image getSprite() {
+	public String getSprite() {
 		return sprite;
 	}
 
 	/**
 	 * Set the sprite of the player
-	 * @param sprite ({@link Image}) The new sprite of the player
+	 * @param sprite ({@link String}) The new sprite of the player
 	 */
-	public void setSprite(Image sprite) {
+	public void setSprite(String sprite) {
 		this.sprite = sprite;
 	}
 
