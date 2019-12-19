@@ -136,4 +136,9 @@ public class GameTextView implements GameView {
 	public static void main(String[] args) {
 		new GameTextView().run();
 	}
+
+	@Override
+	public boolean isExited() {
+		return false;
+	}
 }

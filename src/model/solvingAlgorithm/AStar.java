@@ -46,8 +46,9 @@ public class AStar extends SolvingAlgorithmStrategy {
 		
 		if(this.searchingPath) return null;
 		if(labyrinth.getPlayer().getPosition().equals(labyrinth.getEndPosition())) return null;
-		this.searchingPath = true;
+		if(!labyrinth.isGenerationFinished()) return null;
 		
+		this.searchingPath = true;
 		Queue<Node> open = new PriorityQueue<>();
 		open.add(new Node(null, labyrinth.getPlayer().getPosition(), labyrinth.getEndPosition()));
 		List<Node> closed = new ArrayList<>();

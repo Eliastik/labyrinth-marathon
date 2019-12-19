@@ -35,6 +35,7 @@ import model.generationAlgorithm.RecursiveBacktracking;
 import model.generationAlgorithm.RecursiveDivision;
 import model.generationAlgorithm.SideWinder;
 import model.generationAlgorithm.TestPathfinding1;
+import model.generationAlgorithm.TestPathfinding2;
 import model.generationAlgorithm.Wilson;
 import model.solvingAlgorithm.AStar;
 import model.solvingAlgorithm.BreadthFirstSearch;
@@ -118,7 +119,7 @@ public class GameLauncher extends Application {
 		ComboBox<String> algorithms = new ComboBox<>();
 		HBox.setMargin(algorithms, new Insets(5, 5, 5, 5));
 		ObservableList<String> algorithmsList = FXCollections.observableArrayList();
-		algorithmsList.addAll("Growing Tree", "Binary Tree", "Side Winder", "Recursive Backtracking", "Prim", "Hunt and Kill", "Recursive Division", "Wilson", "Aldous Broder", "TestPathfinding1");
+		algorithmsList.addAll("Growing Tree", "Binary Tree", "Side Winder", "Recursive Backtracking", "Prim", "Hunt and Kill", "Recursive Division", "Wilson", "Aldous Broder", "TestPathfinding1", "TestPathfinding2");
 		algorithms.setItems(algorithmsList);
 		algorithms.getSelectionModel().select(0);
 		hboxAlgorithm.getChildren().addAll(algorithms);
@@ -236,6 +237,9 @@ public class GameLauncher extends Application {
 					break;
 				case "TestPathfinding1":
 					this.algorithm = new TestPathfinding1();
+					break;
+				case "TestPathfinding2":
+					this.algorithm = new TestPathfinding2();
 					break;
 				default:
 					this.algorithm = new GrowingTree();

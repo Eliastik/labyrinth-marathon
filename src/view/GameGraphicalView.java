@@ -5,11 +5,9 @@ import java.util.AbstractMap;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Queue;
 import java.util.ResourceBundle;
 
 import controller.GameController;
-import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -62,11 +60,7 @@ public class GameGraphicalView extends Application implements GameView {
 	// Thread / Timeline
 	private AnimationTimer timerDraw;
 	private Thread threadDraw;
-	private Timeline timelineAuto;
-	private Thread threadAuto;
 	private Timeline timelineWin;
-	// Autopath
-	private Queue<Position> pathAuto;
 	// Animation
 	private long prevTime = 0;
 	private int frameAnimate = 0;
@@ -439,6 +433,8 @@ public class GameGraphicalView extends Application implements GameView {
 			}
 		}
 		
+		CellValue[][][] values = this.controller.getAllCellsAround();
+		
 		for(int i = 0; i < controller.getLabyrinthHeight() * 2 + 1; i++) {
 			for(int j = 0; j < controller.getLabyrinthWidth() * 2 + 1; j++) {
 				if(j == controller.getLabyrinthWidth() * 2 || i == controller.getLabyrinthHeight() * 2) {
@@ -446,9 +442,9 @@ public class GameGraphicalView extends Application implements GameView {
 				} else {
 					Position pos = new Position(j / 2, i / 2);
 					Cell c = controller.getCell(pos);
-					CellValue[] values = controller.getCellAround(pos);
+					CellValue[] value = values[pos.getY()][pos.getX()];
 					
-					if(i == 0 || j == 0 || ((i + 1) % 2 == 0 && j % 2 == 0 && values[0] == CellValue.WALL) || ((j % 2 == 0 && i % 2 == 0) && values[2] == CellValue.WALL) || (i % 2 == 0 && values[1] == CellValue.WALL)) {
+					if(i == 0 || j == 0 || ((i + 1) % 2 == 0 && j % 2 == 0 && value[0] == CellValue.WALL) || ((j % 2 == 0 && i % 2 == 0) && value[2] == CellValue.WALL) || (i % 2 == 0 && value[1] == CellValue.WALL)) {
 						gc.drawImage(brick, (double) widthCase * j + startX, heightCase * i + startY, widthCase, heightCase);
 					} else if((i + 1) % 2 == 0 && (j + 1) % 2 == 0) {
 						if(pos.equals(currentPlayerPosition)) {
@@ -556,63 +552,11 @@ public class GameGraphicalView extends Application implements GameView {
 	}
 	
 	public void enableAutoPlayer() {
-		if(!this.controller.searchingPath() && !this.controller.isPlayerBlocked() && this.threadAuto == null) {
-			stopAutoPlayer();
-			controller.setAutoPlayer(true);
-	
-			this.threadAuto = new Thread(() -> {
-				if(this.pathAuto == null) {
-					this.pathAuto = controller.getPath();
-					if(this.pathAuto != null && !this.pathAuto.isEmpty()) this.pathAuto.poll();
-				}
-			
-				this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.25), ev -> {
-					if(!exited) {
-						if(!controller.isGoalAchieved() && this.pathAuto != null && !this.pathAuto.isEmpty()) {
-							Position next = this.pathAuto.poll();
-							Position current = controller.getPlayerPosition();
-							
-							if(next != null) {
-								if(next.getX() == current.getX() - 1) {
-									controller.movePlayer(Direction.WEST);
-								} else if(next.getX() == current.getX() + 1) {
-									controller.movePlayer(Direction.EAST);
-								} else if(next.getY() == current.getY() - 1) {
-									controller.movePlayer(Direction.NORTH);
-								} else if(next.getY() == current.getY() + 1) {
-									controller.movePlayer(Direction.SOUTH);
-								}
-							} else {
-								this.stopAutoPlayer();
-							}
-						}
-					} else {
-						this.stopAutoPlayer();
-					}
-				}));
-				
-				this.timelineAuto.setCycleCount(Animation.INDEFINITE);
-				this.timelineAuto.play();
-			});
-
-			this.threadAuto.setDaemon(true);
-			this.threadAuto.start();
-		}
+		this.controller.enableAutoPlayer();
 	}
 	
 	public void stopAutoPlayer() {
-		controller.setAutoPlayer(false);
-		
-		if(this.timelineAuto != null) this.timelineAuto.stop();
-		
-		if(this.threadAuto != null) {
-			try {
-				this.controller.setAutoPlayer(false);
-				this.threadAuto.join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		this.controller.stopAutoPlayer();
 	}
 
 	@Override
@@ -663,6 +607,11 @@ public class GameGraphicalView extends Application implements GameView {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean isExited() {
+		return this.exited;
 	}
 	
 	@Override

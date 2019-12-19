@@ -340,6 +340,27 @@ public class Labyrinth {
 	}
 
 	/**
+	 * Get CellValue ({@link CellValue#WALL} or {@link CellValue#EMPTY}) of all the edges around the current cell<br />
+	 * Used to display the labyrinth
+	 * @param pos ({@link Position}) The position of the cell
+	 * @return ({@link CellValue}[][][3]) An array of CellValue which contains three entries :<br />
+	 * {@link CellValue}[0] = The west value<br />
+	 * {@link CellValue}[1] = The north value<br />
+	 * {@link CellValue}[2] = The north-west value
+	 */
+	public CellValue[][][] getAllCellsAround() {
+		CellValue[][][] res = new CellValue[this.getHeight()][this.getWidth()][3];
+		
+		for(int i = 0; i < this.getHeight(); i++) {
+			for(int j = 0; j < this.getWidth(); j++) {
+				res[i][j] = this.getCellAround(new Position(j, i));
+			}
+		}
+		
+		return res;
+	}
+
+	/**
 	 * Get CellValue ({@link CellValue#WALL} or {@link CellValue#EMPTY}) of the edges around the current cell<br />
 	 * Used to display the labyrinth
 	 * @param pos ({@link Position}) The position of the cell

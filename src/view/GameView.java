@@ -25,4 +25,9 @@ public interface GameView {
 	 * Run the view
 	 */
 	public void run();
+	/**
+	 * Inform if the view is exited
+	 * @return (boolean)
+	 */
+	public boolean isExited();
 }

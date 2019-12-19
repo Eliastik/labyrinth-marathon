@@ -39,6 +39,7 @@ public class BreadthFirstSearch extends SolvingAlgorithmStrategy {
 		
 		if(this.searchingPath) return null;
 		if(labyrinth.getPlayer().getPosition().equals(labyrinth.getEndPosition())) return null;
+		if(!labyrinth.isGenerationFinished()) return null;
 		
 		this.searchingPath = true;
 		Queue<List<Position>> queue = new LinkedList<>();

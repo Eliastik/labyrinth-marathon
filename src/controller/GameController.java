@@ -2,8 +2,12 @@ package controller;
 
 import java.util.Queue;
 
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
+import javafx.util.Duration;
 import model.Cell;
 import model.CellValue;
 import model.Labyrinth;
@@ -23,6 +27,10 @@ public class GameController {
 	private GameView view;
 	private Thread threadCheckBlocked;
 	private boolean useThreadedCheckBlocked = true;
+	// Autoplayer
+	private Queue<Position> pathAuto;
+	private Timeline timelineAuto;
+	private Thread threadAuto;
 	
 	public GameController(Labyrinth labyrinth, GameView view) {
 		super();
@@ -305,5 +313,80 @@ public class GameController {
 	 */
 	public boolean isGenerationFinished() {
 		return this.labyrinth.isGenerationFinished();
+	}
+	
+	/**
+	 * {@link model.Labyrinth#getAllCellsAround()}
+	 * @return (boolean)
+	 */
+	public CellValue[][][] getAllCellsAround() {
+		return this.labyrinth.getAllCellsAround();
+	}
+	
+	/**
+	 * Start the auto-player mode (using chosen pathfinding/solving algorithm)<br />
+	 * Fails if the generation of the labyrinth is still in process, if the auto-player is disabled for this labyrinth or if the player is blocked
+	 */
+	public void enableAutoPlayer() {
+		if(!this.searchingPath() && !this.isPlayerBlocked() && this.isGenerationFinished() && this.isAutoPlayerEnabled() && this.threadAuto == null) {
+			stopAutoPlayer();
+			this.setAutoPlayer(true);
+	
+			this.threadAuto = new Thread(() -> {
+				if(this.pathAuto == null) {
+					this.pathAuto = this.getPath();
+					if(this.pathAuto != null && !this.pathAuto.isEmpty()) this.pathAuto.poll();
+				}
+			
+				this.timelineAuto = new Timeline(new KeyFrame(Duration.seconds(0.25), ev -> {
+					if(!view.isExited()) {
+						if(!this.isGoalAchieved() && this.pathAuto != null && !this.pathAuto.isEmpty()) {
+							Position next = this.pathAuto.poll();
+							Position current = this.getPlayerPosition();
+							
+							if(next != null) {
+								if(next.getX() == current.getX() - 1) {
+									this.movePlayer(Direction.WEST);
+								} else if(next.getX() == current.getX() + 1) {
+									this.movePlayer(Direction.EAST);
+								} else if(next.getY() == current.getY() - 1) {
+									this.movePlayer(Direction.NORTH);
+								} else if(next.getY() == current.getY() + 1) {
+									this.movePlayer(Direction.SOUTH);
+								}
+							} else {
+								this.stopAutoPlayer();
+							}
+						}
+					} else {
+						this.stopAutoPlayer();
+					}
+				}));
+				
+				this.timelineAuto.setCycleCount(Animation.INDEFINITE);
+				this.timelineAuto.play();
+			});
+
+			this.threadAuto.setDaemon(true);
+			this.threadAuto.start();
+		}
+	}
+	
+	/**
+	 * Stop the auto-player mode
+	 */
+	public void stopAutoPlayer() {
+		this.setAutoPlayer(false);
+		
+		if(this.timelineAuto != null) this.timelineAuto.stop();
+		
+		if(this.threadAuto != null) {
+			try {
+				this.setAutoPlayer(false);
+				this.threadAuto.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }
