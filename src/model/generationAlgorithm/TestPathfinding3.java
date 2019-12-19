@@ -15,17 +15,17 @@ import model.util.Position;
  * @version 1.0
  * @since 19/12/2019
  */
-public class TestPathfinding2 extends GenerationAlgorithmStrategy {
+public class TestPathfinding3 extends GenerationAlgorithmStrategy {
 	@Override
 	public void generate(Labyrinth labyrinth, Random random, Position start, Position end, boolean stepByStep) {
 		this.eraseGrid(labyrinth);
 		int middleGridWidth = labyrinth.getWidth() / 2;
 		int middleGridHeight = labyrinth.getHeight() / 2;
 		
-		for(int i = 0; i < labyrinth.getHeight(); i++) {
+		for(int i = 0; i < labyrinth.getWidth(); i++) {
 			if(this.isStopped()) return;
 			
-			Position current = new Position(middleGridWidth, i);
+			Position current = new Position(i, middleGridHeight);
 			Cell currentCell = labyrinth.getCell(current);
 				
 			Position west = labyrinth.getNeighbour(current, Direction.WEST, Direction.WEST);
@@ -37,7 +37,7 @@ public class TestPathfinding2 extends GenerationAlgorithmStrategy {
 			Position south = labyrinth.getNeighbour(current, Direction.SOUTH, Direction.SOUTH);
 			Cell southCell = labyrinth.getCell(south);
 			
-			if(i != middleGridHeight && i != 0 && i != labyrinth.getHeight() - 1) {
+			if(i != middleGridWidth && i != 0 && i != labyrinth.getWidth() - 1) {
 				currentCell.setValue(CellValue.WALL);
 				currentCell.setEdgeToDirection(Direction.WEST, CellValue.WALL);
 				currentCell.setEdgeToDirection(Direction.EAST, CellValue.WALL);
