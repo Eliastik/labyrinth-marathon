@@ -17,7 +17,7 @@ import model.util.Position;
 /**
  * The A* Shortest Path solving algorithm
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 16/12/2019
  * @see <a href="https://en.wikipedia.org/wiki/A*_search_algorithm">https://en.wikipedia.org/wiki/A*_search_algorithm</a>
  */

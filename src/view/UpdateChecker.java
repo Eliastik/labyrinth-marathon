@@ -5,6 +5,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Properties;
 
 import org.json.JSONObject;
@@ -13,7 +14,7 @@ import org.json.JSONTokener;
 /**
  * The updater
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 30/11/2019
  */
 public class UpdateChecker {
@@ -29,7 +30,7 @@ public class UpdateChecker {
 		
 		Properties properties = new Properties();
 		properties.load(getClass().getResourceAsStream("/appInfo.properties"));
-		this.updateSource = properties.getProperty("updateSource") + "?platform=" + URLEncoder.encode(System.getProperty("os.name").trim(), "UTF-8");
+		this.updateSource = properties.getProperty("updateSource") + "?platform=" + URLEncoder.encode(System.getProperty("os.name").trim(), "UTF-8") + "&lang=" + URLEncoder.encode(Locale.getDefault().toString().trim(), "UTF-8");
 		this.currentVersion = properties.getProperty("version");
 		
 		URL request = new URL(updateSource);

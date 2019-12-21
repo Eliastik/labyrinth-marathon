@@ -11,7 +11,7 @@ import model.util.Position;
 /**
  * The class that must be extended by a labyrinth generation algorithm
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 30/11/2019
  */
 public abstract class GenerationAlgorithmStrategy {

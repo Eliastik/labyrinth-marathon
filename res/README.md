@@ -1,6 +1,3 @@
-<img src="https://raw.githubusercontent.com/Eliastik/labyrinth-marathon/master/res/images/logo.png" width="300" alt="Labyrinth Marathon" />
-<p><img src="https://raw.githubusercontent.com/Eliastik/labyrinth-marathon/master/screenshot.png" width="400" alt="Screenshot" /> <img src="https://raw.githubusercontent.com/Eliastik/labyrinth-marathon/master/screenshot2.png" width="400" alt="Screenshot 2" /></p>
-
 # English
 
 A simple labyrinth game written in Java with several generation algorithms and more. Interface made in JavaFX.
@@ -10,7 +7,7 @@ A simple labyrinth game written in Java with several generation algorithms and m
 
 ## About this game
 
-* Version: 1.0
+* Version: 1.1
 * Made in France by Eliastik - [eliastiksofts.com](http://eliastiksofts.com) - Contact : [eliastiksofts.com/contact](http://eliastiksofts.com/contact)
 * License: GNU GPLv3 (see license.txt file)
 
@@ -21,6 +18,15 @@ A simple labyrinth game written in Java with several generation algorithms and m
 * Uses a grass texture from [here](https://streak.club/p/27965/redid-the-grass-blocks-by-notapollogising)
 
 ## Changelog
+
+* Version 1.1 (12/21/2019):
+    - Added new generation algorithms (Growing Tree, Side Winder, Recursive Backtracking, Prim, Hunt and Kill, Recursive Division and Wilson)
+    - Added new solving algorithms (A-Star and Dijkstra)
+    - The generation and solving algorithms can now be animated to show their execution
+    - The characters walk is now animated
+    - Better performances
+    - Bug fixes and others improvements
+    - Code architecture improvements : MVC pattern, multi-threading, improved Javadoc and others improvements
 
 * Version 1.0 (12/2/2019):
     - Initial version
@@ -34,7 +40,7 @@ Un simple jeu de labyrinthe écrit en Java avec plusieurs algorithmes de génér
 
 ## À propos du jeu
 
-* Version : 1.0
+* Version : 1.1
 * Made in France by Eliastik - [eliastiksofts.com](http://eliastiksofts.com) - Contact : [eliastiksofts.com/contact](http://eliastiksofts.com/contact)
 * Licence : GNU GPLv3 (voir le fichier license.txt)
 
@@ -45,6 +51,15 @@ Un simple jeu de labyrinthe écrit en Java avec plusieurs algorithmes de génér
 * Utilise une texture d'herbe venant d'[ici](https://streak.club/p/27965/redid-the-grass-blocks-by-notapollogising)
 
 ## Changelog
+
+* Version 1.1 (21/12/2019) :
+    - Ajout de nouveaux algorithmes de génération (Growing Tree, Side Winder, Recursive Backtracking, Prim, Hunt and Kill, Recursive Division et Wilson)
+    - Ajout de nouveaux algorithmes de résolution (A-Star et Dijkstra)
+    - Les algorithmes de génération et de résolution peuvent désormais être animés pour montrer leur exécution
+    - Le mouvement des personnages est maintenant animé
+    - Amélioration des performances
+    - Correction de bugs et autre ajustements
+    - Amélioration de l'architecture du code : Patron MVC, multi-threading, amélioration de la Javadoc et autres améliorations
 
 * Version 1.0 (02/12/2019) :
     - Version initiale

@@ -16,7 +16,7 @@ import model.util.Position;
 /**
  * The Breadth First Search solving algorithm
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 16/12/2019
  * @see <a href="https://en.wikipedia.org/wiki/Breadth-first_search">https://en.wikipedia.org/wiki/Breadth-first_search</a>
  */

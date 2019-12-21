@@ -5,6 +5,7 @@ import model.util.Position;
 /**
  * The Manhattan heuristic distance
  * @author Eliastik
+ * @version 1.1
  * @since 16/12/2019
  *
  */

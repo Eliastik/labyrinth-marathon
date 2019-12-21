@@ -13,7 +13,7 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'javafx-gradle-plugin'
 archivesBaseName = 'labyrinth-marathon'
-version = '1.0'
+version = '1.1'
 compileJava.options.encoding = 'UTF-8'
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8

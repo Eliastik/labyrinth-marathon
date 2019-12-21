@@ -7,7 +7,7 @@ import model.util.Position;
 /**
  * The class that must be extended by a labyrinth solving algorithm
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 12/12/2019
  */
 public abstract class SolvingAlgorithmStrategy {

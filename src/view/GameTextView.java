@@ -14,7 +14,7 @@ import model.util.Direction;
  * The game (text mode)<br />
  * Only used for debug
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 30/11/2019
  */
 public class GameTextView implements GameView {

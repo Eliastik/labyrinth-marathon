@@ -16,7 +16,7 @@ import model.util.Position;
 /**
  * The Growing Tree algorithm
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 05/12/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm.html">http://weblog.jamisbuck.org/2011/1/27/maze-generation-growing-tree-algorithm.html</a>
  */

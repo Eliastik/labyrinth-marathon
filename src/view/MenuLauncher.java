@@ -42,7 +42,7 @@ import javafx.stage.Stage;
 /**
  * The game menu
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 30/11/2019
  */
 public class MenuLauncher extends Application {
@@ -80,6 +80,8 @@ public class MenuLauncher extends Application {
 				alert.setHeaderText(locales.getString("aboutApp"));
 				alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/styleAlert.css").toExternalForm());
 				ImageView icon = new ImageView(new Image(getClass().getResourceAsStream("/images/icon_flat.png")));
+				Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
+				stageAlert.getIcons().add(new Image("/images/icon_flat.png"));
 				icon.setFitHeight(64);
 				icon.setFitWidth(64);
 				alert.setGraphic(icon);
@@ -202,6 +204,8 @@ public class MenuLauncher extends Application {
 								Alert alert = new Alert(Alert.AlertType.INFORMATION);
 								alert.setTitle(locales.getString("updateManager"));
 								alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/styleAlert.css").toExternalForm());
+								Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
+								stageAlert.getIcons().add(new Image("/images/icon_flat.png"));
 								
 								if(checkUpdate) {
 									alert.setHeaderText(locales.getString("updateAvailable"));
@@ -288,6 +292,8 @@ public class MenuLauncher extends Application {
 		alert.setTitle(title);
 		alert.setHeaderText(title);
 		alert.getDialogPane().getStylesheets().add(getClass().getResource("/styles/styleAlert.css").toExternalForm());
+		Stage stageAlert = (Stage) alert.getDialogPane().getScene().getWindow();
+		stageAlert.getIcons().add(new Image("/images/icon_flat.png"));
 		TextArea text = new TextArea();
 		text.setWrapText(true);
 		text.setEditable(false);

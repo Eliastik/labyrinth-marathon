@@ -45,7 +45,7 @@ import model.solvingAlgorithm.Dijkstra;
 /**
  * The launcher with settings
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 30/11/2019
  */
 public class GameLauncher extends Application {

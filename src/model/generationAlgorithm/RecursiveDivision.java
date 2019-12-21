@@ -11,7 +11,7 @@ import model.util.Position;
 /**
  * The Recursive Division algorithm
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 09/12/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/1/12/maze-generation-recursive-division-algorithm.html">http://weblog.jamisbuck.org/2011/1/12/maze-generation-recursive-division-algorithm.html</a>
  */

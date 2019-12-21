@@ -12,7 +12,7 @@ import model.util.Position;
 /**
  * A test for the pathfinding (solving) algorithms
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 16/12/2019
  */
 public class TestPathfinding1 extends GenerationAlgorithmStrategy {

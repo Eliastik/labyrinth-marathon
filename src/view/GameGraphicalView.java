@@ -49,7 +49,7 @@ import model.util.Position;
 /**
  * Graphical game
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 30/11/2019
  */
 public class GameGraphicalView extends Application implements GameView {

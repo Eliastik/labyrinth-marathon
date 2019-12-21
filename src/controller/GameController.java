@@ -14,7 +14,7 @@ import view.GameView;
 /**
  * This class represents the controller according to the MVC pattern
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 05/12/2019
  *
  */

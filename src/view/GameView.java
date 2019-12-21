@@ -5,7 +5,7 @@ import controller.GameController;
 /**
  * This interface represents a view according to the MVC pattern
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 05/12/2019
  *
  */

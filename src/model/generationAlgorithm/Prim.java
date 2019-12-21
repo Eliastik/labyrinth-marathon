@@ -14,7 +14,7 @@ import model.util.Position;
 /**
  * The Prim's algorithm
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 06/12/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/1/10/maze-generation-prim-s-algorithm.html">http://weblog.jamisbuck.org/2011/1/10/maze-generation-prim-s-algorithm.html</a>
  */

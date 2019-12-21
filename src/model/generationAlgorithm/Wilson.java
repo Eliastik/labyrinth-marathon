@@ -19,7 +19,7 @@ import model.util.Position;
 /**
  * The Wilson's algorithm
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 07/12/2019
  * @see <a href="http://weblog.jamisbuck.org/2011/1/20/maze-generation-wilson-s-algorithm.html">http://weblog.jamisbuck.org/2011/1/20/maze-generation-wilson-s-algorithm.html</a>
  */

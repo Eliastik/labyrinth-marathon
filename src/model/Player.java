@@ -13,7 +13,7 @@ import model.util.Position;
 /**
  * The class representing the player
  * @author Eliastik
- * @version 1.0
+ * @version 1.1
  * @since 30/11/2019
  */
 public class Player {
