@@ -236,6 +236,7 @@ public class MenuLauncher extends Application {
 									
 									HBox hboxChangesTextarea = new HBox();
 									TextArea textareaChanges = new TextArea(checker.getChangesUpdate());
+									textareaChanges.setWrapText(true);
 									textareaChanges.setEditable(false);
 									textareaChanges.setPrefWidth(450);
 									HBox.setMargin(textareaChanges, new Insets(5, 0, 0, 0));
