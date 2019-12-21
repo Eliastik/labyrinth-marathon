@@ -96,11 +96,11 @@ public class GameLauncher extends Application {
 		Spinner<Integer> spinnerHeight;
 		
 		if(this.gameMode == 2) {
-			spinnerWidth = this.createSpinner(2, 200, 15);
-			spinnerHeight = this.createSpinner(2, 200, 15);
+			spinnerWidth = this.createSpinner(2, 250, 15);
+			spinnerHeight = this.createSpinner(2, 250, 15);
 		} else {
-			spinnerWidth = this.createSpinner(2, 200, 2);
-			spinnerHeight = this.createSpinner(2, 200, 2);
+			spinnerWidth = this.createSpinner(2, 250, 2);
+			spinnerHeight = this.createSpinner(2, 250, 2);
 		}
 		
 		HBox.setMargin(spinnerWidth, new Insets(5, 5, 5, 5));
