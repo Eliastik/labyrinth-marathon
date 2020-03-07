@@ -342,7 +342,6 @@ public class Labyrinth {
 	/**
 	 * Get CellValue ({@link CellValue#WALL} or {@link CellValue#EMPTY}) of all the edges around the current cell<br />
 	 * Used to display the labyrinth
-	 * @param pos ({@link Position}) The position of the cell
 	 * @return ({@link CellValue}[][][3]) An array of CellValue which contains three entries :<br />
 	 * {@link CellValue}[0] = The west value<br />
 	 * {@link CellValue}[1] = The north value<br />
