@@ -93,7 +93,7 @@ public class Player {
 			this.checkBlocked = true;
 			
 			Stack<Position> checkList = new Stack<>();
-			checkList.add(this.labyrinth.getEndPosition());
+			checkList.add(this.getPosition());
 			List<Position> complete = new ArrayList<>();
 			
 			while(!checkList.isEmpty()) {
@@ -109,10 +109,10 @@ public class Player {
 			    	  Cell c = this.labyrinth.getCell(pos);
 			    	  
 			    	  if(!checkList.contains(pos) && !complete.contains(pos) && this.labyrinth.canMoveTo(this.labyrinth.getCell(currentPosition), c, directions[i])) {
-					        if((c.getValue() == CellValue.EMPTY || pos.equals(this.getPosition()))) {
+					        if((c.getValue() == CellValue.EMPTY || pos.equals(this.labyrinth.getEndPosition()))) {
 						        checkList.add(pos);
 						        
-						        if(pos.equals(this.getPosition())) {
+						        if(pos.equals(this.labyrinth.getEndPosition())) {
 						    		this.blocked = false;
 						    		return;
 						        }
