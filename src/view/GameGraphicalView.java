@@ -593,8 +593,6 @@ public class GameGraphicalView extends Application implements GameView {
 	
 	public void run() {
 		try {
-			new JFXPanel();
-			
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
