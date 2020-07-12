@@ -1,70 +1,107 @@
-buildscript {
-	dependencies {
-		classpath group: 'de.dynamicfiles.projects.gradle.plugins', name: 'javafx-gradle-plugin', version: '8.8.2'
-	}
-	
-	repositories {
-		mavenLocal()
-		mavenCentral()
-	}
+plugins {
+    id "org.openjfx.javafxplugin" version "0.0.9"
+    id "org.beryx.runtime" version "1.11.0"
 }
 
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'javafx-gradle-plugin'
-archivesBaseName = 'labyrinth-marathon'
-version = '1.1'
-compileJava.options.encoding = 'UTF-8'
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
-
 repositories {
-	mavenLocal()
-	mavenCentral()
+    mavenLocal()
+    mavenCentral()
 }
 
 dependencies {
-	compile group: 'org.json', name: 'json', version: '20190722'
+    compile group: "org.json", name: "json", version: "20200518"
+}
+
+apply plugin: "java"
+apply plugin: "eclipse"
+archivesBaseName = "labyrinth-marathon"
+version = "1.1"
+def jpackageJVMPath = "/usr/lib/jvm/java-14-openjdk-amd64" // Change to the JVM path containing jpackage executable
+compileJava.options.encoding = "UTF-8"
+sourceCompatibility = 1.11
+targetCompatibility = 1.11
+mainClassName = "view.MainLauncher"
+
+ext.moduleName = "labyrinth-marathon"
+
+compileJava {
+    inputs.property("moduleName", moduleName)
+    
+    doFirst {
+        options.compilerArgs = [
+            "--module-path", classpath.asPath,
+            "--add-modules", "javafx.controls,javafx.fxml"
+        ]
+        classpath = files()
+    }
+}
+
+run {
+    doFirst {
+        jvmArgs = [
+            "--module-path", classpath.asPath,
+            "--add-modules", "javafx.controls,javafx.fxml"
+        ]
+    }
 }
 
 sourceSets {
-	main.java.srcDirs = ['src/']
-	main.resources.srcDirs = ['res/']
+    main.java.srcDirs = ["src/"]
+    main.resources.srcDirs = ["res/"]
+}
+
+javafx {
+    version = "11"
+    modules = ["javafx.controls", "javafx.base", "javafx.graphics", "javafx.swing", "javafx.fxml"]
+}
+
+runtime {
+    options = ["--strip-debug", "--compress", "2", "--no-header-files", "--no-man-pages"]
+    modules = ["java.desktop", "jdk.unsupported.desktop", "java.xml", "jdk.unsupported", "java.datatransfer"]
+    
+    jpackage {
+        imageOptions = ["--icon", "src/main/resources/images/icon.ico"]
+        
+        if(org.gradle.internal.os.OperatingSystem.current().windows) {
+            installerOptions += ["--win-per-user-install", "--win-dir-chooser", "--win-menu"]
+        }
+    }
+}
+
+jpackage {
+    jpackageData.jpackageHome = jpackageJVMPath
 }
 
 jar {
-	manifest {
-		attributes 'Main-Class': 'view.MenuLauncher'
-	}
-	
-	from {
-		configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-	}
+    manifest {
+        attributes "Main-Class": "view.MainLauncher"
+    }
+    
+    from {
+        exclude "**/module-info.class"
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 javadoc {
-	source = sourceSets.main.allJava
-	classpath = configurations.compile
+    source = sourceSets.main.allJava
+    inputs.property("moduleName", moduleName)
+    
+    doFirst {
+        options.addStringOption('-module-path', classpath.asPath)
+    }
 }
 
 eclipse {
-	classpath {
-		defaultOutputDir = file('build-eclipse')
-	}
-}
-
-jfx {
-	verbose = true
-	identifier = '4176e652-6b34-4928-a357-b32dcd3e64a5'
-	mainClass = 'view.MenuLauncher'
-	vendor = 'Eliastik'
-	nativeReleaseVersion = version
-	appName = "Labyrinth Marathon"
-	usePatchedJFXAntLib = false
-	jfxMainAppJarName = archivesBaseName + '-' + version + '.jar'
-	additionalAppResources = 'res/'
-	bundleArguments = [
-		licenseType: 'GPLv3+',
-		licenseFile: 'license.txt'
-	]
+    classpath {
+        defaultOutputDir = file("build-eclipse")
+        
+        file {
+            whenMerged {
+                entries.findAll { 
+                    it.kind == "src" || it.kind == "lib" 
+                }.each { it.entryAttributes["module"] = "true" }
+            }
+        }
+    }
 }

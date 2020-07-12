@@ -86,7 +86,7 @@ public class Labyrinth {
 	}
 
 	/**
-	 * Generate randoms start and end positions<br />
+	 * Generate randoms start and end positions<br>
 	 * Reset the player position
 	 * @param random ({@link Random}) The pseudo-random number generator
 	 */
@@ -99,7 +99,7 @@ public class Labyrinth {
 	}
 	
 	/**
-	 * Generate randoms start and end positions<br />
+	 * Generate randoms start and end positions<br>
 	 * Reset the player position to the new start position generated
 	 * @param seed (long) The value for the pseudo-random number generator
 	 */
@@ -132,7 +132,7 @@ public class Labyrinth {
 	}
 
 	/**
-	 * Set the start position<br />
+	 * Set the start position<br>
 	 * Reset the position of the player to the new start position
 	 * @param startPosition ({@link Position}) The new start position
 	 */
@@ -151,7 +151,7 @@ public class Labyrinth {
 	}
 
 	/**
-	 * Set the end position<br />
+	 * Set the end position<br>
 	 * Reset the position of the player to the start position
 	 * @param endPosition ({@link Position}) The new end position
 	 */
@@ -304,7 +304,7 @@ public class Labyrinth {
 	
 	/**
 	 * Generate the labyrinth
-	 * @param seed (long) Value for the pseudo-random number generator (two same seeds => same labyrinth generated (if start and end positions are identical, same grid size, same algorithm))
+	 * @param seed (long) Value for the pseudo-random number generator (two same seeds == same labyrinth generated (if start and end positions are identical, same grid size, same algorithm))
 	 * @param stepByStep (boolean) The algorithm sleeps between iterations to demonstrate how it works (to be run by an independent Thread)
 	 */
 	public void generate(long seed, boolean stepByStep) {
@@ -323,9 +323,9 @@ public class Labyrinth {
 	}
 	
 	/**
-	 * Calculate a path to the exit and return this path.<br />
+	 * Calculate a path to the exit and return this path.<br>
 	 * Return null if no path was found.
-	 * @return ({@link Queue}<{@link Position}>) The path
+	 * @return ({@link Queue} of {@link Position}) The path
 	 */
 	public Queue<Position> getPath() {
 		return this.solver.getPath(this);
@@ -340,11 +340,11 @@ public class Labyrinth {
 	}
 
 	/**
-	 * Get CellValue ({@link CellValue#WALL} or {@link CellValue#EMPTY}) of all the edges around the current cell<br />
+	 * Get CellValue ({@link CellValue#WALL} or {@link CellValue#EMPTY}) of all the edges around the current cell<br>
 	 * Used to display the labyrinth
-	 * @return ({@link CellValue}[][][3]) An array of CellValue which contains three entries :<br />
-	 * {@link CellValue}[0] = The west value<br />
-	 * {@link CellValue}[1] = The north value<br />
+	 * @return ({@link CellValue}[][][3]) An array of CellValue which contains three entries :<br>
+	 * {@link CellValue}[0] = The west value<br>
+	 * {@link CellValue}[1] = The north value<br>
 	 * {@link CellValue}[2] = The north-west value
 	 */
 	public CellValue[][][] getAllCellsAround() {
@@ -360,12 +360,12 @@ public class Labyrinth {
 	}
 
 	/**
-	 * Get CellValue ({@link CellValue#WALL} or {@link CellValue#EMPTY}) of the edges around the current cell<br />
+	 * Get CellValue ({@link CellValue#WALL} or {@link CellValue#EMPTY}) of the edges around the current cell<br>
 	 * Used to display the labyrinth
 	 * @param pos ({@link Position}) The position of the cell
-	 * @return ({@link CellValue}[3]) An array of CellValue which contains three entries :<br />
-	 * {@link CellValue}[0] = The west value<br />
-	 * {@link CellValue}[1] = The north value<br />
+	 * @return ({@link CellValue}[3]) An array of CellValue which contains three entries :<br>
+	 * {@link CellValue}[0] = The west value<br>
+	 * {@link CellValue}[1] = The north value<br>
 	 * {@link CellValue}[2] = The north-west value
 	 */
 	public CellValue[] getCellAround(Position pos) {

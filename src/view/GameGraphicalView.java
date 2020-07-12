@@ -81,7 +81,7 @@ public class GameGraphicalView extends Application implements GameView {
 	/**
 	 * Construct a new graphical game
 	 * @param launcher (GameLauncher) the launcher
-	 * @param displatInfoStart (boolean)
+	 * @param displayInfoStart (boolean)
 	 * @param level (int)
 	 */
 	public GameGraphicalView(GameLauncher launcher, boolean displayInfoStart, int level) {

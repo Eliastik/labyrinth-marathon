@@ -191,6 +191,7 @@ public class MenuLauncher extends Application {
 							checkUpdateTmp = checker.checkUpdate();
 						} catch (Exception e3) {
 							errorUpdateTmp = true;
+							System.out.println(e3);
 						}
 						
 						final boolean checkUpdate = checkUpdateTmp;

@@ -11,7 +11,7 @@ import controller.GameController;
  */
 public interface GameView {
 	/**
-	 * Update the view<br />
+	 * Update the view<br>
 	 * The controller uses this method to warn the view about a change in the model
 	 * @param moveSucceeded (boolean) The player moved successfully
 	 */

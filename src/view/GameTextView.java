@@ -11,7 +11,7 @@ import model.Labyrinth;
 import model.util.Direction;
 
 /**
- * The game (text mode)<br />
+ * The game (text mode)<br>
  * Only used for debug
  * @author Eliastik
  * @version 1.1
@@ -27,7 +27,6 @@ public class GameTextView implements GameView {
 	/**
 	 * Construct a new text game
 	 * @param launcher (GameLauncher) the launcher
-	 * @param displatInfoStart (boolean)
 	 * @param level (int)
 	 */
 	public GameTextView(GameLauncher launcher, int level) {

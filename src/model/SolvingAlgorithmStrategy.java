@@ -25,7 +25,7 @@ public abstract class SolvingAlgorithmStrategy {
 	
 	/**
 	 * Solve the labyrinth
-	 * @return ({@link Queue}<{@link Position}>) The path to the end position, or null if no path was found
+	 * @return ({@link Queue} of {@link Position}) The path to the end position, or null if no path was found
 	 */
 	public abstract Queue<Position> getPath(Labyrinth labyrinth);
 	

@@ -275,7 +275,7 @@ public class GameController {
 	}
 	
 	/**
-	 * Set if the blocked player check must use a {@link Thread}<br />
+	 * Set if the blocked player check must use a {@link Thread}<br>
 	 * Defaults to true
 	 * @param useThreadedCheckBlocked (boolean) true to use a {@link Thread}, false otherwise
 	 */
@@ -300,7 +300,7 @@ public class GameController {
 	}
 	
 	/**
-	 * Start the auto-player mode (using chosen pathfinding/solving algorithm)<br />
+	 * Start the auto-player mode (using chosen pathfinding/solving algorithm)<br>
 	 * Fails if the generation of the labyrinth is still in process, if the auto-player is disabled for this labyrinth or if the player is blocked
 	 */
 	public void enableAutoPlayer() {

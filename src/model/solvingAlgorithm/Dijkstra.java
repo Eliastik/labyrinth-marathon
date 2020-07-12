@@ -3,7 +3,7 @@ package model.solvingAlgorithm;
 import model.util.Position;
 
 /**
- * The Dijkstra Shortest Path solving algorithm<br />
+ * The Dijkstra Shortest Path solving algorithm<br>
  * This algorithm is a special case for the A* algorithm where the heuristic function always return 0
  * @author Eliastik
  * @version 1.1

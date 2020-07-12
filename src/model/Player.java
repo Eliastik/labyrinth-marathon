@@ -71,7 +71,7 @@ public class Player {
 	}
 	
 	/**
-	 * Detect if the player is blocked (if no path leads him to the exit)<br />
+	 * Detect if the player is blocked (if no path leads him to the exit)<br>
 	 * Uses a flood fill algorithm
 	 * @return (boolean) true if the player is blocked, false otherwise
 	 * @see <a href="https://en.wikipedia.org/wiki/Flood_fill">https://en.wikipedia.org/wiki/Flood_fill</a>
@@ -83,9 +83,8 @@ public class Player {
 	}
 	
 	/**
-	 * Detect if the player is blocked (if no path leads him to the exit)<br />
+	 * Detect if the player is blocked (if no path leads him to the exit)<br>
 	 * Uses a flood fill algorithm
-	 * @return (boolean) true if the player is blocked, false otherwise
 	 * @see <a href="https://en.wikipedia.org/wiki/Flood_fill">https://en.wikipedia.org/wiki/Flood_fill</a>
 	 */
 	public void checkBlocked() {
@@ -222,7 +221,7 @@ public class Player {
 
 	/**
 	 * Set the auto player setting
-	 * @param autoPlayer (boolean) true if the player must move automatically according to the path to the end position, false otherwise
+	 * @param isAutoPlayer (boolean) true if the player must move automatically according to the path to the end position, false otherwise
 	 */
 	public void setAutoPlayer(boolean isAutoPlayer) {
 		this.isAutoPlayer = isAutoPlayer;
